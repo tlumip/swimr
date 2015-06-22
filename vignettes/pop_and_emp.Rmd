@@ -1,0 +1,22 @@
+---
+title: "Population and Employment"
+author: "Greg Macfarlane"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+I have been tasked with coming up with a convenient method for digesting the 
+results of a SWIM model run. I think the best thing to do is to create a series
+of helper functions that will create plots or calculate metrics on tables pulled
+directly from the database. I have wrapped these functions in an Rpackage that
+I am calling `swimr`. As yet, this package is in a git repository on 
+my computer, but I can throw it on GitHub when I'm given a private space for it,
+or told it can be public.
+
+# Population and Employment
+
+
