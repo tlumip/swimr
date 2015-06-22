@@ -11,6 +11,7 @@
 #' value of the variable at each time stage going across the columns.
 #'
 #' @import dplyr
+#' @import tidyr
 yearly_summary <- function(df, group, var){
   df %>%
     group_by_(group, "TSTEP") %>%
@@ -26,6 +27,8 @@ yearly_summary <- function(df, group, var){
 #' @param df A \code{data_frame} of
 #'
 #' @import ggplot2
+#' @import tidyr
+#' @import dplyr
 plot_sevar <- function(df, which_county, controls = TRUE){
   # prepare data_frame for plotting
   df <- df %>% ungroup() %>%
