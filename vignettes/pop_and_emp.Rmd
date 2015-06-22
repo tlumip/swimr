@@ -13,10 +13,62 @@ I have been tasked with coming up with a convenient method for digesting the
 results of a SWIM model run. I think the best thing to do is to create a series
 of helper functions that will create plots or calculate metrics on tables pulled
 directly from the database. I have wrapped these functions in an Rpackage that
-I am calling `swimr`. As yet, this package is in a git repository on 
-my computer, but I can throw it on GitHub when I'm given a private space for it,
-or told it can be public.
+I am calling `swimr`. 
+
+
+```{r load_swimr}
+library(swimr)
+```
+
+As yet, this package is in a git repository on my computer, but I can throw it 
+on GitHub when I'm given a private space for it, or told it can be public. The
+package relies on `dplyr`, `ggplot2`, and other modern R packages. These should 
+be installed by default, but I use them for lots of things so I'll load them   
+here.
+
+```{r load_libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+One advantage of the `dplyr` package is that it can work on the SQLite database
+directly. For more information, see the `dplyr`
+[vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
+I have included a small (5-year) base scenario version of the database in the
+package to illustrate this functionality and to 
+
+```{r point_to_db}
+db_path <- system.file("extdata", "base_scenario.db", package = "swimr")
+db <- src_sqlite(db_path)
+db
+```
+
 
 # Population and Employment
+To figure out what was going on in the output, I rebuilt the county-level
+population and employment plots Alex showed us in the last group call.
+
+The source data for these plots comes from two different tables in the database;
+`AZONE` has the zone-level socioeconomic data, and `ALLZONES` has the
+information about the zone, including which county the zone is in. We can pull
+the variables we need from each of these tables, and process it as neccessary.
+
+```{r azone_data}
+# Pull land use data
+azone_data <- tbl(db, "AZONE") %>%
+  select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+  # join information for county and state
+  left_join(
+    tbl(db, "ALLZONES") %>%
+      select(AZONE = Azone, county = COUNTY, state = STATE)
+  ) 
+azone_data
+```
+
+At this point, `azone_data` doesn't exist as a table in memory, but instead
+is a list of instructions for `db` to create this table on demand.
+
+
 
 
