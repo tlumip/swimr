@@ -5,10 +5,8 @@ Version: 0.1
 Date: 2015-06-19
 Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
-  person("Alex", "Bettinardi", email = "Alexander.O.BETTINARDI@odot.state.or.us", role = c("aut", "cre"))
+  person("Alex", "Bettinardi", email = "Alexander.O.BETTINARDI@odot.state.or.us", role = c("aut"))
   )
-Maintainer@R: person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
-Description: This package collects several R functions that are used in visualizing
-the Oregon Statewide Integrated Model (SWIM) outputs.
+Description: This package collects several R functions that are used in visualizing the Oregon Statewide Integrated Model (SWIM) outputs.
 License: What license is it under?
 LazyData: TRUE
