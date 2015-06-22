@@ -67,7 +67,40 @@ azone_data
 ```
 
 At this point, `azone_data` doesn't exist as a table in memory, but instead
-is a list of instructions for `db` to create this table on demand.
+is a list of instructions for `db` to create this table on demand. We now want 
+to aggregate the socioeconomic variables up to the county level in each year,
+and compare these model results to the county control totals.
+
+```{r county_data}
+county_data <- azone_data %>%
+  group_by(county, state, TSTEP) %>%
+  summarise(
+    population = sum(POPULATION),
+    employment = sum(EMPLOYMENT),
+    totalhh = sum(TOTALHHS)
+  ) %>%
+  mutate(year = as.numeric(TSTEP) + 1990)
+county_data
+```
+
+At this point, there are two functions that we can execute on this data table. 
+The first is to create a table of an economic variable aggregated to a given
+level at each year, with the function `yearly_summary()`
+
+```{r yearly_summary}
+yearly_summary(county_data, "state", "population")
+yearly_summary(county_data, "county", "employment")
+```
+
+The `plot_sevar()` function makes a plot like Alex's, comparing population and 
+employment in a county. It draws control tables from a `data_frame` included
+with the package. You can also compare multiple counties.
+
+
+```{r plot_sevar, fig.width=8, fig.height=6}
+plot_sevar(county_data, "Baker")
+plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
+```
 
 
 
