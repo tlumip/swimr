@@ -10,9 +10,6 @@ pop <- as.data.frame(Pop.CoYr) %>% tbl_df() %>%
   gather(year, population, -county)
 
 
-county_controls <- pop %>% left_join(emp)
-
-ggplot(county_controls,
-       aes(x = as.numeric(year), y = log(employment), color = county)
-       ) +
-  geom_line()
+county_controls <- pop %>% left_join(emp) %>%
+  mutate(year = as.numeric(year)) %>%
+  gather(var, y, population:employment)
