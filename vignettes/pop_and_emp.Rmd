@@ -35,11 +35,9 @@ library(ggplot2)
 One advantage of the `dplyr` package is that it can work on the SQLite database
 directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
-I have included a small (5-year) base scenario version of the database in the
-package to illustrate this functionality and to 
 
 ```{r point_to_db}
-db_path <- system.file("extdata", "base_scenario.db", package = "swimr")
+db_path <- "/Volumes/TPAU_SWIM2/SWIM25_NewAlphas2.db"
 db <- src_sqlite(db_path)
 db
 ```
