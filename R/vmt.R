@@ -9,7 +9,7 @@
 #'   variable to use. Levels not called are dropped from the plot; default is
 #'   \code{NULL}, meaning print all level.
 #'
-#' @param A ggplot2 figure object.
+#' @return A ggplot2 figure object.
 #'
 #' @export
 #' @impor dplyr, ggplot2
@@ -73,7 +73,7 @@ plot_vmt <- function(db, color_var = "MPO", color_levels = NULL){
 #'   variable to use. Levels not called are dropped from the plot; default is
 #'   \code{NULL}, meaning print all level.
 #'
-#' @param A ggplot2 figure object.
+#' @return A ggplot2 figure object.
 #'
 #' @export
 #' @impor dplyr, ggplot2
