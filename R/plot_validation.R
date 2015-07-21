@@ -1,7 +1,7 @@
 #' Plot base-year traffic validation.
 #'
 #'
-plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
+plot_validation <- function(db){
 
   grouping <- tbl(db, "ALLZONES") %>%
     select_("Azone", facet_var) %>%
@@ -39,7 +39,6 @@ plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
     scale_x_log10() +
     scale_fill_brewer(type = "seq")
 
-  p + facet_wrap(~ facet_var)
 }
 
 
