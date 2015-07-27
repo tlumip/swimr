@@ -11,9 +11,9 @@
 #'
 #' @return A ggplot2 figure object.
 #'
-#' @export
-#' @impor dplyr, ggplot2
+#' @import dplyr ggplot2
 #'
+#' @export
 plot_vmt <- function(db, color_var = "MPO", color_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
@@ -76,7 +76,7 @@ plot_vmt <- function(db, color_var = "MPO", color_levels = NULL){
 #' @return A ggplot2 figure object.
 #'
 #' @export
-#' @impor dplyr, ggplot2
+#' @import dplyr ggplot2
 #'
 plot_pct_cong <- function(db, color_var = "MPO", color_levels = NULL,
                           congested_voc = 0.9){
@@ -146,7 +146,7 @@ plot_pct_cong <- function(db, color_var = "MPO", color_levels = NULL,
 #' @return A ggplot2 figure object.
 #'
 #' @export
-#' @impor dplyr, ggplot2
+#' @import dplyr ggplot2
 #'
 plot_vht <- function(db, color_var = "MPO", color_levels = NULL){
 
