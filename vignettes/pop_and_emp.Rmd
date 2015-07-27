@@ -8,6 +8,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+```{r setup}
+library(knitr)
+opts_chunk$set(fig.width=8, fig.height=6)
+```
 
 I have been tasked with coming up with a convenient method for digesting the 
 results of a SWIM model run. I think the best thing to do is to create a series
@@ -20,11 +24,9 @@ I am calling `swimr`.
 library(swimr)
 ```
 
-As yet, this package is in a git repository on my computer, but I can throw it 
-on GitHub when I'm given a private space for it, or told it can be public. The
-package relies on `dplyr`, `ggplot2`, and other modern R packages. These should 
-be installed by default, but I use them for lots of things so I'll load them   
-here.
+The package relies on `dplyr`, `ggplot2`, and other modern R packages. These
+should be installed by default, but I use them for lots of things so I'll load
+them here.
 
 ```{r load_libraries, message=FALSE, warning=FALSE}
 library(dplyr)
@@ -37,7 +39,7 @@ directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
 
 ```{r point_to_db}
-db_path <- "~/Desktop/SWIM25_NewAlphas2.db"
+db_path <- "~/Documents/projects/swim/midjuly_swim.db"
 db <- src_sqlite(db_path)
 db
 ```
@@ -95,11 +97,10 @@ employment in a county. It draws control tables from a `data_frame` included
 with the package. You can also compare multiple counties.
 
 
-```{r plot_sevar, fig.width=8, fig.height=6}
+```{r plot_sevar}
 plot_sevar(county_data, "Baker")
 plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
 ```
-
 
 ## Floorspace
 
@@ -107,6 +108,27 @@ plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
 plot_floorspace(db, facet_var = "MPO", 
                 facet_levels = c("Metro", "Corvallis", "EugeneSpringfield"))
 
+```
+
+# Traffic
+
+```{r validation}
+plot_validation(db)
+```
+
+
+## VMT/VHT
+```{r vmt}
+plot_vmt(db)
+```
+
+```{r vht}
+plot_vht(db)
+```
+
+## Congestion
+```{r congested}
+plot_pct_cong(db)
 ```
 
 
