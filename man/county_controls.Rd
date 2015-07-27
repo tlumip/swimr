@@ -12,7 +12,7 @@
   \item{employment}
 }}
 \source{
-{Reconstructed from data provided by Alex Bettinardi}
+Reconstructed from data provided by Alex Bettinardi
 }
 \usage{
 county_controls

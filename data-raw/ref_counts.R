@@ -4,4 +4,4 @@ library(readr)
 ref_counts <- read_csv("data-raw/reference-aadt-counts.csv",
                        col_types = "cnncc")
 
-# devtools::use_data(ref_counts, overwrite = TRUE)
+save(ref_counts, file = "data/ref_counts.rda")
