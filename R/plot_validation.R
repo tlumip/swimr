@@ -20,7 +20,6 @@ plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
 
     # Join facet_var
     left_join(grouping, by = "AZONE") %>%
-    filter(!is.na(facet_var)) %>%
     collect() %>%
     mutate(
       FROMNODENO = as.character(FROMNODENO),
@@ -38,14 +37,16 @@ plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   p <- ggplot(link_vols,
               aes(x = AADT, y = DAILY_VOL_TOTAL)) +
-    geom_point(shape = 21, aes(fill = cut_error(pct_error))) +
+    geom_point() +
     geom_smooth() +
     geom_abline(aes(intercept = 0, slope = 1), alpha = 0.5) +
     scale_y_log10() +
-    scale_x_log10() +
-    scale_fill_brewer(type = "seq")
+    scale_x_log10()
 
-  p
+  p + facet_wrap(~ facet_var) +
+    ylab("Assigned Volume") +
+    xlab("Observed AADT") +
+    theme_bw()
 }
 
 

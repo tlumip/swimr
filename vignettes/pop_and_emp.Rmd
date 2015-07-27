@@ -104,6 +104,11 @@ plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
 
 # Traffic
 
+```{r validation}
+plot_validation(db)
+```
+
+
 ## VMT/VHT
 ```{r vmt}
 plot_vmt(db)
