@@ -1,12 +1,17 @@
 #' Plot base-year traffic validation.
 #'
 #'
-plot_validation <- function(db){
+plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   grouping <- tbl(db, "ALLZONES") %>%
     select_("Azone", facet_var) %>%
     rename(AZONE = Azone) %>%
     rename_("facet_var" = facet_var)
+
+  # If no levels are specified, show all but external stations.
+  if(is.null(facet_levels)){
+    facet_levels <- get_levels(grouping)
+  }
 
   # get base year link traffic volumes
   link_vols <- tbl(db, "LINK_DATA") %>%
@@ -15,6 +20,7 @@ plot_validation <- function(db){
 
     # Join facet_var
     left_join(grouping, by = "AZONE") %>%
+    filter(!is.na(facet_var)) %>%
     collect() %>%
     mutate(
       FROMNODENO = as.character(FROMNODENO),
@@ -39,16 +45,8 @@ plot_validation <- function(db){
     scale_x_log10() +
     scale_fill_brewer(type = "seq")
 
+  p
 }
 
 
 
-#' Cut percent error into ranges
-#'
-#' @param x a vector of error measurements
-#' @return a factor showing the bin
-#'
-cut_error <- function(x){
-  brks <- c(0.05, 0.1, 0.2, 0.5, 1)
-  cut(x, breaks = c(0, brks, Inf))
-}
