@@ -14,8 +14,8 @@
 #' @export
 plot_floorspace <- function(db,
                             facet_var = c("MPO", "COUNTY", "STATE"),
-                            facet_levels = NULL
-                            ){
+                            facet_levels = NULL,
+                            type_levels = NULL ){
 
 
   # set facet variable; if null then default to MPO
@@ -34,6 +34,10 @@ plot_floorspace <- function(db,
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
   }
 
+  # get levels of floortype
+  if(is.null(type_levels)){
+    type_levels <- floor_types$floor_type
+  }
 
   # get floorspace table and compute summary
   floorspace <- tbl(db, "FLR_INVENTORY") %>%
@@ -51,13 +55,19 @@ plot_floorspace <- function(db,
     # sum within facet, year, and type
     group_by(facet_var, year, commodity) %>%
     summarise_each(funs(sum), floor:built) %>%
-    collect()
+    collect() %>%
+
+    # consolidate floortypes and filter to desired levels
+    left_join(floor_types, by = "commodity") %>%
+    filter(floor_type %in% type_levels) %>%
+    group_by(facet_var, year, floor_type) %>%
+    summarise_each(funs(sum), floor:built)
 
 
   # make plot
   ggplot(floorspace,
          aes(x = as.numeric(year), y = floor,
-             group = commodity, color = commodity)) +
+             group = floor_type, color = floor_type)) +
     geom_path()  +
     geom_point(aes(size = built)) +
     facet_wrap( ~ facet_var) +
