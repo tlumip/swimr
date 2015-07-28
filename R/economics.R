@@ -59,6 +59,7 @@ plot_floorspace <- function(db,
          aes(x = as.numeric(year), y = floor,
              group = commodity, color = commodity)) +
     geom_path()  +
+    geom_point(aes(size = built)) +
     facet_wrap( ~ facet_var) +
 
     scale_y_log10() +
