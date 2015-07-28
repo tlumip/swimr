@@ -7,6 +7,7 @@
 #' @param facet_var The variable in the zone table to facet by. Defaults to MPO
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
+#' @param type_levels The types of floorspace to show in the plot.
 #'
 #'
 #' @return A ggplot2 object showing the floorspace by type and and year.
