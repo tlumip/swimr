@@ -37,7 +37,7 @@ directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
 
 ```{r point_to_db}
-db_path <- "/Volumes/TPAU_SWIM2/SWIM25_NewAlphas2.db"
+db_path <- "~/Desktop/SWIM25_NewAlphas2.db"
 db <- src_sqlite(db_path)
 db
 ```
@@ -101,5 +101,12 @@ plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
 ```
 
 
+## Floorspace
+
+```{r floorspace}
+plot_floorspace(db, facet_var = "MPO", 
+                facet_levels = c("Metro", "Corvallis", "EugeneSpringfield"))
+
+```
 
 
