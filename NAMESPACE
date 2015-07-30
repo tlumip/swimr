@@ -2,6 +2,7 @@
 
 export(plot_pct_cong)
 export(plot_sevar)
+export(plot_validation)
 export(plot_vht)
 export(plot_vmt)
 export(yearly_summary)

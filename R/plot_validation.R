@@ -5,6 +5,7 @@
 #' @param db The scenario database.
 #' @return A ggplot2 object.
 #'
+#' @export
 plot_validation <- function(db){
 
 
