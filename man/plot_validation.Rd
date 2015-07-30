@@ -4,9 +4,15 @@
 \alias{plot_validation}
 \title{Plot base-year traffic validation.}
 \usage{
-plot_validation(db, facet_var = "MPO", facet_levels = NULL)
+plot_validation(db)
+}
+\arguments{
+\item{db}{The scenario database.}
+}
+\value{
+A ggplot2 object.
 }
 \description{
-Plot base-year traffic validation.
+Create a plot of the base scenario link volumes compared with observed AADT.
 }
 

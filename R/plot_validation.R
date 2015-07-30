@@ -1,25 +1,18 @@
 #' Plot base-year traffic validation.
 #'
+#' Create a plot of the base scenario link volumes compared with observed AADT.
 #'
-plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
+#' @param db The scenario database.
+#' @return A ggplot2 object.
+#'
+plot_validation <- function(db){
 
-  grouping <- tbl(db, "ALLZONES") %>%
-    select_("Azone", facet_var) %>%
-    rename(AZONE = Azone) %>%
-    rename_("facet_var" = facet_var)
-
-  # If no levels are specified, show all but external stations.
-  if(is.null(facet_levels)){
-    facet_levels <- get_levels(grouping)
-  }
 
   # get base year link traffic volumes
   link_vols <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, FROMNODENO, TONODENO, TSTEP, DAILY_VOL_TOTAL) %>%
+    select(FROMNODENO, TONODENO, TSTEP, DAILY_VOL_TOTAL) %>%
     filter(TSTEP == "23") %>%
 
-    # Join facet_var
-    left_join(grouping, by = "AZONE") %>%
     collect() %>%
     mutate(
       FROMNODENO = as.character(FROMNODENO),
@@ -27,7 +20,7 @@ plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
     )  %>%
 
     # Join count locations
-    right_join(ref_counts, by = c("FROMNODENO", "TONODENO")) %>%
+    left_join(ref_counts, by = c("FROMNODENO", "TONODENO")) %>%
 
     # compute percent error
     mutate(
@@ -41,12 +34,13 @@ plot_validation <- function(db, facet_var = "MPO", facet_levels = NULL){
     geom_smooth() +
     geom_abline(aes(intercept = 0, slope = 1), alpha = 0.5) +
     scale_y_log10() +
-    scale_x_log10()
+    scale_x_log10() +
 
-  p + facet_wrap(~ facet_var) +
     ylab("Assigned Volume") +
     xlab("Observed AADT") +
     theme_bw()
+
+  p
 }
 
 
