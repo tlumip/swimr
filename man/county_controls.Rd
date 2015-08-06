@@ -7,12 +7,13 @@
 \format{A data frame with 396 observations.
 \describe{
   \item{county}{name of the county in Oregon}
-  \item{year}{the year for the control; 1990-2010 are estimates, past 2010 are forecasts}
-  \item{population}
-  \item{employment}
+  \item{year}{the year for the control; 1990-2010 are estimates, past 2010
+  are forecasts}
+  \item{population}{The population control}
+  \item{employment}{The employment control}
 }}
 \source{
-{Reconstructed from data provided by Alex Bettinardi}
+Reconstructed from data provided by Alex Bettinardi
 }
 \usage{
 county_controls

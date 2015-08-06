@@ -26,12 +26,10 @@ yearly_summary <- function(df, group, var){
 
 #' Make a plot of population and employment
 #'
-#' @param df A \code{data_frame} consisting of at least the following variables:
-#'   county, year, population, employment.
-#'
-#' @param which_county A character vector of county names whose values should
-#'   be included in the plot.
-#'
+#' @param db The scenario sqlite database.
+#' @param color_var Field to color by: either "MPO" or "COUNTY".
+#' @param color_levels A character vector of the color variable specifiying
+#'   which levels to include.
 #' @param controls Plot against the control totals. Defaults to TRUE, cannot
 #'   currently run with FALSE.
 #'
@@ -43,29 +41,108 @@ yearly_summary <- function(df, group, var){
 #' @import ggplot2
 #' @import tidyr
 #' @import dplyr
-plot_sevar <- function(df, which_county, controls = TRUE){
-  # prepare data_frame for plotting
-  df <- df %>% ungroup() %>% collect() %>%
-    filter(county %in% which_county) %>%
-    select(county, year, population, employment) %>%
-    gather(var, y, population:employment) %>%
-    mutate(data = "SWIM")
+plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
+                       color_levels = NULL, controls = TRUE
+                       ){
 
-  # add county controls
-  if(controls){
-    ct <- county_controls %>%
-      filter(county %in% which_county) %>%
-      select(county, year, var, y) %>%
-      mutate(data = "Control")
-    df <- rbind_list(df, ct)
+  # set color variable; if null then default to County
+  if(is.null(color_var)){
+    color_var = "COUNTY"
   }
 
-  # create plot frame
-  p <- ggplot(df) +
-    geom_line(aes(x = year, y = y, color = county, lty = data))
+  # county plot with controls
+  if(color_var == "COUNTY"){
+
+    # Pull se data
+    df <- tbl(db, "AZONE") %>%
+      select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+      # join information for county and state
+      left_join(
+        tbl(db, "ALLZONES") %>%
+          select(AZONE = Azone, county = COUNTY, state = STATE)
+      ) %>%
+
+      # summarize to the county level
+      group_by(county, state, TSTEP) %>%
+      summarise(
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
+      ) %>%
+      mutate(year = as.numeric(TSTEP) + 1990) %>%
+      ungroup() %>% collect()
+
+    # if no levels specified, then keep all
+    if(!is.null(color_levels)){
+      df <- filter(df, county %in% color_levels)
+    }
+
+    df <- df %>%
+      select(county, year, population, employment) %>%
+      gather(var, y, population:employment) %>%
+      mutate(data = "SWIM")
+
+    # add county controls
+    if(controls){
+      ct <- county_controls %>%
+        filter(county %in% df$county) %>%
+        filter(year > 2005) %>%
+        select(county, year, var, y) %>%
+        mutate(data = "Control")
+
+      df <- rbind(df, ct)
+    }
+
+    p <- ggplot(df) +
+      geom_line(aes(x = year, y = y, color = county, lty = data)) +
+      scale_linetype_manual("Data", values = c("dashed", "solid"))
+
+  } else { # MPO plot without controls
+
+
+    grouping <- tbl(db, "BZONE") %>%
+      select_("BZONE", "color_var" = color_var)
+
+    # get levels of facet_var if none given
+    if(is.null(color_levels)){
+      color_levels <- grouping %>% group_by(color_var) %>% collect() %>%
+        slice(1) %>% .$color_var
+
+      color_levels <- color_levels[which(color_levels != "EXTSTA")]
+    }
+
+    # Pull se data
+    df <- tbl(db, "AZONE") %>%
+      select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+      # join information for county and state
+      left_join(
+        tbl(db, "ALLZONES") %>%
+          select(AZONE = Azone, MPO = MPO, state = STATE)
+      ) %>%
+      filter(MPO %in% color_levels) %>%
+
+      # summarize to the MPO level
+      group_by(MPO, TSTEP) %>%
+      summarise(
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
+      ) %>%
+      mutate(year = as.numeric(TSTEP) + 1990) %>%
+      ungroup() %>% collect() %>%
+
+      select(MPO, year, population, employment) %>%
+      gather(var, y, population:employment) %>%
+      mutate(data = "SWIM")
+
+    p <- ggplot(df) +
+      geom_line(aes(x = year, y = y, color = MPO))
+  }
+
 
   # theme, etc
   p +
+    scale_y_log10() +
     facet_grid(. ~ var, scales = "free_y") +
     xlab("Year") + ylab("Count") +
     theme_bw()
