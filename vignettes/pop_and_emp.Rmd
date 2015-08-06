@@ -1,5 +1,5 @@
 ---
-title: "Population and Employment"
+title: "Scenario Plots"
 author: "Greg Macfarlane"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -44,53 +44,9 @@ db <- src_sqlite(db_path)
 db
 ```
 
+# Single Scenario
 
-# Population and Employment
-To figure out what was going on in the output, I rebuilt the county-level
-population and employment plots Alex showed us in the last group call.
-
-The source data for these plots comes from two different tables in the database;
-`AZONE` has the zone-level socioeconomic data, and `ALLZONES` has the
-information about the zone, including which county the zone is in. We can pull
-the variables we need from each of these tables, and process it as neccessary.
-
-```{r azone_data}
-# Pull land use data
-azone_data <- tbl(db, "AZONE") %>%
-  select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
-  # join information for county and state
-  left_join(
-    tbl(db, "ALLZONES") %>%
-      select(AZONE = Azone, county = COUNTY, state = STATE)
-  ) 
-azone_data
-```
-
-At this point, `azone_data` doesn't exist as a table in memory, but instead
-is a list of instructions for `db` to create this table on demand. We now want 
-to aggregate the socioeconomic variables up to the county level in each year,
-and compare these model results to the county control totals.
-
-```{r county_data}
-county_data <- azone_data %>%
-  group_by(county, state, TSTEP) %>%
-  summarise(
-    population = sum(POPULATION),
-    employment = sum(EMPLOYMENT),
-    totalhh = sum(TOTALHHS)
-  ) %>%
-  mutate(year = as.numeric(TSTEP) + 1990)
-county_data
-```
-
-At this point, there are two functions that we can execute on this data table. 
-The first is to create a table of an economic variable aggregated to a given
-level at each year, with the function `yearly_summary()`
-
-```{r yearly_summary}
-yearly_summary(county_data, "state", "population")
-yearly_summary(county_data, "county", "employment")
-```
+## Population and Employment
 
 The `plot_sevar()` function makes a plot like Alex's, comparing population and 
 employment in a county. It draws control tables from a `data_frame` included
@@ -98,8 +54,8 @@ with the package. You can also compare multiple counties.
 
 
 ```{r plot_sevar}
-plot_sevar(county_data, "Baker")
-plot_sevar(county_data, c("Multnomah", "Washington", "Clackamas"))
+plot_sevar(db, color_var = "COUNTY", 
+           color_levels = c("Multnomah", "Washington", "Clackamas"))
 ```
 
 ## Floorspace
@@ -110,10 +66,10 @@ plot_floorspace(db, facet_var = "MPO",
 
 ```
 
-# Traffic
+## Traffic
 
 ```{r validation}
-plot_validation(db)
+#plot_validation(db)
 ```
 
 
