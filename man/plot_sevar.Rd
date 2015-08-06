@@ -4,14 +4,16 @@
 \alias{plot_sevar}
 \title{Make a plot of population and employment}
 \usage{
-plot_sevar(df, which_county, controls = TRUE)
+plot_sevar(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
+  controls = TRUE)
 }
 \arguments{
-\item{df}{A \code{data_frame} consisting of at least the following variables:
-  county, year, population, employment.}
+\item{db}{The scenario sqlite database.}
 
-\item{which_county}{A character vector of county names whose values should
-  be included in the plot.}
+\item{color_var}{Field to color by: either "MPO" or "COUNTY".}
+
+\item{color_levels}{A character vector of the color variable specifiying
+which levels to include.}
 
 \item{controls}{Plot against the control totals. Defaults to TRUE, cannot
   currently run with FALSE.}

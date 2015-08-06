@@ -1,9 +1,13 @@
 #' Plot Trips by MPO
 #'
 #' @param db the scenario database.
+#' @param facet_var Defaults to MPO
+#' @param facet_levels defaults to all
+#' @param share Plot mode split.
 #'
 #' @import dplyr
 #' @import tidyr
+#' @export
 plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
                        share = TRUE) {
 
