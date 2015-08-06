@@ -86,13 +86,23 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     if(controls){
       ct <- county_controls %>%
         filter(county %in% df$county) %>%
+        filter(year > 2005) %>%
         select(county, year, var, y) %>%
         mutate(data = "Control")
 
       df <- rbind(df, ct)
     }
 
-  } else {
+    p <- ggplot(df) +
+      geom_line(aes(x = year, y = y, color = county, lty = data)) +
+      scale_linetype_manual("Data", values = c("dashed", "solid"))
+
+  } else { # MPO plot without controls
+
+
+    grouping <- tbl(db, "BZONE") %>%
+      select_("BZONE", "color_var" = color_var)
+
     # get levels of facet_var if none given
     if(is.null(color_levels)){
       color_levels <- grouping %>% group_by(color_var) %>% collect() %>%
@@ -100,15 +110,39 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 
       color_levels <- color_levels[which(color_levels != "EXTSTA")]
     }
+
+    # Pull se data
+    df <- tbl(db, "AZONE") %>%
+      select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+      # join information for county and state
+      left_join(
+        tbl(db, "ALLZONES") %>%
+          select(AZONE = Azone, MPO = MPO, state = STATE)
+      ) %>%
+      filter(MPO %in% color_levels) %>%
+
+      # summarize to the MPO level
+      group_by(MPO, TSTEP) %>%
+      summarise(
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
+      ) %>%
+      mutate(year = as.numeric(TSTEP) + 1990) %>%
+      ungroup() %>% collect() %>%
+
+      select(MPO, year, population, employment) %>%
+      gather(var, y, population:employment) %>%
+      mutate(data = "SWIM")
+
+    p <- ggplot(df) +
+      geom_line(aes(x = year, y = y, color = MPO))
   }
 
-  # create plot frame
-  p <- ggplot(df) +
-    geom_line(aes(x = year, y = y, color = county, lty = data)) +
-    scale_linetype_manual("Data", values = c("dashed", "solid"))
 
   # theme, etc
   p +
+    scale_y_log10() +
     facet_grid(. ~ var, scales = "free_y") +
     xlab("Year") + ylab("Count") +
     theme_bw()
