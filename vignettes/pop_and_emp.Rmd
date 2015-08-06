@@ -72,6 +72,13 @@ plot_floorspace(db, facet_var = "MPO",
 #plot_validation(db)
 ```
 
+## Trips
+```{r trips}
+plot_trips(db, "MPO", share = TRUE)
+plot_trips(db, "MPO", share = FALSE)
+```
+
+
 
 ## VMT/VHT
 ```{r vmt}
