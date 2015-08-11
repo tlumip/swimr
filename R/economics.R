@@ -91,3 +91,45 @@ plot_floorspace <- function(db,
     theme_bw()
 
 }
+
+#' Compare floorspace over time
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of floorspace to show in the plot.
+#'
+#' @export
+#'
+compare_floorspace <- function(db1, db2,
+                               facet_var = c("MPO", "COUNTY", "STATE"),
+                               facet_levels = NULL,
+                               type_levels = NULL){
+
+  # get the reference scenario data
+  fref <- extract_floorspace(db1, facet_var, facet_levels, type_levels) %>%
+    rename(floor_ref = floor, built_ref = built)
+
+  # get the comparison scenario
+  fcom <- extract_floorspace(db2, facet_var, facet_levels, type_levels) %>%
+    rename(floor_com = floor, built_com = built)
+
+  f <- left_join(fref, fcom) %>%
+    gather(var, value, floor_ref:built_com) %>%
+    separate(var, c("var", "scenario")) %>%
+    spread(scenario, value, fill = NA) %>%
+    filter(var == "built") %>%
+    mutate(diff = com - ref)
+
+
+  ggplot(f,
+         aes(x = year, y = diff, fill = floor_type)) +
+    geom_area(alpha = 0.5) +
+    facet_wrap( ~ facet_var) +
+    xlab("Year") + ylab("Difference in constructed floor area") +
+    theme_bw()
+}
+
+
