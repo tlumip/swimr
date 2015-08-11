@@ -22,6 +22,9 @@ plot_vmt <- function(db, color_var = "MPO", color_levels = NULL){
     rename(AZONE = Azone) %>%
     rename_("color_var" = color_var)
 
+
+  # TODO: group by facility type
+
   # If no levels are specified, show all but external stations.
   if(is.null(color_levels)){
     a <- grouping %>%
