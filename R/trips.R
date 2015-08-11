@@ -11,14 +11,19 @@
 plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
                        share = TRUE) {
 
-
   df <- tbl(db, "TRIPMATRIX") %>%
     # sum trips on origin
     mutate(BZONE = FROMBZONE) %>%
     select(-FROMBZONE, -TOBZONE) %>%
     left_join(tbl(db, "BZONE") %>% select_("BZONE", "facet_var" = facet_var),
-              by = "BZONE") %>%
+              by = "BZONE")
 
+  # if no levels specified, then keep all
+  if(!is.null(facet_levels)){
+    df <- df %>% filter(facet_var %in% facet_levels)
+  }
+
+  df <- df %>%
     group_by(facet_var, TSTEP) %>%
     summarise_each(funs(sum), am_BIKE:am_WK_TRAN) %>%
 
