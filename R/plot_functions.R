@@ -23,8 +23,8 @@ yearly_summary <- function(df, group, var){
     spread(year, var, fill = NA)
 }
 
-
-#' Make a plot of population and employment
+#' Extract SE data from DB
+#'
 #'
 #' @param db The scenario sqlite database.
 #' @param color_var Field to color by: either "MPO" or "COUNTY".
@@ -33,17 +33,9 @@ yearly_summary <- function(df, group, var){
 #' @param controls Plot against the control totals. Defaults to TRUE, cannot
 #'   currently run with FALSE.
 #'
-#' @return A \code{ggplot2} plot object showing the modeled change in employment
-#'   and population over time.
-#'
-#' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
-plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
-                       color_levels = NULL, controls = TRUE
-                       ){
+#' @return a data frame
+extract_se <- function(db, color_var = c("MPO", "COUNTY"),
+                       color_levels = NULL, controls = TRUE){
 
   # set color variable; if null then default to County
   if(is.null(color_var)){
@@ -52,7 +44,6 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 
   # county plot with controls
   if(color_var == "COUNTY"){
-
     # Pull se data
     df <- tbl(db, "AZONE") %>%
       select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
@@ -93,12 +84,8 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
       df <- rbind(df, ct)
     }
 
-    p <- ggplot(df) +
-      geom_line(aes(x = year, y = y, color = county, lty = data)) +
-      scale_linetype_manual("Data", values = c("dashed", "solid"))
 
-  } else { # MPO plot without controls
-
+  } else {
 
     grouping <- tbl(db, "BZONE") %>%
       select_("BZONE", "color_var" = color_var)
@@ -134,6 +121,43 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
       select(MPO, year, population, employment) %>%
       gather(var, y, population:employment) %>%
       mutate(data = "SWIM")
+  }
+
+}
+
+#' Make a plot of population and employment
+#'
+#' @param db The scenario sqlite database.
+#' @param color_var Field to color by: either "MPO" or "COUNTY".
+#' @param color_levels A character vector of the color variable specifiying
+#'   which levels to include.
+#' @param controls Plot against the control totals. Defaults to TRUE
+#'
+#' @return A \code{ggplot2} plot object showing the modeled change in employment
+#'   and population over time.
+#'
+#' @export
+#'
+#' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
+                       color_levels = NULL, controls = TRUE
+                       ){
+
+
+  # county plot with controls
+  if(color_var == "COUNTY"){
+
+    df <- extract_se(db, color_var, color_levels, controls)
+
+    p <- ggplot(df) +
+      geom_line(aes(x = year, y = y, color = county, lty = data)) +
+      scale_linetype_manual("Data", values = c("dashed", "solid"))
+
+  } else { # MPO plot without controls
+
+    df <- extract_se(db, color_var, color_levels, controls)
 
     p <- ggplot(df) +
       geom_line(aes(x = year, y = y, color = MPO))
@@ -147,3 +171,6 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     xlab("Year") + ylab("Count") +
     theme_bw()
 }
+
+
+
