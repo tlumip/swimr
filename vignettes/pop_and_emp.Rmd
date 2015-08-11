@@ -40,7 +40,7 @@ directly. For more information, see the `dplyr`
 
 ```{r point_to_db}
 db_path <- "~/Documents/projects/swim/midjuly_swim.db"
-db <- src_sqlite(db_path)
+db1 <- src_sqlite(db_path)
 db
 ```
 
@@ -94,4 +94,15 @@ plot_vht(db)
 plot_pct_cong(db)
 ```
 
+# Compare scenarios
+
+```{r two_scenarios}
+db1 <- src_sqlite("~/Documents/projects/swim/midjuly_swim.db")
+db2 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
+```
+
+```{r compare_floorspace}
+compare_floorspace(db1, db2, facet_var = "COUNTY", 
+                   facet_levels = c("Multnomah", "Clackamas", "Washington"))
+```
 
