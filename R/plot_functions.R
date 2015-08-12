@@ -179,8 +179,8 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param color_var Field to color by: either "MPO" or "COUNTY".
-#' @param color_levels A character vector of the color variable specifiying
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
 #' @param controls Plot against the control totals. Defaults to TRUE
 #'
@@ -192,28 +192,28 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #' @import ggplot2
 #' @import tidyr
 #' @import dplyr
-compare_sevar <- function(db1, db2, color_var = c("MPO", "COUNTY"),
-                       color_levels = NULL){
+compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
+                          facet_levels = NULL){
 
 
-  seref <- extract_se(db1, color_var, color_levels, controls = FALSE) %>%
+  seref <- extract_se(db1, facet_var, facet_levels, controls = FALSE) %>%
     rename(ref = y)
-  secom <- extract_se(db2, color_var, color_levels, controls = FALSE) %>%
+  secom <- extract_se(db2, facet_var, facet_levels, controls = FALSE) %>%
     rename(com = y)
 
   df <- left_join(seref, secom) %>%
     mutate(diff = com - ref)
 
-  if(color_var == "COUNTY"){
-    df <- rename(df, color_var = county)
+  if(facet_var == "COUNTY"){
+    df <- rename(df, facet_var = county)
   } else {
-    df <- rename(df, color_var = MPO)
+    df <- rename(df, facet_var = MPO)
   }
 
   ggplot(df,
          aes(x = year, y = diff, fill = var)) +
     geom_area(alpha = 0.5) +
-    facet_wrap(~color_var) +
+    facet_wrap(~facet_var) +
     xlab("Year") + ylab("Difference in population.") +
     theme_bw()
 }
