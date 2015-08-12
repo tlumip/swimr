@@ -123,6 +123,8 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
       mutate(data = "SWIM")
   }
 
+  return(df)
+
 }
 
 #' Make a plot of population and employment
@@ -173,4 +175,45 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 }
 
 
+#' Compare population and employment
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param color_var Field to color by: either "MPO" or "COUNTY".
+#' @param color_levels A character vector of the color variable specifiying
+#'   which levels to include.
+#' @param controls Plot against the control totals. Defaults to TRUE
+#'
+#' @return A \code{ggplot2} plot object showing the modeled change in employment
+#'   and population over time.
+#'
+#' @export
+#'
+#' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+compare_sevar <- function(db1, db2, color_var = c("MPO", "COUNTY"),
+                       color_levels = NULL){
 
+
+  seref <- extract_se(db1, color_var, color_levels, controls = FALSE) %>%
+    rename(ref = y)
+  secom <- extract_se(db2, color_var, color_levels, controls = FALSE) %>%
+    rename(com = y)
+
+  df <- left_join(seref, secom) %>%
+    mutate(diff = com - ref)
+
+  if(color_var == "COUNTY"){
+    df <- rename(df, color_var = county)
+  } else {
+    df <- rename(df, color_var = MPO)
+  }
+
+  ggplot(df,
+         aes(x = year, y = diff, fill = var)) +
+    geom_area(alpha = 0.5) +
+    facet_wrap(~color_var) +
+    xlab("Year") + ylab("Difference in population.") +
+    theme_bw()
+}
