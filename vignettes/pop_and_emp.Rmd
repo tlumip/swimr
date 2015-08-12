@@ -106,3 +106,7 @@ compare_floorspace(db1, db2, facet_var = "COUNTY",
                    facet_levels = c("Multnomah", "Clackamas", "Washington"))
 ```
 
+```{r compare_sedata}
+compare_sevar(db1, db2, facet_var = "COUNTY", 
+              facet_levels = c("Multnomah", "Clackamas", "Washington"))
+```
