@@ -122,6 +122,49 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     theme_bw()
 }
 
+
+#' Extract congestion
+#'
+#'
+#'
+extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
+                         congested_voc = 0.9){
+
+  # Get lookup table of zones to grouping variable.
+  grouping <- tbl(db, "ALLZONES") %>%
+    select_("Azone", facet_var) %>%
+    rename(AZONE = Azone) %>%
+    rename_("facet_var" = facet_var)
+
+  # If no levels are specified, show all but external stations.
+  if(is.null(facet_levels)){
+    a <- grouping %>%
+      collect() %>%
+      filter(facet_var != "EXTSTA")
+
+    facet_levels = names(table(a$facet_var))
+  }
+
+  link_con <- tbl(db, "LINK_DATA") %>%
+    select(AZONE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
+    left_join(grouping, by = "AZONE") %>%
+
+    # filter out regions you don't want
+    filter(facet_var %in% facet_levels) %>%
+
+    filter(TEMP_CAPACITY > 0) %>%
+    collect() %>%  #need to collect sooner because of ifelse below.
+
+    # Calculate the percent of congested links
+    mutate(
+      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc,
+                         1, 0),
+      year = as.numeric(TSTEP) + 1990
+    ) %>%
+    group_by(year, facet_var, PLANNO) %>%
+    summarise(percent_congested = (sum(congested) / n()) * 100)
+}
+
 #' Plot percent congested links over time.
 #'
 #' This function plots the percent of congested links, colored and
@@ -138,58 +181,63 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 #' @export
 #' @import dplyr ggplot2
 #'
-plot_pct_cong <- function(db, color_var = "MPO", color_levels = NULL,
+plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
                           congested_voc = 0.9){
 
-  # Get lookup table of zones to grouping variable.
-  grouping <- tbl(db, "ALLZONES") %>%
-    select_("Azone", color_var) %>%
-    rename(AZONE = Azone) %>%
-    rename_("color_var" = color_var)
 
-  # If no levels are specified, show all but external stations.
-  if(is.null(color_levels)){
-    a <- grouping %>%
-      collect() %>%
-      filter(color_var != "EXTSTA")
+  links_con <- extract_cong(db, facet_var, facet_levels, congested_voc)
 
-    color_levels = names(table(a$color_var))
-  }
-
-  links <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
-    left_join(grouping, by = "AZONE") %>%
-
-    # filter out regions you don't want
-    filter(color_var %in% color_levels) %>%
-
-    filter(TEMP_CAPACITY > 0) %>%
-    collect() %>%  #need to collect sooner because of ifelse below.
-
-    # Calculate the percent of congested links
-    mutate(
-      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc,
-                         1, 0)
-    ) %>%
-    group_by(TSTEP, color_var) %>%
-    summarise(percent_congested = (sum(congested) / n()) * 100) %>%
-
-    ungroup() %>%
-    mutate(TSTEP = as.numeric(TSTEP))
-
-  p <- ggplot(
-    links,
-    aes(x = TSTEP + 1990, y = percent_congested, color = color_var)
+  ggplot(
+    links_con,
+    aes(x = year, y = percent_congested, color = factor(PLANNO))
   ) +
     geom_path() +
-    scale_color_discrete(color_var)
-
-  p +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent Congested Links") +
+    facet_wrap(~ facet_var) +
     theme_bw()
 
 }
 
+#' Plot percent congested links over time.
+#'
+#' This function plots the percent of congested links, colored and
+#' faceted by arbitrary variables in the link table.
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var The variable to use in faceting the data.
+#' @param facet_levels A character vector giving the levels of the faceting
+#'   variable to use. Levels not called are dropped from the plot; default is
+#'   \code{NULL}, meaning print all level.
+#'
+#' @return A ggplot2 figure object.
+#'
+#' @export
+#' @import dplyr ggplot2
+#'
+compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
+                             congested_voc = 0.9){
+
+
+  conref <- extract_cong(db1, facet_var, facet_levels)  %>%
+    rename(ref = percent_congested)
+  concom <- extract_cong(db2, facet_var, facet_levels)  %>%
+    rename(com = percent_congested)
+
+  df <- left_join(conref, concom) %>%
+    mutate(diff = (com + rpois(n(), 5)) - ref)
+
+
+  ggplot(df,
+         aes(x = year, y = diff, fill = factor(PLANNO))) +
+    geom_area(alpha = 0.5) +
+    facet_wrap(~facet_var) +
+    scale_fill_discrete("Facility Type") +
+    xlab("Year") + ylab("Difference in percent of congested links.") +
+    theme_bw()
+
+}
 
 
 #' Plot VHT over time.
