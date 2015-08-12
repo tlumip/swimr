@@ -4,7 +4,7 @@
 \alias{plot_vmt}
 \title{Plot VMT over time.}
 \usage{
-plot_vmt(db, color_var = "MPO", color_levels = NULL)
+plot_vmt(db, facet_var = "MPO", facet_levels = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}
