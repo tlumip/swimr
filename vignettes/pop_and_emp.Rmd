@@ -39,7 +39,7 @@ directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
 
 ```{r point_to_db}
-db_path <- "~/Documents/projects/swim/midjuly_swim.db"
+db_path <- "~/Documents/projects/swim/FinalReference_Test.db"
 db <- src_sqlite(db_path)
 db
 ```
@@ -82,7 +82,7 @@ plot_trips(db, "MPO", share = FALSE)
 
 ## VMT/VHT
 ```{r vmt}
-plot_vmt(db)
+plot_vmt(db, facet_var = "MPO")
 ```
 
 ```{r vht}

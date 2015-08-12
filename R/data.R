@@ -42,3 +42,14 @@
 #' }
 #' @source Calculated by Rick Donnelly from data supplied by ODOT.
 "ref_counts"
+
+
+#' Link table
+#'
+#' A fortified shapefile containing link attributes
+"links"
+
+#' Zone table
+#'
+#' A fortified shapefile containing the zone geometries
+"zones"
