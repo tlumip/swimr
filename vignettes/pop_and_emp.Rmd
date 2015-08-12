@@ -39,8 +39,8 @@ directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
 
 ```{r point_to_db}
-db_path <- "~/Documents/projects/swim/midjuly_swim.db"
-db1 <- src_sqlite(db_path)
+db_path <- "~/Documents/projects/swim/FinalReference_Test.db"
+db <- src_sqlite(db_path)
 db
 ```
 
@@ -82,7 +82,7 @@ plot_trips(db, "MPO", share = FALSE)
 
 ## VMT/VHT
 ```{r vmt}
-plot_vmt(db)
+plot_vmt(db, facet_var = "MPO")
 ```
 
 ```{r vht}
@@ -94,19 +94,4 @@ plot_vht(db)
 plot_pct_cong(db)
 ```
 
-# Compare scenarios
 
-```{r two_scenarios}
-db1 <- src_sqlite("~/Documents/projects/swim/midjuly_swim.db")
-db2 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
-```
-
-```{r compare_floorspace}
-compare_floorspace(db1, db2, facet_var = "COUNTY", 
-                   facet_levels = c("Multnomah", "Clackamas", "Washington"))
-```
-
-```{r compare_sedata}
-compare_sevar(db1, db2, facet_var = "COUNTY", 
-              facet_levels = c("Multnomah", "Clackamas", "Washington"))
-```
