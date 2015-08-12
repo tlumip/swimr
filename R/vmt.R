@@ -1,21 +1,7 @@
-#' Plot VMT over time.
-#'
-#' This function plots the sum of the daily link volumes over time, colored and
-#' faceted by arbitrary variables in the link table.
-#'
-#' @param db The scenario database.
-#' @param color_var The variable to use in coloring the data.
-#' @param color_levels A character vector giving the levels of the coloring
-#'   variable to use. Levels not called are dropped from the plot; default is
-#'   \code{NULL}, meaning print all level.
-#'
-#' @return A ggplot2 figure object.
-#'
-#' @import dplyr ggplot2 dplyrExtras
+#' Extract VMT
 #'
 #'
-#' @export
-plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
+extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
@@ -36,7 +22,6 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     select(FROMNODENO, TONODENO, LENGTH)
 
 
-
   # TODO: group by facility type
 
   # If no levels are specified, show all but external stations.
@@ -55,33 +40,87 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     # filter out regions you don't want
     filter(facet_var %in% facet_levels) %>%
     collect()  %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
 
     # get link distance from table
     left_join(link_dist, by = c("ANODE" = "FROMNODENO", "BNODE" = "TONODENO")) %>%
 
     # calculate total by year and group
-    group_by(TSTEP, facet_var, PLANNO) %>%
-    summarise(vmt = sum(DAILY_VOL_TOTAL * LENGTH, na.rm = TRUE)) %>%
+    group_by(year, facet_var, PLANNO) %>%
+    summarise(vmt = sum(DAILY_VOL_TOTAL * LENGTH, na.rm = TRUE))
 
-    # bring it locally
-    ungroup() %>%
-    mutate(TSTEP = as.numeric(TSTEP))
+  return(link_vmt)
+}
 
-  p <- ggplot(
-    link_vmt,
-    aes(x = TSTEP + 1990, y = vmt, color = factor(PLANNO))
-  ) +
+#' Plot VMT over time.
+#'
+#' This function plots the sum of the daily link volumes over time, colored and
+#' faceted by arbitrary variables in the link table.
+#'
+#' @param db The scenario database.
+#' @param color_var The variable to use in coloring the data.
+#' @param color_levels A character vector giving the levels of the coloring
+#'   variable to use. Levels not called are dropped from the plot; default is
+#'   \code{NULL}, meaning print all level.
+#'
+#' @return A ggplot2 figure object.
+#'
+#' @import dplyr ggplot2 dplyrExtras
+#'
+#'
+#' @export
+plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
+
+  link_vmt <- extract_vmt(db, facet_var, facet_levels)
+
+  ggplot(link_vmt,
+         aes(x = year, y = vmt, color = factor(PLANNO))
+         ) +
     geom_path() +
     scale_y_log10() +
     facet_wrap(~ facet_var) +
-    scale_color_discrete("Facility Type")
-
-  p +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Vehicle Miles Traveled") +
     theme_bw()
 
 }
 
+#' Compare VMT between scenarios
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#'
+#' @return A \code{ggplot2} plot object showing the modeled change in employment
+#'   and population over time.
+#'
+#' @export
+#'
+#' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
+                          facet_levels = NULL){
+
+
+  vmtref <- extract_vmt(db1, facet_var, facet_levels)  %>%
+    rename(ref = vmt)
+  vmtcom <- extract_vmt(db2, facet_var, facet_levels)  %>%
+    rename(com = vmt)
+
+  df <- left_join(vmtref, vmtcom) %>%
+    mutate(diff = com - ref)
+
+  ggplot(df,
+         aes(x = year, y = diff, fill = factor(PLANNO))) +
+    geom_area(alpha = 0.5) +
+    facet_wrap(~facet_var) +
+    scale_fill_discrete("Facility Type") +
+    xlab("Year") + ylab("Difference in vmt.") +
+    theme_bw()
+}
 
 #' Plot percent congested links over time.
 #'
