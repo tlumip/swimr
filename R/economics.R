@@ -125,8 +125,8 @@ compare_floorspace <- function(db1, db2,
 
 
   ggplot(f,
-         aes(x = year, y = diff, fill = floor_type)) +
-    geom_area(alpha = 0.5) +
+         aes(x = year, y = diff, color = floor_type)) +
+    geom_path() +
     facet_wrap( ~ facet_var) +
     xlab("Year") + ylab("Percent difference (current - reference) in floor area") +
     theme_bw()
