@@ -121,14 +121,14 @@ compare_floorspace <- function(db1, db2,
     separate(var, c("var", "scenario")) %>%
     spread(scenario, value, fill = NA) %>%
     filter(var == "built") %>%
-    mutate(diff = com - ref)
+    mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
   ggplot(f,
          aes(x = year, y = diff, fill = floor_type)) +
     geom_area(alpha = 0.5) +
     facet_wrap( ~ facet_var) +
-    xlab("Year") + ylab("Difference in constructed floor area") +
+    xlab("Year") + ylab("Percent difference (current - reference) in floor area") +
     theme_bw()
 }
 
