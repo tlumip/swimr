@@ -12,14 +12,12 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
   # Link distances
   link_dist <- links %>%
     # reverse link distance
-    mutate_if(
-      order == 2,
-      hold = FROMNODENO,
-      FROMNODENO = TONODENO,
-      TONODENO = hold,
+    mutate(
+      ANODE = ifelse(order == 2, TONODENO, FROMNODENO),
+      BNODE = ifelse(order == 2, FROMNODENO, TONODENO),
       LENGTH = R_LENGTH
     ) %>%
-    select(FROMNODENO, TONODENO, LENGTH)
+    select(ANODE, BNODE, LENGTH)
 
 
   # TODO: group by facility type
@@ -43,7 +41,7 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     mutate(year = as.numeric(TSTEP) + 1990) %>%
 
     # get link distance from table
-    left_join(link_dist, by = c("ANODE" = "FROMNODENO", "BNODE" = "TONODENO")) %>%
+    left_join(link_dist) %>%
 
     # calculate total by year and group
     group_by(year, facet_var, PLANNO) %>%
