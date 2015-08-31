@@ -1,15 +1,14 @@
-#' Plot Trips by MPO
+#' Extract trips from scenario
+#'
 #'
 #' @param db the scenario database.
 #' @param facet_var Defaults to MPO
 #' @param facet_levels defaults to all
-#' @param share Plot mode split.
 #'
 #' @import dplyr
 #' @import tidyr
 #' @export
-plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
-                       share = TRUE) {
+extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   df <- tbl(db, "TRIPMATRIX") %>%
     # sum trips on origin
@@ -38,6 +37,23 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
     group_by(facet_var, year, mode) %>%
     summarise(trips = sum(trips))
 
+}
+
+#' Plot Trips by MPO
+#'
+#' @param db the scenario database.
+#' @param facet_var Defaults to MPO
+#' @param facet_levels defaults to all
+#' @param share Plot mode split.
+#'
+#' @import dplyr
+#' @import tidyr
+#' @export
+plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
+                       share = TRUE) {
+
+  df <- extract_trips(db, facet_var, facet_levels)
+
   if(share) {
     df <- df %>%
       group_by(facet_var, year) %>%
@@ -60,6 +76,5 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
     facet_wrap( ~ facet_var) +
     xlab("Year") +
     theme_bw()
-
 
 }
