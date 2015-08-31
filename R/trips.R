@@ -1,6 +1,5 @@
 #' Extract trips from scenario
 #'
-#'
 #' @param db the scenario database.
 #' @param facet_var Defaults to MPO
 #' @param facet_levels defaults to all
@@ -75,6 +74,44 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
     geom_path()  +
     facet_wrap( ~ facet_var) +
     xlab("Year") +
+    theme_bw()
+
+}
+
+#' Compare Trips
+#'
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#'
+compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
+                          share = TRUE){
+
+  # reference scenario
+  fref <- extract_trips(db1, facet_var, facet_levels) %>%
+    rename(ref = trips)
+  # current scenario
+  fcom <- extract_trips(db2, facet_var, facet_levels) %>%
+    rename(com = trips)
+
+  df <- left_join(fref, fcom) %>%
+    mutate(
+      diff = (com - ref) / ref * 100,
+      diff = ifelse(is.na(diff), 0, diff)
+    )
+
+  # plot of percent difference
+  p <- ggplot(df,
+              aes(x = year, y = diff, color = mode)) +
+    geom_path() +
+    facet_wrap(~ facet_var)
+
+  p +
+    xlab("Year") +
+    ylab("Percent difference in number of trips produced (current - reference)") +
     theme_bw()
 
 }
