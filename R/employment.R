@@ -94,3 +94,46 @@ plot_employment <- function(db,
     theme_bw()
 
 }
+
+
+#' Compare Employment between two scenarios
+#'
+#' This function plots the value of employment sold by a zone. This is a proxy
+#' for the number of workers in each sector, which is not immediately available
+#' from the SWIM database.
+#'
+#' @param db1 The reference scenario database.
+#' @param db2 The current scenario database.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+#' @return A ggplot2 object showing the employment by type and and year.
+#'
+#' @export
+compare_employment <- function(db1, db2,
+                            facet_var = c("MPO", "COUNTY", "STATE"),
+                            facet_levels = NULL,
+                            type_levels = NULL){
+
+  # get the reference scenario data
+  fref <- extract_employment(db1, facet_var, facet_levels, type_levels) %>%
+    rename(out_ref = output)
+
+  # get the comparison scenario
+  fcom <- extract_employment(db2, facet_var, facet_levels, type_levels) %>%
+    rename(out_com = output)
+
+  f <- left_join(fref, fcom) %>%
+    mutate(diff = (out_com - out_ref) / out_ref * 100)  # percent difference
+
+
+  ggplot(f,
+         aes(x = year, y = diff, color = naics_label)) +
+    geom_path() +
+    facet_wrap( ~ facet_var) +
+    xlab("Year") +
+    ylab("Percent difference (current - reference) in Employee Output") +
+    theme_bw()
+}
