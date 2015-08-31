@@ -112,8 +112,8 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
-         aes(x = year, y = diff, fill = factor(PLANNO))) +
-    geom_area(alpha = 0.5) +
+         aes(x = year, y = diff, color = factor(PLANNO))) +
+    geom_path() +
     facet_wrap(~facet_var) +
     scale_fill_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VMT.") +
@@ -229,8 +229,8 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 
   ggplot(df,
          aes(x = year, y = diff, fill = factor(PLANNO))) +
-    geom_area(alpha = 0.5) +
-    facet_wrap(~facet_var) +
+    geom_path() +
+    facet_wrap(~ facet_var) +
     scale_fill_discrete("Facility Type") +
     xlab("Year") + ylab("Difference in percent of congested links.") +
     theme_bw()
