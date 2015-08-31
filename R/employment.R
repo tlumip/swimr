@@ -55,6 +55,7 @@ extract_employment <- function(db,
     filter(naics1 %in% type_levels) %>%
     group_by(facet_var, year, naics_label) %>%
     summarise(output = sum(output)) %>%
+    mutate(year = as.numeric(year) + 1990)
 
   return(employment)
 }
