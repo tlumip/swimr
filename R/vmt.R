@@ -1,6 +1,6 @@
 #' Extract VMT
 #'
-#'
+#' @export
 extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
