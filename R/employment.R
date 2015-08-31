@@ -59,3 +59,38 @@ extract_employment <- function(db,
 
   return(employment)
 }
+
+#' Plot Employment by Sector
+#'
+#' This function plots the value of employment sold by a zone. This is a proxy
+#' for the number of workers in each sector, which is not immediately available
+#' from the SWIM database.
+#'
+#' @param db The scenario database.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+#' @return A ggplot2 object showing the employment by type and and year.
+#'
+#' @export
+plot_employment <- function(db,
+                            facet_var = c("MPO", "COUNTY", "STATE"),
+                            facet_levels = NULL,
+                            type_levels = NULL){
+
+  employment <- extract_employment(db, facet_var, facet_levels, type_levels)
+
+  # make plot
+  ggplot(employment,
+         aes(x = as.numeric(year), y = output,
+             group = naics_label, color = naics_label)) +
+    geom_path()  +
+    facet_wrap( ~ facet_var) +
+
+    scale_y_log10() +
+    xlab("Year") + ylab("Output (dollars)") +
+    theme_bw()
+
+}
