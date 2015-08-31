@@ -1,6 +1,36 @@
-
 employment_types <- data_frame(
-  sector = names(table(employment$sector)),
+  sector = c(
+    "BuySell_A1_Mgmt_Bus", "BuySell_Accommodations",
+    "BuySell_B1_Prof_Specialty",
+    "BuySell_B2_Education",  "BuySell_B3_Health",
+    "BuySell_B4_Technical_Unskilled",
+    "BuySell_C1_Sales_Clerical_Professionals", "BuySell_C2_Sales_Service",
+    "BuySell_C3_Clerical", "BuySell_C4_Sales_Clerical_Unskilled",
+    "BuySell_Capital_Transfer_Receipts", "BuySell_Communications_and_Utilities",
+    "BuySell_Construction", "BuySell_D1_Production_Specialists",
+    "BuySell_D2_MaintConstRepair_Specialists",
+    "BuySell_D3_ProtectTrans_Specialists",
+    "BuySell_D4_Blue_Collar_Unskilled", "BuySell_Education_Reports_to_Sponsors",
+    "BuySell_Energy", "BuySell_Entertainment_Services",
+    "BuySell_Fire_Business_and_Professional_Services",
+    "BuySell_Food_Services", "BuySell_Government_Administration",
+    "BuySell_Government_Support_Receipts", "BuySell_Health_Services",
+    "BuySell_Higher_Education", "BuySell_Internal_Services_Construction",
+    "BuySell_Internal_Services_Education_k12",
+    "BuySell_Internal_Services_Energy",
+    "BuySell_Internal_Services_Government_Administration",
+    "BuySell_Internal_Services_Information",
+    "BuySell_Internal_Services_Manufacturing",
+    "BuySell_Internal_Services_Resources",
+    "BuySell_Internal_Services_Retail_Store",
+    "BuySell_Internal_Services_Utilities",
+    "BuySell_Internal_Services_Wholesale",
+    "BuySell_Internal_ServicesTransport",
+    "BuySell_Investing_Receipts",
+    "BuySell_Personal_and_Other_Services_and_Amusements",
+    "BuySell_Proprietor_Income_Receipts", "BuySell_Retail_Trade",
+    "BuySell_Return_Investment_Receipts", "BuySell_Teaching_K12"
+  ),
   naics = c(
     "55 - Management", "72 - Accomodation", "54 - Professional",
     "61 - Education", "62 - Health",
@@ -42,9 +72,15 @@ employment_types <- data_frame(
     "52 - Finance",
     "61 - Education"
   ),
-  naics1 = substr(naics, 1, 1)
+  naics1 = substr(naics, 1, 1),
+  naics_label = factor(
+    naics1,
+    labels = c("2 - Energy/Utilities", "3- Technical/Manufacturing",
+               "Retail/Transport", "Professional", "Health/Education",
+               "Food", "Services", "Government")
+  )
 )
 
-devtools::use_data(employment_types)
+devtools::use_data(employment_types, overwrite = TRUE)
 
 

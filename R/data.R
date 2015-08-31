@@ -35,6 +35,7 @@
 #'   \item{sector}{The employment sector in the db.}
 #'   \item{naics}{The two-digit NAICS code largely corresponding to the sector.}
 #'   \item{naics1}{The one-digit NAICS code aggregation level.}
+#'   \item{naics_label}{Label for the one-digit NAICS Code.}
 #' }
 "employment_types"
 
