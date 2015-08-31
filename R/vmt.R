@@ -109,14 +109,14 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     rename(com = vmt)
 
   df <- left_join(vmtref, vmtcom) %>%
-    mutate(diff = com - ref)
+    mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
          aes(x = year, y = diff, fill = factor(PLANNO))) +
     geom_area(alpha = 0.5) +
     facet_wrap(~facet_var) +
     scale_fill_discrete("Facility Type") +
-    xlab("Year") + ylab("Difference in vmt.") +
+    xlab("Year") + ylab("Percent difference in VMT.") +
     theme_bw()
 }
 
