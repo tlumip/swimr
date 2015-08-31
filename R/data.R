@@ -26,6 +26,17 @@
 #'
 "floor_types"
 
+#' Employment types
+#'
+#' A dataset mapping the NAICS sectors in the buy/sell from the database to
+#' consolidated categories.
+#' @format A data frame with 43 observations.
+#' \describe{
+#'   \item{sector}{The employment sector in the db.}
+#'   \item{naics}{The two-digit NAICS code largely corresponding to the sector.}
+#'   \item{naics1}{The one-digit NAICS code aggregation level.}
+#' }
+"employment_types"
 
 #' Reference counts
 #'
