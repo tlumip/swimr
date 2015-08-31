@@ -224,7 +224,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
     rename(com = percent_congested)
 
   df <- left_join(conref, concom) %>%
-    mutate(diff = (com + rpois(n(), 5)) - ref)
+    mutate(diff = (com - ref))
 
 
   ggplot(df,
