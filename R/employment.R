@@ -2,6 +2,8 @@
 #'
 #' This is an internal function to pull the employment data from a scenario and
 #' return it to either the single scenario or scenario comparison functions.
+#'
+#' @export
 extract_employment <- function(db,
                                facet_var = c("MPO", "COUNTY", "STATE"),
                                facet_levels = NULL,
@@ -55,6 +57,7 @@ extract_employment <- function(db,
     filter(naics1 %in% type_levels) %>%
     group_by(facet_var, year, naics_label) %>%
     summarise(output = sum(output)) %>%
+    ungroup() %>%
     mutate(year = as.numeric(year) + 1990)
 
   return(employment)
@@ -84,7 +87,7 @@ plot_employment <- function(db,
 
   # make plot
   ggplot(employment,
-         aes(x = as.numeric(year), y = output,
+         aes(x = year, y = output,
              group = naics_label, color = naics_label)) +
     geom_path()  +
     facet_wrap( ~ facet_var) +
