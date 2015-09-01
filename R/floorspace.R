@@ -94,7 +94,7 @@ plot_floorspace <- function(db,
     facet_wrap( ~ facet_var) +
 
     scale_y_log10() +
-    xlab("Year") + ylab("Floor Space [million sqft]") +
+    xlab("Year") + ylab("Floor Space [sqft]") +
     theme_bw()
 
 }
