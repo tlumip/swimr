@@ -128,13 +128,26 @@ transportation model runs.
 
 ## Volume of Travel
 
+```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
+compare_vmt(db1, db2, facet, facet_levels)
+```
+
+```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
+compare_vht(db1, db2, facet, facet_levels)
+```
 
 
 ## Mode Split
+```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
+compare_trips(db1, db2, facet, facet_levels)
+```
 
 
 ## Congested Links
 
+```{r compare_cong, fig.cap="Comparison of percent link congestion."}
+compare_pct_cong(db1, db2, facet, facet_levels)
+```
 
 
 # Economics
