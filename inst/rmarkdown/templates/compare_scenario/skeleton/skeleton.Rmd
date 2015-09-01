@@ -1,0 +1,175 @@
+---
+title: "Compare Scenarios"
+author: "Parsons Brinckerhoff"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: spacelab
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE, message = FALSE,
+  fig.keep = TRUE, fig.path = "./figures/",
+  fig.width=8, fig.height=6
+)
+
+
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+library(ggplot2)
+library(swimr)
+```
+
+```{r figrefs}
+library(kfigr)
+# wrappers for short use
+rtab <- function(tag){
+  figr(tag, TRUE, TRUE, "Table")
+}
+
+rfig <- function(tag){
+  figr(tag, TRUE, TRUE, "Figure")
+}
+```
+
+
+```{r setdb}
+# update to reflect scenario location
+db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
+db2 <- src_sqlite("~/Documents/projects/swim/midjuly_swim.db")
+# update to reflect scope of analysis
+facet <- "COUNTY"
+facet_levels <-  c("Multnomah", "Washington", "Clackamas")
+years <- c(2010, 2025, 2040)
+```
+
+
+# Scenario Description
+
+`r rtab("scenario")` shows the scenario information.
+
+```{r scenario, results='asis'}
+# update to reflect current scenario
+scen_info <- data_frame(
+  Name = c("Reference", "Current"),
+  Scenario = c("Reference scenario", "Mid July"),
+  `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
+                   "removed")
+)
+
+kable(scen_info, caption = "Scenario Information")
+```
+
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`.
+
+# Population and Employment
+
+```{r se}
+se <- left_join(
+  extract_se(db1, "MPO") %>% rename(reference = y),
+  extract_se(db2, "MPO") %>% rename(current   = y)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100)
+```
+
+`r rtab("tab_pop")` and `r rfig("tab_emp")` show the MPO-level population and 
+employment in each scenario by year, as well as the percent difference between
+the scenarios. `r rfig("fig_population")` shows the difference between the two
+scenarios across time aggregated to selected regions.
+
+```{r tab_pop, results='asis'}
+pop <- se %>% filter(var == "population")
+
+ref <- yearly_summary(pop, "MPO", "reference")
+cur <- yearly_summary(pop, "MPO", "current")
+diff <- yearly_summary(pop, "MPO", "diff")
+
+pop <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(pop) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(pop, caption = "Population by MPO", digits = 2)
+```
+
+```{r tab_emp, results='asis'}
+emp <- se %>% filter(var == "employment")
+
+ref <- yearly_summary(emp, "MPO", "reference")
+cur <- yearly_summary(emp, "MPO", "current")
+diff <- yearly_summary(emp, "MPO", "diff")
+
+emp <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(emp) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(emp, caption = "Employment by MPO", digits = 2)
+```
+
+
+```{r fig_population, fig.cap="Population and employment in selected areas."}
+compare_sevar(db1, db2, facet, facet_levels)
+```
+
+# Transportation 
+Note that the plots in this section may only have data for years in which the 
+transportation model runs.
+
+## Volume of Travel
+
+```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
+compare_vmt(db1, db2, facet, facet_levels)
+```
+
+```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
+compare_vht(db1, db2, facet, facet_levels)
+```
+
+
+## Mode Split
+
+`r rfig("fig_mode")` compares the number of trip productions by mode.
+
+```{r fig_mode, fig.cap="Comparison of trip productions by mode."}
+compare_trips(db1, db2, facet, facet_levels)
+```
+
+
+## Congested Links
+
+`r rfig("fig_cong")` shows the percent of links that are congested in each
+area over time by facility type. In this definition, *congested* means that
+the daily volume is greater than 90% of the daily capacity.
+
+```{r compare_cong, fig.cap="Comparison of percent link congestion."}
+compare_pct_cong(db1, db2, facet, facet_levels)
+```
+
+
+# Economics
+
+`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
+`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
+
+```{r fig_floorspace, fig.cap="Comparison of floorspace by type."}
+compare_floorspace(db1, db2, facet, facet_levels)
+```
+
+```{r fig_employment, fig.cap="Comparison of labor output by sector."}
+compare_employment(db1, db2, facet, facet_levels)
+```
+
+
+
+
