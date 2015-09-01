@@ -62,22 +62,21 @@ with the package. You can also compare multiple counties.
 
 
 ```{r plot_sevar}
-plot_sevar(db, color_var = facet, color_levels = counties)
+plot_sevar(db, facet, counties)
 ```
 
 The employment information takes a long time to gather. I don't have the number
 of jobs directly in the database, but I do have output by 
 
 ```{r plot_employment}
-plot_employment(db, facet_var = facet, facet_levels = counties)
+plot_employment(db, facet, counties)
 ```
 
 
 ## Floorspace
 
 ```{r floorspace}
-plot_floorspace(db, facet_var = facet,
-                facet_levels = counties)
+plot_floorspace(db, facet, counties)
 ```
 
 
@@ -86,7 +85,7 @@ plot_floorspace(db, facet_var = facet,
 
 ## Trips
 ```{r trips}
-plot_trips(db, facet, counties,  share = TRUE)
+plot_trips(db, facet, counties, share = TRUE)
 plot_trips(db, facet, counties, share = FALSE)
 ```
 
