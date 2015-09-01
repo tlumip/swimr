@@ -8,8 +8,8 @@
 #'   \item{county}{name of the county in Oregon}
 #'   \item{year}{the year for the control; 1990-2010 are estimates, past 2010
 #'   are forecasts}
-#'   \item{population}{The population control}
-#'   \item{employment}{The employment control}
+#'   \item{var}{The type of control: population or employment.}
+#'   \item{y}{The value of the control.}
 #' }
 #' @source Reconstructed from data provided by Alex Bettinardi
 "county_controls"
@@ -26,6 +26,18 @@
 #'
 "floor_types"
 
+#' Employment types
+#'
+#' A dataset mapping the NAICS sectors in the buy/sell from the database to
+#' consolidated categories.
+#' @format A data frame with 43 observations.
+#' \describe{
+#'   \item{sector}{The employment sector in the db.}
+#'   \item{naics}{The two-digit NAICS code largely corresponding to the sector.}
+#'   \item{naics1}{The one-digit NAICS code aggregation level.}
+#'   \item{naics_label}{Label for the one-digit NAICS Code.}
+#' }
+"employment_types"
 
 #' Reference counts
 #'

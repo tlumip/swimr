@@ -14,10 +14,10 @@ opts_chunk$set(fig.width=8, fig.height=6)
 ```
 
 I have been tasked with coming up with a convenient method for digesting the 
-results of a SWIM model run. I think the best thing to do is to create a series
+results of a SWIM model run. I think the best thing to do is to create a series 
 of helper functions that will create plots or calculate metrics on tables pulled
-directly from the database. I have wrapped these functions in an Rpackage that
-I am calling `swimr`. 
+directly from the database. I have wrapped these functions in an Rpackage that I
+am calling `swimr`.
 
 
 ```{r load_swimr}
@@ -44,6 +44,14 @@ db <- src_sqlite(db_path)
 db
 ```
 
+The functions have been written in such a way that they can aggregate
+to MPO, State, or County. Additionally, the user can select a set of those
+fields to show. 
+```{r set_facets}
+facet <- "COUNTY"
+counties <- c("Multnomah", "Washington", "Clackamas")
+```
+
 # Single Scenario
 
 ## Population and Employment
@@ -54,44 +62,70 @@ with the package. You can also compare multiple counties.
 
 
 ```{r plot_sevar}
-plot_sevar(db, color_var = "COUNTY", 
-           color_levels = c("Multnomah", "Washington", "Clackamas"))
+plot_sevar(db, facet, counties)
 ```
+
+The employment information takes a long time to gather. I don't have the number
+of jobs directly in the database, but I do have output by 
+
+```{r plot_employment}
+plot_employment(db, facet, counties)
+```
+
 
 ## Floorspace
 
 ```{r floorspace}
-plot_floorspace(db, facet_var = "MPO", 
-                facet_levels = c("Metro", "Corvallis", "EugeneSpringfield"))
-
+plot_floorspace(db, facet, counties)
 ```
+
 
 ## Traffic
 
-```{r validation}
-#plot_validation(db)
-```
 
 ## Trips
 ```{r trips}
-plot_trips(db, "MPO", share = TRUE)
-plot_trips(db, "MPO", share = FALSE)
+plot_trips(db, facet, counties, share = TRUE)
+plot_trips(db, facet, counties, share = FALSE)
 ```
-
-
 
 ## VMT/VHT
 ```{r vmt}
-plot_vmt(db, facet_var = "MPO")
+plot_vmt(db, facet, counties)
 ```
 
 ```{r vht}
-plot_vht(db)
+plot_vht(db, facet, counties)
 ```
 
 ## Congestion
 ```{r congested}
-plot_pct_cong(db)
+plot_pct_cong(db, facet, counties)
 ```
 
+# Compare scenarios
+
+```{r two_scenarios}
+db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
+db2 <- src_sqlite("~/Documents/projects/swim/skim_hold.db")
+```
+
+## Economics
+
+```{r compare_floorspace}
+compare_floorspace(db1, db2, facet, counties)
+```
+
+```{r compare_employment}
+compare_employment(db1, db2, facet, counties)
+```
+
+```{r compare_sedata}
+compare_sevar(db1, db2, facet, counties)
+```
+
+## Transportation
+```{r compare_trips}
+compare_trips(db1, db2, facet, counties)
+```
 
