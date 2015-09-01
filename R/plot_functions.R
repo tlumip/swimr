@@ -33,6 +33,7 @@ yearly_summary <- function(df, group, var){
 #' @param controls Plot against the control totals. Defaults to TRUE, cannot
 #'   currently run with FALSE.
 #'
+#' @export
 #' @return a data frame
 extract_se <- function(db, color_var = c("MPO", "COUNTY"),
                        color_levels = NULL, controls = TRUE){
@@ -182,7 +183,6 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #' @param facet_var Field to facet by: either "MPO" or "COUNTY".
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
-#' @param controls Plot against the control totals. Defaults to TRUE
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.

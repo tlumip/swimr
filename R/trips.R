@@ -88,8 +88,7 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
 #'   which levels to include.
 #'
 #' @export
-compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
-                          share = TRUE){
+compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels) %>%

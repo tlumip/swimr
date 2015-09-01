@@ -7,6 +7,21 @@
 extract_cong(db, facet_var = "MPO", facet_levels = NULL,
   congested_voc = 0.9)
 }
+\arguments{
+\item{db}{The scenario database.}
+
+\item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
+
+\item{facet_levels}{A character vector of the facet variable specifiying
+which levels to include.}
+
+\item{congested_voc}{the volume to capacity ratio considered as "congested."
+  Default value is \code{0.9}.}
+}
+\value{
+A data frame with the percent of congested links by facet level and
+  facility type in each year.
+}
 \description{
 Extract congestion
 }
