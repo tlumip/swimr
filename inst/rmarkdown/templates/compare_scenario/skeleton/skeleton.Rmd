@@ -40,10 +40,11 @@ rfig <- function(tag){
 ```{r setdb}
 # update to reflect scenario location
 db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
-db2 <- src_sqlite("~/Documents/projects/swim/skim_hold.db")
+db2 <- src_sqlite("~/Documents/projects/swim/midjuly_swim.db")
 # update to reflect scope of analysis
 facet <- "COUNTY"
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
+years <- c(2010, 2025, 2040)
 ```
 
 
@@ -55,9 +56,9 @@ facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 # update to reflect current scenario
 scen_info <- data_frame(
   Name = c("Reference", "Current"),
-  Scenario = c("Reference scenario", "Constant Skims"),
+  Scenario = c("Reference scenario", "Mid July"),
   `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
-                   "Aug 07 13:10:41 GMT-400 2015")
+                   "removed")
 )
 
 kable(scen_info, caption = "Scenario Information")
@@ -69,27 +70,56 @@ In this report we will focus on `r facet`-level aggregations for
 # Population and Employment
 
 ```{r se}
-se <- extract_se(db, "MPO") %>%
-  spread(var, y)
+se <- left_join(
+  extract_se(db1, "MPO") %>% rename(reference = y),
+  extract_se(db2, "MPO") %>% rename(current   = y)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100)
 ```
 
-`r rtab("tab_pop")` and `r rfig("tab_emp")` shows the MPO-level population and
-employment in the scenario by year. `r rfig("fig_population")` shows the
-county-level aggregation of the same variables across time, compared against the
-county totals.
+`r rtab("tab_pop")` and `r rfig("tab_emp")` show the MPO-level population and 
+employment in each scenario by year, as well as the percent difference between
+the scenarios. `r rfig("fig_population")` shows the difference between the two
+scenarios across time aggregated to selected regions.
 
 ```{r tab_pop, results='asis'}
-yearly_summary(se, "MPO", "population") %>%
-  kable(caption = "Population by MPO")
+pop <- se %>% filter(var == "population")
+
+ref <- yearly_summary(pop, "MPO", "reference")
+cur <- yearly_summary(pop, "MPO", "current")
+diff <- yearly_summary(pop, "MPO", "diff")
+
+pop <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(pop) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(pop, caption = "Population by MPO", digits = 2)
 ```
 
 ```{r tab_emp, results='asis'}
-yearly_summary(se, "MPO", "employment") %>% 
-  kable(caption = "Employment by MPO")
+emp <- se %>% filter(var == "employment")
+
+ref <- yearly_summary(emp, "MPO", "reference")
+cur <- yearly_summary(emp, "MPO", "current")
+diff <- yearly_summary(emp, "MPO", "diff")
+
+emp <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(emp) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
+
 ```{r fig_population, fig.cap="Population and employment in selected areas."}
-plot_sevar(db, facet, facet_levels, TRUE)
+compare_sevar(db1, db2, facet, facet_levels)
 ```
 
 # Transportation 
