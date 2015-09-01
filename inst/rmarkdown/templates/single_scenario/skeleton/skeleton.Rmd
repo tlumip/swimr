@@ -39,7 +39,7 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
+db <- src_sqlite()
 # update to reflect scope of analysis
 facet <- "COUNTY"
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
