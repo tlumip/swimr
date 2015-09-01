@@ -138,12 +138,19 @@ compare_vht(db1, db2, facet, facet_levels)
 
 
 ## Mode Split
-```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
+
+`r rfig("fig_mode")` compares the number of trip productions by mode.
+
+```{r fig_mode, fig.cap="Comparison of trip productions by mode."}
 compare_trips(db1, db2, facet, facet_levels)
 ```
 
 
 ## Congested Links
+
+`r rfig("fig_cong")` shows the percent of links that are congested in each
+area over time by facility type. In this definition, *congested* means that
+the daily volume is greater than 90% of the daily capacity.
 
 ```{r compare_cong, fig.cap="Comparison of percent link congestion."}
 compare_pct_cong(db1, db2, facet, facet_levels)
@@ -151,6 +158,17 @@ compare_pct_cong(db1, db2, facet, facet_levels)
 
 
 # Economics
+
+`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
+`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
+
+```{r fig_floorspace, fig.cap="Comparison of floorspace by type."}
+compare_floorspace(db1, db2, facet, facet_levels)
+```
+
+```{r fig_employment, fig.cap="Comparison of labor output by sector."}
+compare_employment(db1, db2, facet, facet_levels)
+```
 
 
 
