@@ -87,6 +87,7 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
 #'
+#' @export
 compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
                           share = TRUE){
 

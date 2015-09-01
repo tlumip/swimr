@@ -15,7 +15,7 @@ compare_trips(db1, db2, facet_var = "MPO", facet_levels = NULL,
 \item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
 
 \item{facet_levels}{A character vector of the facet variable specifiying
-which levels to include.}
+  which levels to include.}
 }
 \description{
 Compare Trips
