@@ -1,0 +1,149 @@
+---
+title: "Single Scenario"
+author: "Parsons Brinckerhoff"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: spacelab
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE, message = FALSE,
+  fig.keep = TRUE, fig.path = "./figures/",
+  fig.width=8, fig.height=6
+)
+
+
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+library(ggplot2)
+library(swimr)
+```
+
+```{r figrefs}
+library(kfigr)
+# wrappers for short use
+rtab <- function(tag){
+  figr(tag, TRUE, TRUE, "Table")
+}
+
+rfig <- function(tag){
+  figr(tag, TRUE, TRUE, "Figure")
+}
+```
+
+
+```{r setdb}
+# update to reflect scenario location
+db <- src_sqlite()
+# update to reflect scope of analysis
+facet <- "COUNTY"
+facet_levels <-  c("Multnomah", "Washington", "Clackamas")
+years <- c(2010, 2025, 2040)
+```
+
+
+# Scenario Description
+
+`r rtab("scenario")` shows the scenario information.
+
+```{r scenario, results='asis'}
+# update to reflect current scenario
+scen_info <- data_frame(
+  Name = "FinalReference_Test",
+  Scenario = "Reference scenario",
+  `Date in S3` = "Aug 03 16:26:07 GMT-400 2015"
+)
+
+kable(scen_info, caption = "Scenario Information")
+```
+
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`.
+
+# Population and Employment
+
+```{r se}
+se <- extract_se(db, "MPO") %>%
+  spread(var, y)
+```
+
+`r rtab("tab_pop")` and `r rfig("tab_emp")` shows the MPO-level population and
+employment in the scenario by year. `r rfig("fig_population")` shows the
+county-level aggregation of the same variables across time, compared against the
+county totals.
+
+```{r tab_pop, results='asis'}
+yearly_summary(se, "MPO", "population") %>%
+  kable(caption = "Population by MPO")
+```
+
+```{r tab_emp, results='asis'}
+yearly_summary(se, "MPO", "employment") %>% 
+  kable(caption = "Employment by MPO")
+```
+
+```{r fig_population, fig.cap="Population and employment in selected areas."}
+plot_sevar(db, facet, facet_levels, TRUE)
+```
+
+# Transportation 
+Note that the plots in this section may only have data for years in which the 
+transportation model runs.
+
+## Volume of Travel
+
+`r rfig("fig_vmt")` shows the vehicle miles traveled (VMT) on links by facility 
+type; `r rfig("fig_vht")` shows the vehicle hours traveled (VHT).
+
+```{r fig_vmt, fig.cap = "Vehicle miles traveled by facility type."}
+plot_vmt(db, facet, facet_levels)
+```
+
+```{r fig_vht, fig.cap = "Vehicle hours traveled by facility type."}
+plot_vht(db, facet, facet_levels)
+```
+
+
+## Mode Split
+
+`r rfig("fig_mode")` shows the number of trip productions by mode; 
+`r rfig("fig_modesplit")` shows the share of trips by each mode.
+
+```{r fig_mode, fig.cap = "Trip productions by mode."}
+plot_trips(db, facet, facet_levels, share = FALSE)
+```
+
+```{r fig_modesplit, fig.cap = "Share of trips by mode."}
+plot_trips(db, facet, facet_levels, share = TRUE)
+```
+
+## Congested Links
+
+`r rfig("fig_cong")` shows the percent of links that are congested in each
+area over time by facility type. In this definition, *congested* means that
+the daily volume is greater than 90% of the daily capacity.
+
+```{r fig_cong, fig.cap = "Percent of congested links by facility type."}
+plot_pct_cong(db, facet, facet_levels)
+```
+
+
+# Economics
+
+`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
+`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
+
+```{r fig_floorspace, fig.cap="Floorspace in each region by type."}
+plot_floorspace(db, facet, facet_levels)
+```
+
+```{r fig_employment, fig.cap="Labor output in each region by NAICS sector."}
+plot_employment(db, facet, facet_levels)
+```
+
+
