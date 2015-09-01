@@ -91,7 +91,46 @@ yearly_summary(se, "MPO", "employment") %>%
 plot_sevar(db, facet, facet_levels, TRUE)
 ```
 
-
 # Transportation 
+Note that the plots in this section may only have data for years in which the 
+transportation model runs.
+
+## Volume of Travel
+
+`r rfig("fig_vmt")` shows the vehicle miles traveled (VMT) on links by facility 
+type; `r rfig("fig_vht")` shows the vehicle hours traveled (VHT).
+
+```{r fig_vmt, fig.cap = "Vehicle miles traveled by facility type."}
+plot_vmt(db, facet, facet_levels)
+```
+
+```{r fig_vht, fig.cap = "Vehicle hours traveled by facility type."}
+plot_vht(db, facet, facet_levels)
+```
+
+
+## Mode Split
+
+`r rfig("fig_mode")` shows the number of trip productions by mode; 
+`r rfig("fig_modesplit")` shows the share of trips by each mode.
+
+```{r fig_mode, fig.cap = "Trip productions by mode."}
+plot_trips(db, facet, facet_levels, share = FALSE)
+```
+
+```{r fig_modesplit, fig.cap = "Share of trips by mode."}
+plot_trips(db, facet, facet_levels, share = TRUE)
+```
+
+## Congested Links
+
+`r rfig("fig_cong")` shows the percent of links that are congested in each
+area over time by facility type. In this definition, *congested* means that
+the daily volume is greater than 90% of the daily capacity.
+
+```{r fig_cong, fig.cap = "Percent of congested links by facility type."}
+plot_pct_cong(db, facet, facet_levels)
+```
+
 
 # Economics
