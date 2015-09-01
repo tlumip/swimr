@@ -19,6 +19,7 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     rename_("facet_var" = facet_var)
 
   # Link distances
+  data("links", package = "swimr")
   link_dist <- links %>%
     # reverse link distance
     mutate(
@@ -324,12 +325,12 @@ extract_vht <- function(db, facet_var, facet_levels){
 #' @export
 #' @import dplyr ggplot2
 #'
-plot_vht <- function(db, color_var = "MPO", color_levels = NULL){
+plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
-  links <- extract_vht(db, facet_var, facet_levels)
+  df <- extract_vht(db, facet_var, facet_levels)
 
   p <- ggplot(
-    links,
+    df,
     aes(x = year, y = vht, color = factor(PLANNO))
   ) +
     geom_path() +
