@@ -17,8 +17,8 @@ compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
   which levels to include.}
 }
 \value{
-A \code{ggplot2} plot object showing the modeled change in employment
-  and population over time.
+A ggplot2 object showing VMT by facility type in each facet level
+  over time.
 }
 \description{
 Compare VMT between scenarios

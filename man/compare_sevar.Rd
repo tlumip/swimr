@@ -14,9 +14,7 @@ compare_sevar(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
 \item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
 
 \item{facet_levels}{A character vector of the facet variable specifiying
-which levels to include.}
-
-\item{controls}{Plot against the control totals. Defaults to TRUE}
+  which levels to include.}
 }
 \value{
 A \code{ggplot2} plot object showing the modeled change in employment

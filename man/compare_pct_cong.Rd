@@ -15,8 +15,11 @@ compare_pct_cong(db1, db2, facet_var = "MPO", facet_levels = NULL,
 \item{facet_var}{The variable to use in faceting the data.}
 
 \item{facet_levels}{A character vector giving the levels of the faceting
-  variable to use. Levels not called are dropped from the plot; default is
-  \code{NULL}, meaning print all level.}
+variable to use. Levels not called are dropped from the plot; default is
+\code{NULL}, meaning print all level.}
+
+\item{congested_voc}{the volume to capacity ratio considered as "congested."
+  Default value is \code{0.9}.}
 }
 \value{
 A ggplot2 figure object.

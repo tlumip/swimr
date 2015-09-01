@@ -3,6 +3,12 @@
 #' This is an internal function to pull the employment data from a scenario and
 #' return it to either the single scenario or scenario comparison functions.
 #'
+#' @param db The scenario database.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
 #' @export
 extract_employment <- function(db,
                                facet_var = c("MPO", "COUNTY", "STATE"),

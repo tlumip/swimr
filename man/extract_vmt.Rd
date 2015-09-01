@@ -6,6 +6,18 @@
 \usage{
 extract_vmt(db, facet_var = "MPO", facet_levels = NULL)
 }
+\arguments{
+\item{db}{The scenario database.}
+
+\item{facet_var}{The variable to use in facetting the data.}
+
+\item{facet_levels}{A character vector giving the levels of the facet
+  variable to use. Levels not called are dropped from the plot; default is
+  \code{NULL}, meaning print all levels.}
+}
+\value{
+A data frame with VMT summarized by facility type and facet variable.
+}
 \description{
 Extract VMT
 }

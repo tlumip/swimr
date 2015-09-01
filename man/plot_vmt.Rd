@@ -9,14 +9,15 @@ plot_vmt(db, facet_var = "MPO", facet_levels = NULL)
 \arguments{
 \item{db}{The scenario database.}
 
-\item{color_var}{The variable to use in coloring the data.}
+\item{facet_var}{The variable to use in facetting the data.}
 
-\item{color_levels}{A character vector giving the levels of the coloring
+\item{facet_levels}{A character vector giving the levels of the facet
   variable to use. Levels not called are dropped from the plot; default is
-  \code{NULL}, meaning print all level.}
+  \code{NULL}, meaning print all levels.}
 }
 \value{
-A ggplot2 figure object.
+A ggplot2 object showing VMT by facility type in each facet level
+  over time.
 }
 \description{
 This function plots the sum of the daily link volumes over time, colored and

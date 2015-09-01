@@ -8,8 +8,8 @@
 #'   \item{county}{name of the county in Oregon}
 #'   \item{year}{the year for the control; 1990-2010 are estimates, past 2010
 #'   are forecasts}
-#'   \item{population}{The population control}
-#'   \item{employment}{The employment control}
+#'   \item{var}{The type of control: population or employment.}
+#'   \item{y}{The value of the control.}
 #' }
 #' @source Reconstructed from data provided by Alex Bettinardi
 "county_controls"
