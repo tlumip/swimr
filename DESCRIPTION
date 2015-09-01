@@ -1,7 +1,7 @@
 Package: swimr
 Type: Package
 Title: Functions for Looking at Swim
-Version: 0.1
+Version: 0.2.0
 Date: 2015-06-19
 Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
@@ -11,4 +11,5 @@ Description: This package collects several R functions that are used in visualiz
 License: What license is it under?
 LazyData: TRUE
 Suggests: knitr
+Imports: dplyr, dplyrExtras, ggplot2, tidyr
 VignetteBuilder: knitr
