@@ -79,14 +79,13 @@ county totals.
 
 ```{r tab_pop, results='asis'}
 yearly_summary(se, "MPO", "population") %>%
-  kable()
+  kable(caption = "Population by MPO")
 ```
 
 ```{r tab_emp, results='asis'}
 yearly_summary(se, "MPO", "employment") %>% 
-  kable()
+  kable(caption = "Employment by MPO")
 ```
-
 
 ```{r fig_population, fig.cap="Population and employment in selected areas."}
 plot_sevar(db, facet, facet_levels, TRUE)
