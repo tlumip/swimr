@@ -1,0 +1,114 @@
+---
+title: "Compare Scenarios"
+author: "Parsons Brinckerhoff"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: spacelab
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE, message = FALSE,
+  fig.keep = TRUE, fig.path = "./figures/",
+  fig.width=8, fig.height=6
+)
+
+
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+library(ggplot2)
+library(swimr)
+```
+
+```{r figrefs}
+library(kfigr)
+# wrappers for short use
+rtab <- function(tag){
+  figr(tag, TRUE, TRUE, "Table")
+}
+
+rfig <- function(tag){
+  figr(tag, TRUE, TRUE, "Figure")
+}
+```
+
+
+```{r setdb}
+# update to reflect scenario location
+db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
+db2 <- src_sqlite("~/Documents/projects/swim/skim_hold.db")
+# update to reflect scope of analysis
+facet <- "COUNTY"
+facet_levels <-  c("Multnomah", "Washington", "Clackamas")
+```
+
+
+# Scenario Description
+
+`r rtab("scenario")` shows the scenario information.
+
+```{r scenario, results='asis'}
+# update to reflect current scenario
+scen_info <- data_frame(
+  Name = c("Reference", "Current"),
+  Scenario = c("Reference scenario", "Constant Skims"),
+  `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
+                   "Aug 07 13:10:41 GMT-400 2015")
+)
+
+kable(scen_info, caption = "Scenario Information")
+```
+
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`.
+
+# Population and Employment
+
+```{r se}
+se <- extract_se(db, "MPO") %>%
+  spread(var, y)
+```
+
+`r rtab("tab_pop")` and `r rfig("tab_emp")` shows the MPO-level population and
+employment in the scenario by year. `r rfig("fig_population")` shows the
+county-level aggregation of the same variables across time, compared against the
+county totals.
+
+```{r tab_pop, results='asis'}
+yearly_summary(se, "MPO", "population") %>%
+  kable(caption = "Population by MPO")
+```
+
+```{r tab_emp, results='asis'}
+yearly_summary(se, "MPO", "employment") %>% 
+  kable(caption = "Employment by MPO")
+```
+
+```{r fig_population, fig.cap="Population and employment in selected areas."}
+plot_sevar(db, facet, facet_levels, TRUE)
+```
+
+# Transportation 
+Note that the plots in this section may only have data for years in which the 
+transportation model runs.
+
+## Volume of Travel
+
+
+
+## Mode Split
+
+
+## Congested Links
+
+
+
+# Economics
+
+
+
+
