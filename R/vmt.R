@@ -237,6 +237,52 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 
 }
 
+#' Extract VHT
+#' @param db The scenario database.
+#' @param facet_var The variable to use in faceting the data.
+#' @param facet_levels A character vector giving the levels of the faceting
+#'   variable to use. Levels not called are dropped from the plot; default is
+#'   \code{NULL}, meaning print all level.
+#'
+#' @return A data frame with the
+#'
+#' @export
+#'
+#' @import dplyr tidyr
+#'
+extract_vht <- function(db, facet_var, facet_levels){
+
+  # Get lookup table of zones to grouping variable.
+  grouping <- tbl(db, "ALLZONES") %>%
+    select_("Azone", facet_var) %>%
+    rename(AZONE = Azone) %>%
+    rename_("facet_var" = facet_var)
+
+  # If no levels are specified, show all but external stations.
+  if(is.null(facet_levels)){
+    a <- grouping %>%
+      collect() %>%
+      filter(facet_var != "EXTSTA")
+
+    facet_levels = names(table(a$facet_var))
+  }
+
+  links <- tbl(db, "LINK_DATA") %>%
+    select(AZONE, TSTEP, DAILY_TIME_AUTO, PLANNO) %>%
+    left_join(grouping, by = "AZONE") %>%
+
+    # filter out regions you don't want
+    filter(facet_var %in% facet_levels) %>%
+
+    # calculate total by year and group
+    group_by(TSTEP, PLANNO, facet_var) %>%
+    summarise(vht = sum(DAILY_TIME_AUTO)) %>%
+
+    # bring it locally
+    collect() %>%
+    ungroup() %>%
+    mutate(year = as.numeric(TSTEP) + 1990)
+}
 
 #' Plot VHT over time.
 #'
@@ -256,36 +302,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 #'
 plot_vht <- function(db, color_var = "MPO", color_levels = NULL){
 
-  # Get lookup table of zones to grouping variable.
-  grouping <- tbl(db, "ALLZONES") %>%
-    select_("Azone", color_var) %>%
-    rename(AZONE = Azone) %>%
-    rename_("color_var" = color_var)
-
-  # If no levels are specified, show all but external stations.
-  if(is.null(color_levels)){
-    a <- grouping %>%
-      collect() %>%
-      filter(color_var != "EXTSTA")
-
-    color_levels = names(table(a$color_var))
-  }
-
-  links <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, TSTEP, DAILY_TIME_AUTO) %>%
-    left_join(grouping, by = "AZONE") %>%
-
-    # filter out regions you don't want
-    filter(color_var %in% color_levels) %>%
-
-    # calculate total by year and group
-    group_by(TSTEP, color_var) %>%
-    summarise(vht = sum(DAILY_TIME_AUTO)) %>%
-
-    # bring it locally
-    collect() %>%
-    ungroup() %>%
-    mutate(TSTEP = as.numeric(TSTEP))
+  links <- extract_vht(db, facet_var, facet_levels)
 
   p <- ggplot(
     links,
@@ -300,3 +317,41 @@ plot_vht <- function(db, color_var = "MPO", color_levels = NULL){
     theme_bw()
 
 }
+
+#' Compare VHT between scenarios
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#'
+#' @return A ggplot2 object showing VHT by facility type in each facet level
+#'   over time.
+#'
+#' @export
+#'
+#' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
+                        facet_levels = NULL){
+
+
+  vhtref <- extract_vht(db1, facet_var, facet_levels)  %>%
+    rename(ref = vht)
+  vhtcom <- extract_vht(db2, facet_var, facet_levels)  %>%
+    rename(com = vht)
+
+  df <- left_join(vhtref, vhtcom) %>%
+    mutate(diff = (com - ref) / ref * 100)
+
+  ggplot(df,
+         aes(x = year, y = diff, color = factor(PLANNO))) +
+    geom_path() +
+    facet_wrap(~facet_var) +
+    scale_fill_discrete("Facility Type") +
+    xlab("Year") + ylab("Percent difference in VHT.") +
+    theme_bw()
+}
+
