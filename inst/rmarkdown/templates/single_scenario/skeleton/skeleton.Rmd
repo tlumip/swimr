@@ -134,3 +134,16 @@ plot_pct_cong(db, facet, facet_levels)
 
 
 # Economics
+
+`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
+`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
+
+```{r fig_floorspace, fig.cap="Floorspace in each region by type."}
+plot_floorspace(db, facet, facet_levels)
+```
+
+```{r fig_employment, fig.cap="Labor output in each region by NAICS sector."}
+plot_employment(db, facet, facet_levels)
+```
+
+
