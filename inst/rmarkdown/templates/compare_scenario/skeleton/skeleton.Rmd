@@ -249,14 +249,21 @@ compare_trips(db1, db2)
 
 ## Congested Links
 
-`r rfig("fig_cong")` shows the percent of links that are congested in each
-area over time by facility type. In this definition, *congested* means that
-the daily volume is greater than 90% of the daily capacity.
-
-```{r compare_cong, fig.cap="Comparison of percent link congestion."}
-compare_pct_cong(db1, db2, facet, facet_levels)
+```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
+plot_pct_cong(db2, facet, facet_levels, congested_voc = 1.2)
 ```
 
+```{r compare_cong, fig.cap="Comparison of congested PM VMT."}
+compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
+```
+
+```{r plot_cong_mpo, fig.cap="Percent of PM VMT on congested links - all MPO's."}
+plot_pct_cong(db2, congested_voc = 1.2)
+```
+
+```{r compare_cong_mpo, fig.cap="Comparison of congested PM VMT - all MPO's."}
+compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
+```
 
 # Economics
 
