@@ -235,7 +235,7 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 
   ggplot(
     links_con,
-    aes(x = year, y = percent_congested, color = factor(PLANNO))
+    aes(x = year, y = percent_congested, color = factor(FacType))
   ) +
     geom_path() +
     scale_color_discrete("Facility Type") +
@@ -278,7 +278,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 
 
   ggplot(df,
-         aes(x = year, y = diff, fill = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~ facet_var) +
     scale_color_discrete("Facility Type") +
@@ -323,13 +323,16 @@ extract_vht <- function(db, facet_var, facet_levels){
 
     # filter out regions you don't want
     filter(facet_var %in% facet_levels) %>%
-
-    # calculate total by year and group
-    group_by(TSTEP, PLANNO, facet_var) %>%
-    summarise(vht = sum(DAILY_TIME_AUTO * DAILY_VOL_AUTO)) %>%
-
     # bring it locally
     collect() %>%
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
+    # calculate total by year and group
+    group_by(TSTEP, facet_var, FacType) %>%
+    summarise(vht = sum(DAILY_TIME_AUTO * DAILY_VOL_AUTO)) %>%
+
     ungroup() %>%
     mutate(year = as.numeric(TSTEP) + 1990)
 }
@@ -356,7 +359,7 @@ plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   p <- ggplot(
     df,
-    aes(x = year, y = vht, color = factor(PLANNO))
+    aes(x = year, y = vht, color = factor(FacType))
   ) +
     geom_path() +
     facet_wrap(~ facet_var) +
@@ -398,10 +401,10 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
-         aes(x = year, y = diff, color = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~facet_var) +
-    scale_fill_discrete("Facility Type") +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VHT.") +
     theme_bw()
 }
