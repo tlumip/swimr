@@ -168,8 +168,19 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
     facet_levels = names(table(a$facet_var))
   }
 
+  # Link distances
+  data("links", package = "swimr")
+  link_dist <- links %>%
+    # reverse link distance
+    mutate(
+      ANODE = ifelse(order == 2, TONODENO, FROMNODENO),
+      BNODE = ifelse(order == 2, FROMNODENO, TONODENO),
+      LENGTH = R_LENGTH
+    ) %>%
+    select(ANODE, BNODE, LENGTH)
+
   link_con <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
+    select(AZONE, ANODE, BNODE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
     left_join(grouping, by = "AZONE") %>%
 
     # filter out regions you don't want
@@ -178,14 +189,24 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
     filter(TEMP_CAPACITY > 0) %>%
     collect() %>%  #need to collect sooner because of ifelse below.
 
+    # get link distance from table
+    left_join(link_dist) %>%
+
     # Calculate the percent of congested links
     mutate(
-      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc,
-                         1, 0),
+      # is the link congested?
+      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc, 1, 0),
+      # get period vmt
+      vmt = PM_VOL_TOTAL * LENGTH,
+      congested_vmt = congested * vmt,
       year = as.numeric(TSTEP) + 1990
     ) %>%
-    group_by(year, facet_var, PLANNO) %>%
-    summarise(percent_congested = (sum(congested) / n()) * 100)
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
+    group_by(year, facet_var, FacType) %>%
+    summarise(percent_congested = (sum(congested_vmt) / sum(vmt)) * 100)
 }
 
 #' Plot percent congested links over time.
@@ -218,7 +239,7 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
   ) +
     geom_path() +
     scale_color_discrete("Facility Type") +
-    xlab("Year") + ylab("Percent Congested Links") +
+    xlab("Year") + ylab("Percent of PM VMT on Congested Links") +
     facet_wrap(~ facet_var) +
     theme_bw()
 
@@ -260,8 +281,8 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
          aes(x = year, y = diff, fill = factor(PLANNO))) +
     geom_path() +
     facet_wrap(~ facet_var) +
-    scale_fill_discrete("Facility Type") +
-    xlab("Year") + ylab("Difference in percent of congested links.") +
+    scale_color_discrete("Facility Type") +
+    xlab("Year") + ylab("Difference in Percent of PM VMT on Congested Links.") +
     theme_bw()
 
 }
