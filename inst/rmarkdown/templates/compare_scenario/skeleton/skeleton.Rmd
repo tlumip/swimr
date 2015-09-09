@@ -50,7 +50,9 @@ years <- c(2010, 2025, 2040)
 
 # Scenario Description
 
-`r rtab("scenario")` shows the scenario information.
+`r rtab("scenario")` shows the scenario information. 
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`. The report also provides MPO-level aggregations for all MPO's.
 
 ```{r scenario, results='asis'}
 # update to reflect current scenario
@@ -64,8 +66,6 @@ scen_info <- data_frame(
 kable(scen_info, caption = "Scenario Information")
 ```
 
-In this report we will focus on `r facet`-level aggregations for 
-`r facet_levels`.
 
 # Population and Employment
 
@@ -122,8 +122,14 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 compare_sevar(db1, db2, facet, facet_levels)
 ```
 
+```{r fig_population, fig.cap="Population and employment in selected areas."}
+compare_sevar(db1, db2, "MPO")
+```
+
+
 # Transportation 
-Note that the plots in this section may only have data for years in which the 
+
+> Note that the plots in this section may only have data for years in which the 
 transportation model runs.
 
 ## Volume of Travel
