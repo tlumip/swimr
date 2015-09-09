@@ -39,10 +39,10 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
-db2 <- src_sqlite("~/Documents/projects/swim/midjuly_swim.db")
+db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
+db2 <- src_sqlite("~/Documents/projects/swim/Extra_Floorspace_wCongestion.db") # current
 # update to reflect scope of analysis
-facet <- "COUNTY"
+facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 years <- c(2010, 2025, 2040)
 ```
@@ -58,9 +58,9 @@ In this report we will focus on `r facet`-level aggregations for
 # update to reflect current scenario
 scen_info <- data_frame(
   Name = c("Reference", "Current"),
-  Scenario = c("Reference scenario", "Mid July"),
+  Scenario = c("Reference scenario", "Extra Floorspace"),
   `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
-                   "removed")
+                   "")
 )
 
 kable(scen_info, caption = "Scenario Information")
@@ -198,6 +198,9 @@ kable(vht, caption = "vht by MPO", digits = 2)
 compare_vht(db1, db2, facet, facet_levels)
 ```
 
+```{r compare_vht_mpo, fig.cap="Comparison of vht by facility type - all MPO's."}
+compare_vht(db1, db2, "MPO")
+```
 
 ## Mode Split
 
@@ -207,6 +210,9 @@ compare_vht(db1, db2, facet, facet_levels)
 compare_trips(db1, db2, facet, facet_levels)
 ```
 
+```{r fig_mode, fig.cap="Comparison of trip productions by mode."}
+compare_trips(db1, db2, facet, facet_levels)
+```
 
 ## Congested Links
 
