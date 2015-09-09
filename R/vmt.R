@@ -408,4 +408,3 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     xlab("Year") + ylab("Percent difference in VHT.") +
     theme_bw()
 }
-
