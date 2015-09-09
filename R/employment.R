@@ -105,7 +105,8 @@ plot_employment <- function(db,
     facet_wrap( ~ facet_var) +
 
     scale_y_log10() +
-    xlab("Year") + ylab("Output (dollars)") +
+    xlab("Year") + ylab("Employees") +
+    scale_color_discrete("Sector") +
     theme_bw()
 
 }
@@ -148,7 +149,8 @@ compare_employment <- function(db1, db2,
     geom_path() +
     facet_wrap( ~ facet_var) +
     xlab("Year") +
-    ylab("Percent difference (current - reference) in Employee Output") +
+    ylab("Percent difference (current - reference) in Number of Employees") +
+    scale_color_discrete("Sector") +
     theme_bw()
 }
 
