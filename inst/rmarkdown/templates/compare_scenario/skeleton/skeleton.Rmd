@@ -118,11 +118,16 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
 
-```{r fig_population, fig.cap="Population and employment in selected areas."}
+```{r plot_se, fig.cap="Population and employment in selected areas."}
+plot_sevar(db2, facet, facet_levels)
+```
+
+
+```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
 compare_sevar(db1, db2, facet, facet_levels)
 ```
 
-```{r fig_population, fig.cap="Population and employment in selected areas."}
+```{r compare_se_mpo, fig.cap="Comparison of population and employment - all MPOs."}
 compare_sevar(db1, db2, "MPO")
 ```
 
@@ -134,22 +139,21 @@ transportation model runs.
 
 ## Volume of Travel
 
-
 ### VMT
-```{r vmt}
+```{r tab_vmt}
 vmt <- left_join(
   extract_vmt(db1, "MPO") %>% rename(reference = vmt),
   extract_vmt(db2, "MPO") %>% rename(current   = vmt)
 ) %>%
   filter(year %in% years) %>%
-  mutate(diff = (current - reference) / reference * 100) %>%
+  mutate(diff = (current - reference) / reference * 100) 
  
 ref <- yearly_summary(vmt, "facet_var", "reference")
 cur <- yearly_summary(vmt, "facet_var", "current")
 diff <- yearly_summary(vmt, "facet_var", "diff")
 
-vmt <- left_join(ref, cur, by = "MPO") %>%
-  left_join(diff, by = "MPO")
+vmt <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
 
 names(vmt) <- c("MPO", 
                 paste(rep(c("Reference", "Current", "Pct diff"), 
@@ -159,9 +163,16 @@ kable(vmt, caption = "VMT by MPO", digits = 2)
 ```
 
 
+```{r plot_vmt, fig.cap="VMT by facility type."}
+plot_vmt(db2, facet, facet_levels)
+```
 
 ```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
 compare_vmt(db1, db2, facet, facet_levels)
+```
+
+```{r plot_vmt_mpo, fig.cap="VMT by facility type - all MPO's."}
+plot_vmt(db2, "MPO")
 ```
 
 ```{r compare_vmt_mpo, fig.cap="Comparison of VMT by facility type - all MPO's."}
@@ -169,49 +180,71 @@ compare_vmt(db1, db2, "MPO")
 ```
 
 
-### VMT
-```{r vht}
+### VHT
+
+```{r tab_vht}
 vht <- left_join(
   extract_vht(db1, "MPO") %>% rename(reference = vht),
   extract_vht(db2, "MPO") %>% rename(current   = vht)
 ) %>%
   filter(year %in% years) %>%
-  mutate(diff = (current - reference) / reference * 100) %>%
+  mutate(diff = (current - reference) / reference * 100)
  
 ref <- yearly_summary(vht, "facet_var", "reference")
 cur <- yearly_summary(vht, "facet_var", "current")
 diff <- yearly_summary(vht, "facet_var", "diff")
 
-vht <- left_join(ref, cur, by = "MPO") %>%
-  left_join(diff, by = "MPO")
+vht <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
 
 names(vht) <- c("MPO", 
                 paste(rep(c("Reference", "Current", "Pct diff"), 
                           each = length(years)),
                       rep(years, 3)))
-kable(vht, caption = "vht by MPO", digits = 2)
+kable(vht, caption = "VHT by MPO", digits = 2)
 ```
 
 
+```{r plot_vht, fig.cap="VHT by facility type."}
+plot_vht(db2, facet, facet_levels)
+```
 
-```{r compare_vht, fig.cap="Comparison of vht by facility type."}
+```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
 compare_vht(db1, db2, facet, facet_levels)
 ```
 
-```{r compare_vht_mpo, fig.cap="Comparison of vht by facility type - all MPO's."}
+```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
+plot_vht(db2, facet, facet_levels)
+```
+
+```{r compare_vht_mpo, fig.cap="Comparison of VHT by facility type - all MPO's."}
 compare_vht(db1, db2, "MPO")
 ```
 
 ## Mode Split
+```{r mode_share, fig.cap="Share of trips produced by mode"}
+plot_trips(db2, facet, facet_levels, share = TRUE)
+```
 
-`r rfig("fig_mode")` compares the number of trip productions by mode.
+```{r mode_share_mpo, fig.cap="Share of trips produced by mode - all MPOs"}
+plot_trips(db2,  share = TRUE)
+```
 
-```{r fig_mode, fig.cap="Comparison of trip productions by mode."}
+```{r mode_vol, fig.cap="Total trips produced by mode."}
+plot_trips(db2, facet, facet_levels, share = FALSE)
+```
+
+```{r mode_vol_mpo, fig.cap="Total trips produced by mode - all MPOs"}
+plot_trips(db2, share = FALSE)
+```
+
+
+```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
 compare_trips(db1, db2, facet, facet_levels)
 ```
 
-```{r fig_mode, fig.cap="Comparison of trip productions by mode."}
-compare_trips(db1, db2, facet, facet_levels)
+```{r compare_mode_mpo, fig.cap="Comparison of trip productions by mode - all MPOs."}
+compare_trips(db1, db2)
 ```
 
 ## Congested Links
@@ -235,7 +268,7 @@ compare_floorspace(db1, db2, facet, facet_levels)
 ```
 
 ```{r fig_employment, fig.cap="Comparison of labor output by sector."}
-compare_employment(db1, db2, facet, facet_levels)
+#compare_employment(db1, db2, facet, facet_levels)
 ```
 
 
