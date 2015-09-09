@@ -26,6 +26,20 @@
 #'
 "floor_types"
 
+
+#' Facility types
+#'
+#' A dataset mapping the facility types in the database to consolidated
+#' categories.
+#' @format A data frame with 17 observations.
+#' \describe{
+#'   \item{PLANNO}{The facility classifications in the db.}
+#'   \item{floor_type}{The consolidated classifications.}
+#' }
+#'
+"fac_types"
+
+
 #' Employment types
 #'
 #' A dataset mapping the NAICS sectors in the buy/sell from the database to
