@@ -267,17 +267,40 @@ compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
 
 # Economics
 
-`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
-`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
+## Built Floorspace
+```{r plot_floorspace, fig.cap="Floorspace by type."}
+plot_floorspace(db2, facet, facet_levels)
+```
 
-```{r fig_floorspace, fig.cap="Comparison of floorspace by type."}
+```{r plot_floorspace_mpo, fig.cap="Floorspace by type - all MPO's."}
+plot_floorspace(db2)
+```
+
+```{r compare_floorspace, fig.cap="Comparison of floorspace by type."}
 compare_floorspace(db1, db2, facet, facet_levels)
 ```
 
-```{r fig_employment, fig.cap="Comparison of labor output by sector."}
-#compare_employment(db1, db2, facet, facet_levels)
+```{r compare_floorspace_mpo, fig.cap="Comparison of floorspace by type - all MPO's."}
+compare_floorspace(db1, db2)
 ```
 
+## Employee Output
+
+```{r plot_employment, fig.cap="Labor output by sector."}
+plot_employment(db2, facet, facet_levels)
+```
+
+```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
+plot_employment(db2)
+```
+
+```{r compare_employment, fig.cap="Comparison of labor output by sector."}
+compare_employment(db1, db2, facet, facet_levels)
+```
+
+```{r plot_employment_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+compare_employment(db1, db2)
+```
 
 
 
