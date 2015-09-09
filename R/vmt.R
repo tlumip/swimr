@@ -53,8 +53,12 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     # get link distance from table
     left_join(link_dist) %>%
 
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
     # calculate total by year and group
-    group_by(year, facet_var, PLANNO) %>%
+    group_by(year, facet_var, FacType) %>%
     summarise(vmt = sum(DAILY_VOL_TOTAL * LENGTH, na.rm = TRUE))
 
   return(link_vmt)
@@ -83,7 +87,7 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
   link_vmt <- extract_vmt(db, facet_var, facet_levels)
 
   ggplot(link_vmt,
-         aes(x = year, y = vmt, color = factor(PLANNO))
+         aes(x = year, y = vmt, color = factor(FacType))
          ) +
     geom_path() +
     scale_y_log10() +
@@ -123,10 +127,10 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
-         aes(x = year, y = diff, color = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~facet_var) +
-    scale_fill_discrete("Facility Type") +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VMT.") +
     theme_bw()
 }
