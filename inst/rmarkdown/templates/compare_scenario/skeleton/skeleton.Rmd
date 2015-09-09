@@ -128,11 +128,67 @@ transportation model runs.
 
 ## Volume of Travel
 
+
+### VMT
+```{r vmt}
+vmt <- left_join(
+  extract_vmt(db1, "MPO") %>% rename(reference = vmt),
+  extract_vmt(db2, "MPO") %>% rename(current   = vmt)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100) %>%
+ 
+ref <- yearly_summary(vmt, "facet_var", "reference")
+cur <- yearly_summary(vmt, "facet_var", "current")
+diff <- yearly_summary(vmt, "facet_var", "diff")
+
+vmt <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(vmt) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(vmt, caption = "VMT by MPO", digits = 2)
+```
+
+
+
 ```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
 compare_vmt(db1, db2, facet, facet_levels)
 ```
 
-```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
+```{r compare_vmt_mpo, fig.cap="Comparison of VMT by facility type - all MPO's."}
+compare_vmt(db1, db2, "MPO")
+```
+
+
+### VMT
+```{r vht}
+vht <- left_join(
+  extract_vht(db1, "MPO") %>% rename(reference = vht),
+  extract_vht(db2, "MPO") %>% rename(current   = vht)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100) %>%
+ 
+ref <- yearly_summary(vht, "facet_var", "reference")
+cur <- yearly_summary(vht, "facet_var", "current")
+diff <- yearly_summary(vht, "facet_var", "diff")
+
+vht <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(vht) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(vht, caption = "vht by MPO", digits = 2)
+```
+
+
+
+```{r compare_vht, fig.cap="Comparison of vht by facility type."}
 compare_vht(db1, db2, facet, facet_levels)
 ```
 
