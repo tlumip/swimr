@@ -211,7 +211,7 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 
 #' Plot percent congested links over time.
 #'
-#' This function plots the percent of congested links, colored and
+#' This function plots the percent of PM VMT traveling on congested links.,
 #' faceted by arbitrary variables in the link table.
 #'
 #' @param db The scenario database.
@@ -247,8 +247,8 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 
 #' Plot percent congested links over time.
 #'
-#' This function plots the percent of congested links, colored and
-#' faceted by arbitrary variables in the link table.
+#' This function plots the percent of PM VMT travelling on congested links,
+#' colored and faceted by arbitrary variables in the link table.
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
@@ -300,7 +300,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 #'
 #' @import dplyr tidyr
 #'
-extract_vht <- function(db, facet_var, facet_levels){
+extract_vht <- function(db, facet_var, facet_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
