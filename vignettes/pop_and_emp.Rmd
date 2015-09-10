@@ -52,80 +52,9 @@ facet <- "COUNTY"
 counties <- c("Multnomah", "Washington", "Clackamas")
 ```
 
-# Single Scenario
+The user creates a plot using an RMarkdown template included in the package.
+From inside RStudio,
 
-## Population and Employment
-
-The `plot_sevar()` function makes a plot like Alex's, comparing population and 
-employment in a county. It draws control tables from a `data_frame` included
-with the package. You can also compare multiple counties.
-
-
-```{r plot_sevar}
-plot_sevar(db, facet, counties)
-```
-
-The employment information takes a long time to gather. I don't have the number
-of jobs directly in the database, but I do have output by 
-
-```{r plot_employment}
-plot_employment(db, facet, counties)
-```
-
-
-## Floorspace
-
-```{r floorspace}
-plot_floorspace(db, facet, counties)
-```
-
-
-## Traffic
-
-
-## Trips
-```{r trips}
-plot_trips(db, facet, counties, share = TRUE)
-plot_trips(db, facet, counties, share = FALSE)
-```
-
-## VMT/VHT
-```{r vmt}
-plot_vmt(db, facet, counties)
-```
-
-```{r vht}
-plot_vht(db, facet, counties)
-```
-
-## Congestion
-```{r congested}
-plot_pct_cong(db, facet, counties)
-```
-
-# Compare scenarios
-
-```{r two_scenarios}
-db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db")
-db2 <- src_sqlite("~/Documents/projects/swim/skim_hold.db")
-```
-
-## Economics
-
-```{r compare_floorspace}
-compare_floorspace(db1, db2, facet, counties)
-```
-
-```{r compare_employment}
-compare_employment(db1, db2, facet, counties)
-```
-
-```{r compare_sedata}
-compare_sevar(db1, db2, facet, counties)
-```
-
-## Transportation
-```{r compare_trips}
-compare_trips(db1, db2, facet, counties)
-```
-
+  - `New .Rmd`
+  - `Templates>`
+  - Either `Single Scenario` or `Compare Scenarios`
