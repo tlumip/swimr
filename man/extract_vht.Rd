@@ -4,7 +4,7 @@
 \alias{extract_vht}
 \title{Extract VHT}
 \usage{
-extract_vht(db, facet_var, facet_levels)
+extract_vht(db, facet_var, facet_levels = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}

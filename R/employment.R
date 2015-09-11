@@ -36,44 +36,50 @@ extract_employment <- function(db,
     type_levels <- employment_types$naics1
   }
 
-  # get buysell table and compute summary
-  employment <- tbl(db, "BuySellMatrix") %>%
-    select(
-      BZONE = FROMBZONE,
-      year = TSTEP,
-      BuySell_A1_Mgmt_Bus:BuySell_Fire_Business_and_Professional_Services,
-      BuySell_Food_Services:BuySell_Return_Investment_Receipts,
-      BuySell_Teaching_K12
-    )  %>%
+  # define consolidated employment types
+  emp_types <- data_frame(
+    ACTIVITY = c(
+      "CNST", "ENGY", "ENT", "FIRE", "GOV", "HIED", "HLTH", "HOSP",
+      "INFO", "K12", "MFG", "RES", "RET", "SERV", "TRNS", "UTL", "WHSL"
+    ),
+    emp_type = c(
+      "Construction/Manufacturing", "Energy/Utilities", "Retail/Entertainment",
+      "Public Services", "Public Services", "Education", "Health", "Health",
+      "Services", "Education", "Construction/Manufacturing", "Resources",
+      "Retail/Entertainment", "Services", "Transportation/Warehousing",
+      "Energy/Utilities", "Transportation/Warehousing"
+    )
+  )
 
-    mutate(year = as.numeric(year) + 1990) %>%
 
-    group_by(BZONE, year) %>%
-    summarise_each(funs(sum), -BZONE, -year) %>%
+  employment <- tbl(db, "ActivityLocations") %>%
+    select(BZONE, ACTIVITY, TSTEP, Employment) %>%
+    filter(Employment > 0) %>%
 
-    # join facet and filter desired levels
+    # join grouping variable
     left_join(grouping, by = "BZONE") %>%
     filter(facet_var %in% facet_levels) %>%
     collect() %>%
 
-    gather(sector, output, BuySell_A1_Mgmt_Bus:BuySell_Teaching_K12) %>%
+    # consolidate employment categories
+    mutate(
+      ACTIVITY =  gsub("_.*", "", ACTIVITY),
+      year = as.numeric(TSTEP) + 1990
+    ) %>%
+    left_join(emp_types, by = "ACTIVITY") %>%
 
-    # consolidate employment types and filter to desired levels
-    left_join(employment_types, by = "sector") %>%
-    filter(naics1 %in% type_levels) %>%
-    group_by(facet_var, year, naics_label) %>%
-    summarise(output = sum(output)) %>%
-    ungroup() %>%
-    mutate(year = as.numeric(year) + 1990)
+    # summarize
+    group_by(facet_var, emp_type, year) %>%
+    summarise(emp = sum(Employment))
+
 
   return(employment)
 }
 
 #' Plot Employment by Sector
 #'
-#' This function plots the value of employment sold by a zone. This is a proxy
-#' for the number of workers in each sector, which is not immediately available
-#' from the SWIM database.
+#' This function plots the employment by type in an area over time between two
+#' scenarios.
 #'
 #' @param db The scenario database.
 #' @param facet_var The variable in the zone table to facet by. Defaults to MPO
@@ -85,31 +91,31 @@ extract_employment <- function(db,
 #'
 #' @export
 plot_employment <- function(db,
-                            facet_var = c("MPO", "COUNTY", "STATE"),
-                            facet_levels = NULL,
-                            type_levels = NULL){
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          type_levels = NULL){
 
   employment <- extract_employment(db, facet_var, facet_levels, type_levels)
 
   # make plot
   ggplot(employment,
-         aes(x = year, y = output,
-             group = naics_label, color = naics_label)) +
+         aes(x = year, y = emp,
+             group = emp_type, color = emp_type)) +
     geom_path()  +
     facet_wrap( ~ facet_var) +
 
     scale_y_log10() +
-    xlab("Year") + ylab("Output (dollars)") +
+    xlab("Year") + ylab("Employees") +
+    scale_color_discrete("Sector") +
     theme_bw()
 
 }
 
 
-#' Compare Employment between two scenarios
+#' Compare labor output between two scenarios
 #'
-#' This function plots the value of employment sold by a zone. This is a proxy
-#' for the number of workers in each sector, which is not immediately available
-#' from the SWIM database.
+#' This function compares the employment by type in an area over time between two
+#' scenarios.
 #'
 #' @param db1 The reference scenario database.
 #' @param db2 The current scenario database.
@@ -128,21 +134,23 @@ compare_employment <- function(db1, db2,
 
   # get the reference scenario data
   fref <- extract_employment(db1, facet_var, facet_levels, type_levels) %>%
-    rename(out_ref = output)
+    rename(ref = emp)
 
   # get the comparison scenario
   fcom <- extract_employment(db2, facet_var, facet_levels, type_levels) %>%
-    rename(out_com = output)
+    rename(com = emp)
 
   f <- left_join(fref, fcom) %>%
-    mutate(diff = (out_com - out_ref) / out_ref * 100)  # percent difference
+    mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
   ggplot(f,
-         aes(x = year, y = diff, color = naics_label)) +
+         aes(x = year, y = diff, color = emp_type)) +
     geom_path() +
     facet_wrap( ~ facet_var) +
     xlab("Year") +
-    ylab("Percent difference (current - reference) in Employee Output") +
+    ylab("Percent difference (current - reference) in Number of Employees") +
+    scale_color_discrete("Sector") +
     theme_bw()
 }
+

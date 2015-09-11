@@ -2,7 +2,7 @@
 % Please edit documentation in R/employment.R
 \name{compare_employment}
 \alias{compare_employment}
-\title{Compare Employment between two scenarios}
+\title{Compare labor output between two scenarios}
 \usage{
 compare_employment(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
   facet_levels = NULL, type_levels = NULL)
@@ -23,8 +23,7 @@ levels other than external stations.}
 A ggplot2 object showing the employment by type and and year.
 }
 \description{
-This function plots the value of employment sold by a zone. This is a proxy
-for the number of workers in each sector, which is not immediately available
-from the SWIM database.
+This function compares the employment by type in an area over time between two
+scenarios.
 }
 

@@ -1,0 +1,306 @@
+---
+title: "Compare Scenarios"
+author: "Parsons Brinckerhoff"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: spacelab
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE, message = FALSE,
+  fig.keep = TRUE, fig.path = "./figures/",
+  fig.width=8, fig.height=6
+)
+
+
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+library(ggplot2)
+library(swimr)
+```
+
+```{r figrefs}
+library(kfigr)
+# wrappers for short use
+rtab <- function(tag){
+  figr(tag, TRUE, TRUE, "Table")
+}
+
+rfig <- function(tag){
+  figr(tag, TRUE, TRUE, "Figure")
+}
+```
+
+
+```{r setdb}
+# update to reflect scenario location
+db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
+db2 <- src_sqlite("~/Documents/projects/swim/Extra_Floorspace_wCongestion.db") # current
+# update to reflect scope of analysis
+facet <- "COUNTY" 
+facet_levels <-  c("Multnomah", "Washington", "Clackamas")
+years <- c(2010, 2025, 2040)
+```
+
+
+# Scenario Description
+
+`r rtab("scenario")` shows the scenario information. 
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`. The report also provides MPO-level aggregations for all MPO's.
+
+```{r scenario, results='asis'}
+# update to reflect current scenario
+scen_info <- data_frame(
+  Name = c("Reference", "Current"),
+  Scenario = c("Reference scenario", "Extra Floorspace"),
+  `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
+                   "")
+)
+
+kable(scen_info, caption = "Scenario Information")
+```
+
+
+# Population and Employment
+
+```{r se}
+se <- left_join(
+  extract_se(db1, "MPO") %>% rename(reference = y),
+  extract_se(db2, "MPO") %>% rename(current   = y)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100)
+```
+
+`r rtab("tab_pop")` and `r rfig("tab_emp")` show the MPO-level population and 
+employment in each scenario by year, as well as the percent difference between
+the scenarios. `r rfig("fig_population")` shows the difference between the two
+scenarios across time aggregated to selected regions.
+
+```{r tab_pop, results='asis'}
+pop <- se %>% filter(var == "population")
+
+ref <- yearly_summary(pop, "MPO", "reference")
+cur <- yearly_summary(pop, "MPO", "current")
+diff <- yearly_summary(pop, "MPO", "diff")
+
+pop <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(pop) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(pop, caption = "Population by MPO", digits = 2)
+```
+
+```{r tab_emp, results='asis'}
+emp <- se %>% filter(var == "employment")
+
+ref <- yearly_summary(emp, "MPO", "reference")
+cur <- yearly_summary(emp, "MPO", "current")
+diff <- yearly_summary(emp, "MPO", "diff")
+
+emp <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
+
+names(emp) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(emp, caption = "Employment by MPO", digits = 2)
+```
+
+
+```{r plot_se, fig.cap="Population and employment in selected areas."}
+plot_sevar(db2, facet, facet_levels)
+```
+
+
+```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
+compare_sevar(db1, db2, facet, facet_levels)
+```
+
+```{r compare_se_mpo, fig.cap="Comparison of population and employment - all MPOs."}
+compare_sevar(db1, db2, "MPO")
+```
+
+
+# Transportation 
+
+> Note that the plots in this section may only have data for years in which the 
+transportation model runs.
+
+## Volume of Travel
+
+### VMT
+```{r tab_vmt}
+vmt <- left_join(
+  extract_vmt(db1, "MPO") %>% rename(reference = vmt),
+  extract_vmt(db2, "MPO") %>% rename(current   = vmt)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100) 
+ 
+ref <- yearly_summary(vmt, "facet_var", "reference")
+cur <- yearly_summary(vmt, "facet_var", "current")
+diff <- yearly_summary(vmt, "facet_var", "diff")
+
+vmt <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
+
+names(vmt) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(vmt, caption = "VMT by MPO", digits = 2)
+```
+
+
+```{r plot_vmt, fig.cap="VMT by facility type."}
+plot_vmt(db2, facet, facet_levels)
+```
+
+```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
+compare_vmt(db1, db2, facet, facet_levels)
+```
+
+```{r plot_vmt_mpo, fig.cap="VMT by facility type - all MPO's."}
+plot_vmt(db2, "MPO")
+```
+
+```{r compare_vmt_mpo, fig.cap="Comparison of VMT by facility type - all MPO's."}
+compare_vmt(db1, db2, "MPO")
+```
+
+
+### VHT
+
+```{r tab_vht}
+vht <- left_join(
+  extract_vht(db1, "MPO") %>% rename(reference = vht),
+  extract_vht(db2, "MPO") %>% rename(current   = vht)
+) %>%
+  filter(year %in% years) %>%
+  mutate(diff = (current - reference) / reference * 100)
+ 
+ref <- yearly_summary(vht, "facet_var", "reference")
+cur <- yearly_summary(vht, "facet_var", "current")
+diff <- yearly_summary(vht, "facet_var", "diff")
+
+vht <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
+
+names(vht) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(vht, caption = "VHT by MPO", digits = 2)
+```
+
+
+```{r plot_vht, fig.cap="VHT by facility type."}
+plot_vht(db2, facet, facet_levels)
+```
+
+```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
+compare_vht(db1, db2, facet, facet_levels)
+```
+
+```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
+plot_vht(db2, facet, facet_levels)
+```
+
+```{r compare_vht_mpo, fig.cap="Comparison of VHT by facility type - all MPO's."}
+compare_vht(db1, db2, "MPO")
+```
+
+## Mode Split
+```{r mode_share, fig.cap="Share of trips produced by mode"}
+plot_trips(db2, facet, facet_levels, share = TRUE)
+```
+
+```{r mode_share_mpo, fig.cap="Share of trips produced by mode - all MPOs"}
+plot_trips(db2,  share = TRUE)
+```
+
+```{r mode_vol, fig.cap="Total trips produced by mode."}
+plot_trips(db2, facet, facet_levels, share = FALSE)
+```
+
+```{r mode_vol_mpo, fig.cap="Total trips produced by mode - all MPOs"}
+plot_trips(db2, share = FALSE)
+```
+
+
+```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
+compare_trips(db1, db2, facet, facet_levels)
+```
+
+```{r compare_mode_mpo, fig.cap="Comparison of trip productions by mode - all MPOs."}
+compare_trips(db1, db2)
+```
+
+## Congested Links
+
+```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
+plot_pct_cong(db2, facet, facet_levels, congested_voc = 1.2)
+```
+
+```{r compare_cong, fig.cap="Comparison of congested PM VMT."}
+compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
+```
+
+```{r plot_cong_mpo, fig.cap="Percent of PM VMT on congested links - all MPO's."}
+plot_pct_cong(db2, congested_voc = 1.2)
+```
+
+```{r compare_cong_mpo, fig.cap="Comparison of congested PM VMT - all MPO's."}
+compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
+```
+
+# Economics
+
+## Built Floorspace
+```{r plot_floorspace, fig.cap="Floorspace by type."}
+plot_floorspace(db2, facet, facet_levels)
+```
+
+```{r plot_floorspace_mpo, fig.cap="Floorspace by type - all MPO's."}
+plot_floorspace(db2)
+```
+
+```{r compare_floorspace, fig.cap="Comparison of floorspace by type."}
+compare_floorspace(db1, db2, facet, facet_levels)
+```
+
+```{r compare_floorspace_mpo, fig.cap="Comparison of floorspace by type - all MPO's."}
+compare_floorspace(db1, db2)
+```
+
+## Employee Output
+
+```{r plot_employment, fig.cap="Labor output by sector."}
+plot_employment(db2, facet, facet_levels)
+```
+
+```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
+plot_employment(db2)
+```
+
+```{r compare_employment, fig.cap="Comparison of labor output by sector."}
+compare_employment(db1, db2, facet, facet_levels)
+```
+
+```{r plot_employment_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+compare_employment(db1, db2)
+```
+
+
+

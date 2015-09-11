@@ -1,15 +1,16 @@
 Package: swimr
 Type: Package
 Title: Functions for Looking at Swim
-Version: 0.2.0
+Version: 0.2.1
 Date: 2015-06-19
 Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
   person("Alex", "Bettinardi", email = "Alexander.O.BETTINARDI@odot.state.or.us", role = c("aut"))
   )
 Description: This package collects several R functions that are used in visualizing the Oregon Statewide Integrated Model (SWIM) outputs.
-License: What license is it under?
+License: file LICENSE
 LazyData: TRUE
+Depends: R (>= 3.1.2)
 Suggests: knitr
 Imports: dplyr, dplyrExtras, ggplot2, tidyr
 VignetteBuilder: knitr

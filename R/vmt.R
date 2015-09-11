@@ -53,8 +53,12 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     # get link distance from table
     left_join(link_dist) %>%
 
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
     # calculate total by year and group
-    group_by(year, facet_var, PLANNO) %>%
+    group_by(year, facet_var, FacType) %>%
     summarise(vmt = sum(DAILY_VOL_TOTAL * LENGTH, na.rm = TRUE))
 
   return(link_vmt)
@@ -83,7 +87,7 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
   link_vmt <- extract_vmt(db, facet_var, facet_levels)
 
   ggplot(link_vmt,
-         aes(x = year, y = vmt, color = factor(PLANNO))
+         aes(x = year, y = vmt, color = factor(FacType))
          ) +
     geom_path() +
     scale_y_log10() +
@@ -123,10 +127,10 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
-         aes(x = year, y = diff, color = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~facet_var) +
-    scale_fill_discrete("Facility Type") +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VMT.") +
     theme_bw()
 }
@@ -164,8 +168,19 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
     facet_levels = names(table(a$facet_var))
   }
 
+  # Link distances
+  data("links", package = "swimr")
+  link_dist <- links %>%
+    # reverse link distance
+    mutate(
+      ANODE = ifelse(order == 2, TONODENO, FROMNODENO),
+      BNODE = ifelse(order == 2, FROMNODENO, TONODENO),
+      LENGTH = R_LENGTH
+    ) %>%
+    select(ANODE, BNODE, LENGTH)
+
   link_con <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
+    select(AZONE, ANODE, BNODE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
     left_join(grouping, by = "AZONE") %>%
 
     # filter out regions you don't want
@@ -174,19 +189,29 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
     filter(TEMP_CAPACITY > 0) %>%
     collect() %>%  #need to collect sooner because of ifelse below.
 
+    # get link distance from table
+    left_join(link_dist) %>%
+
     # Calculate the percent of congested links
     mutate(
-      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc,
-                         1, 0),
+      # is the link congested?
+      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc, 1, 0),
+      # get period vmt
+      vmt = PM_VOL_TOTAL * LENGTH,
+      congested_vmt = congested * vmt,
       year = as.numeric(TSTEP) + 1990
     ) %>%
-    group_by(year, facet_var, PLANNO) %>%
-    summarise(percent_congested = (sum(congested) / n()) * 100)
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
+    group_by(year, facet_var, FacType) %>%
+    summarise(percent_congested = (sum(congested_vmt) / sum(vmt)) * 100)
 }
 
 #' Plot percent congested links over time.
 #'
-#' This function plots the percent of congested links, colored and
+#' This function plots the percent of PM VMT traveling on congested links.,
 #' faceted by arbitrary variables in the link table.
 #'
 #' @param db The scenario database.
@@ -210,11 +235,11 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 
   ggplot(
     links_con,
-    aes(x = year, y = percent_congested, color = factor(PLANNO))
+    aes(x = year, y = percent_congested, color = factor(FacType))
   ) +
     geom_path() +
     scale_color_discrete("Facility Type") +
-    xlab("Year") + ylab("Percent Congested Links") +
+    xlab("Year") + ylab("Percent of PM VMT on Congested Links") +
     facet_wrap(~ facet_var) +
     theme_bw()
 
@@ -222,8 +247,8 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 
 #' Plot percent congested links over time.
 #'
-#' This function plots the percent of congested links, colored and
-#' faceted by arbitrary variables in the link table.
+#' This function plots the percent of PM VMT travelling on congested links,
+#' colored and faceted by arbitrary variables in the link table.
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
@@ -253,11 +278,11 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 
 
   ggplot(df,
-         aes(x = year, y = diff, fill = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~ facet_var) +
-    scale_fill_discrete("Facility Type") +
-    xlab("Year") + ylab("Difference in percent of congested links.") +
+    scale_color_discrete("Facility Type") +
+    xlab("Year") + ylab("Difference in Percent of PM VMT on Congested Links.") +
     theme_bw()
 
 }
@@ -275,7 +300,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 #'
 #' @import dplyr tidyr
 #'
-extract_vht <- function(db, facet_var, facet_levels){
+extract_vht <- function(db, facet_var, facet_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
@@ -298,13 +323,16 @@ extract_vht <- function(db, facet_var, facet_levels){
 
     # filter out regions you don't want
     filter(facet_var %in% facet_levels) %>%
-
-    # calculate total by year and group
-    group_by(TSTEP, PLANNO, facet_var) %>%
-    summarise(vht = sum(DAILY_TIME_AUTO * DAILY_VOL_AUTO)) %>%
-
     # bring it locally
     collect() %>%
+
+    # consolidate facility types
+    left_join(fac_types) %>%
+
+    # calculate total by year and group
+    group_by(TSTEP, facet_var, FacType) %>%
+    summarise(vht = sum(DAILY_TIME_AUTO * DAILY_VOL_AUTO)) %>%
+
     ungroup() %>%
     mutate(year = as.numeric(TSTEP) + 1990)
 }
@@ -331,7 +359,7 @@ plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   p <- ggplot(
     df,
-    aes(x = year, y = vht, color = factor(PLANNO))
+    aes(x = year, y = vht, color = factor(FacType))
   ) +
     geom_path() +
     facet_wrap(~ facet_var) +
@@ -373,11 +401,10 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     mutate(diff = (com - ref) / ref * 100)
 
   ggplot(df,
-         aes(x = year, y = diff, color = factor(PLANNO))) +
+         aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
     facet_wrap(~facet_var) +
-    scale_fill_discrete("Facility Type") +
+    scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VHT.") +
     theme_bw()
 }
-

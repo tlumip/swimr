@@ -21,8 +21,7 @@ levels other than external stations.}
 A ggplot2 object showing the employment by type and and year.
 }
 \description{
-This function plots the value of employment sold by a zone. This is a proxy
-for the number of workers in each sector, which is not immediately available
-from the SWIM database.
+This function plots the employment by type in an area over time between two
+scenarios.
 }
 

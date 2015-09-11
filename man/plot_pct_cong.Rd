@@ -23,7 +23,7 @@ variable to use. Levels not called are dropped from the plot; default is
 A ggplot2 figure object.
 }
 \description{
-This function plots the percent of congested links, colored and
+This function plots the percent of PM VMT traveling on congested links.,
 faceted by arbitrary variables in the link table.
 }
 
