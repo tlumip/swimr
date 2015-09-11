@@ -95,7 +95,7 @@ plot_employment <- function(db,
                           facet_levels = NULL,
                           type_levels = NULL){
 
-  employment <- extract_laborout(db, facet_var, facet_levels, type_levels)
+  employment <- extract_employment(db, facet_var, facet_levels, type_levels)
 
   # make plot
   ggplot(employment,
