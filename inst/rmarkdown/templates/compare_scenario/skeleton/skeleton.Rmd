@@ -78,7 +78,7 @@ se <- left_join(
   mutate(diff = (current - reference) / reference * 100)
 ```
 
-`r rtab("tab_pop")` and `r rfig("tab_emp")` show the MPO-level population and 
+`r rtab("tab_pop")` and `r rtab("tab_emp")` show the MPO-level population and 
 employment in each scenario by year, as well as the percent difference between
 the scenarios. `r rfig("fig_population")` shows the difference between the two
 scenarios across time aggregated to selected regions.
@@ -214,7 +214,7 @@ compare_vht(db1, db2, facet, facet_levels)
 ```
 
 ```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
-plot_vht(db2, facet, facet_levels)
+plot_vht(db2)
 ```
 
 ```{r compare_vht_mpo, fig.cap="Comparison of VHT by facility type - all MPO's."}
@@ -284,7 +284,7 @@ compare_floorspace(db1, db2, facet, facet_levels)
 compare_floorspace(db1, db2)
 ```
 
-## Employee Output
+## Employment
 
 ```{r plot_employment, fig.cap="Labor output by sector."}
 plot_employment(db2, facet, facet_levels)
