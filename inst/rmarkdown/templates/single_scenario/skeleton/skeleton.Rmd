@@ -186,15 +186,21 @@ plot_pct_cong(db, congested_voc = 1.2)
 
 # Economics
 
-`r rfig("fig_floorspace")` shows the total floorspace in the area by type. 
-`r rfig("fig_employment")` shows the labor output by NAICS sector in the area.
-
-```{r fig_floorspace, fig.cap="Floorspace in each region by type."}
+## Built Floorspace
+```{r plot_floorspace, fig.cap="Floorspace by type."}
 plot_floorspace(db, facet, facet_levels)
 ```
 
-```{r fig_employment, fig.cap="Labor output in each region by NAICS sector."}
+```{r plot_floorspace_mpo, fig.cap="Floorspace by type - all MPO's."}
+plot_floorspace(db)
+```
+
+## Employment
+
+```{r plot_employment, fig.cap="Labor output by sector."}
 plot_employment(db, facet, facet_levels)
 ```
 
-
+```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
+plot_employment(db)
+```
