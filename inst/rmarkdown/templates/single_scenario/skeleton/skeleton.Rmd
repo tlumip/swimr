@@ -39,17 +39,20 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db <- src_sqlite()
+db <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
 # update to reflect scope of analysis
-facet <- "COUNTY"
+facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 years <- c(2010, 2025, 2040)
 ```
 
 
+
 # Scenario Description
 
-`r rtab("scenario")` shows the scenario information.
+`r rtab("scenario")` shows the scenario information. 
+In this report we will focus on `r facet`-level aggregations for 
+`r facet_levels`. The report also provides MPO-level aggregations for all MPO's.
 
 ```{r scenario, results='asis'}
 # update to reflect current scenario
