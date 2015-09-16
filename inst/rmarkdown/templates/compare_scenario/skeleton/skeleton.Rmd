@@ -39,8 +39,10 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
-db2 <- src_sqlite("~/Documents/projects/swim/Extra_Floorspace_wCongestion.db") # current
+ref_db <- "~/Documents/projects/swim/FinalReference_Test.db" # reference
+cur_db <- "~/Documents/projects/swim/Extra_Floorspace_wCongestion.db" # current
+db1 <- src_sqlite(ref_db) 
+db2 <- src_sqlite(cur_db) 
 # update to reflect scope of analysis
 facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
@@ -58,9 +60,8 @@ In this report we will focus on `r facet`-level aggregations for
 # update to reflect current scenario
 scen_info <- data_frame(
   Name = c("Reference", "Current"),
-  Scenario = c("Reference scenario", "Extra Floorspace"),
-  `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
-                   "")
+  Scenario = c(basename(ref_db), basename(cur_db)),
+  `File Date` = c(file.info(ref_db)$mtime, file.info(cur_db)$mtime)
 )
 
 kable(scen_info, caption = "Scenario Information")
