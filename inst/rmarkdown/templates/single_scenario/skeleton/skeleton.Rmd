@@ -101,25 +101,57 @@ plot_sevar(db, "MPO")
 
 
 # Transportation 
-Note that the plots in this section may only have data for years in which the 
+
 ## Validation
 
 ```{r plot_validation}
 plot_validation(db)
 ```
+
+> Note that the plots in this section may only have data for years in which the 
 transportation model runs.
+
 
 ## Volume of Travel
 
-`r rfig("fig_vmt")` shows the vehicle miles traveled (VMT) on links by facility 
-type; `r rfig("fig_vht")` shows the vehicle hours traveled (VHT).
+### VMT
+```{r tab_vmt}
+vmt <- extract_vmt(db, "MPO") %>%
+  filter(year %in% years) %>%
+  group_by(year, facet_var) %>%
+  summarise(vmt = sum(vmt)) %>%
+  yearly_summary("facet_var", "vmt")
 
-```{r fig_vmt, fig.cap = "Vehicle miles traveled by facility type."}
+kable(vmt, caption = "VMT by MPO", digits = 2)
+```
+
+
+```{r plot_vmt, fig.cap="VMT by facility type."}
 plot_vmt(db, facet, facet_levels)
 ```
 
-```{r fig_vht, fig.cap = "Vehicle hours traveled by facility type."}
+```{r plot_vmt_mpo, fig.cap="VMT by facility type - all MPO's."}
+plot_vmt(db, "MPO")
+```
+
+
+### VHT
+```{r tab_vht}
+vht <- extract_vht(db, "MPO") %>%
+  filter(year %in% years) %>%
+  group_by(year, facet_var) %>%
+  summarise(vht = sum(vht)) %>%
+  yearly_summary("facet_var", "vht")
+
+kable(vht, caption = "VHT by MPO", digits = 2)
+```
+
+```{r plot_vht, fig.cap="VHT by facility type."}
 plot_vht(db, facet, facet_levels)
+```
+
+```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
+plot_vht(db)
 ```
 
 
