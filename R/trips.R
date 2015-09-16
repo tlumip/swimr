@@ -10,11 +10,13 @@
 extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   df <- tbl(db, "TRIPMATRIX") %>%
-    # sum trips on origin
+    # determine the origin MPO of the trip
     mutate(BZONE = FROMBZONE) %>%
     select(-FROMBZONE, -TOBZONE) %>%
     left_join(tbl(db, "BZONE") %>% select_("BZONE", "facet_var" = facet_var),
-              by = "BZONE")
+              by = "BZONE") %>%
+    select(-BZONE)
+
 
   # if no levels specified, then keep all
   if(!is.null(facet_levels)){
@@ -23,16 +25,18 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   df <- df %>%
     group_by(facet_var, TSTEP) %>%
-    summarise_each(funs(sum), am_BIKE:am_WK_TRAN) %>%
-
+    summarise_each(funs(sum), -TSTEP, -facet_var) %>%
     ungroup() %>% collect() %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
     select(-TSTEP) %>%
 
     # combine periods
-    gather(mode, trips, -facet_var, -year) %>%
+    gather(mode, trips, -year, -facet_var) %>%
     separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
 
+    # join consolidated mode information
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
     group_by(facet_var, year, mode) %>%
     summarise(trips = sum(trips))
 
