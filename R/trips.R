@@ -23,6 +23,17 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
     df <- df %>% filter(facet_var %in% facet_levels)
   }
 
+  mode_types <- data_frame(
+    mode = c(
+      "BIKE", "DA", "DR_TRAN", "SCHOOL_BUS", "SR2", "SR3P",
+      "TRK", "WALK", "WK_TRAN"
+    ),
+    consolidated_mode = c(
+      "non-motorized", "drive alone", "transit", "school bus", "shared",
+      "shared", "truck", "non-motorized", "transit"
+    )
+  )
+
   df <- df %>%
     group_by(facet_var, TSTEP) %>%
     summarise_each(funs(sum), -TSTEP, -facet_var) %>%
