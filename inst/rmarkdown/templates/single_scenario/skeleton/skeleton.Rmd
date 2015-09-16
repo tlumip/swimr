@@ -102,6 +102,11 @@ plot_sevar(db, "MPO")
 
 # Transportation 
 Note that the plots in this section may only have data for years in which the 
+## Validation
+
+```{r plot_validation}
+plot_validation(db)
+```
 transportation model runs.
 
 ## Volume of Travel
