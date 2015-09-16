@@ -1,7 +1,7 @@
 Package: swimr
 Type: Package
 Title: Functions for Looking at Swim
-Version: 0.2.1
+Version: 0.2.2
 Date: 2015-06-19
 Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
