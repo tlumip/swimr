@@ -156,26 +156,31 @@ plot_vht(db)
 
 
 ## Mode Split
-
-`r rfig("fig_mode")` shows the number of trip productions by mode; 
-`r rfig("fig_modesplit")` shows the share of trips by each mode.
-
-```{r fig_mode, fig.cap = "Trip productions by mode."}
-plot_trips(db, facet, facet_levels, share = FALSE)
-```
-
-```{r fig_modesplit, fig.cap = "Share of trips by mode."}
+```{r mode_share, fig.cap="Share of trips produced by mode"}
 plot_trips(db, facet, facet_levels, share = TRUE)
 ```
 
+```{r mode_share_mpo, fig.cap="Share of trips produced by mode - all MPOs"}
+plot_trips(db,  share = TRUE)
+```
+
+```{r mode_vol, fig.cap="Total trips produced by mode."}
+plot_trips(db, facet, facet_levels, share = FALSE)
+```
+
+```{r mode_vol_mpo, fig.cap="Total trips produced by mode - all MPOs"}
+plot_trips(db, share = FALSE)
+```
+
+
 ## Congested Links
 
-`r rfig("fig_cong")` shows the percent of links that are congested in each
-area over time by facility type. In this definition, *congested* means that
-the daily volume is greater than 90% of the daily capacity.
+```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
+plot_pct_cong(db, facet, facet_levels, congested_voc = 1.2)
+```
 
-```{r fig_cong, fig.cap = "Percent of congested links by facility type."}
-plot_pct_cong(db, facet, facet_levels)
+```{r plot_cong_mpo, fig.cap="Percent of PM VMT on congested links - all MPO's."}
+plot_pct_cong(db, congested_voc = 1.2)
 ```
 
 
