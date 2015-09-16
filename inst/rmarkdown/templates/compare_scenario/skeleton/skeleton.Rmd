@@ -298,7 +298,7 @@ plot_employment(db2)
 compare_employment(db1, db2, facet, facet_levels)
 ```
 
-```{r plot_employment_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+```{r compare_employment_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
 compare_employment(db1, db2)
 ```
 
