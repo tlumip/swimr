@@ -157,6 +157,27 @@ plot_vht(db)
 
 
 ## Mode Split
+```{r tab_trips, results='asis'}
+trips <- extract_trips(db, "MPO") %>%
+  filter(year %in% years) %>%
+  group_by(year, facet_var) %>%
+  summarise(trips = sum(trips)) %>%
+  yearly_summary("facet_var", "trips")
+
+kable(trips, caption = "Total Trips by MPO", digits = 2)
+```
+
+```{r tab_trips, results='asis'}
+tab_mode <- extract_trips(db, "MPO", facet_levels = c("Metro", "OOO")) %>%
+  filter(year %in% years) %>%
+  filter(facet_var == "Metro") %>%
+  group_by(year, mode) %>%
+  summarise(trips = sum(trips)) %>%
+  yearly_summary("mode", "trips")
+
+kable(tab_mode, caption = "Metro MPO Trips by Mode", digits = 2)
+```
+
 ```{r mode_share, fig.cap="Share of trips produced by mode"}
 plot_trips(db, facet, facet_levels, share = TRUE)
 ```
