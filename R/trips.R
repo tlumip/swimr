@@ -23,16 +23,6 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
     df <- df %>% filter(facet_var %in% facet_levels)
   }
 
-  mode_types <- data_frame(
-    mode = c(
-      "BIKE", "DA", "DR_TRAN", "SCHOOL_BUS", "SR2", "SR3P",
-      "TRK", "WALK", "WK_TRAN"
-    ),
-    consolidated_mode = c(
-      "non-motorized", "drive alone", "transit", "school bus", "shared",
-      "shared", "truck", "non-motorized", "transit"
-    )
-  )
 
   df <- df %>%
     group_by(facet_var, TSTEP) %>%
@@ -44,10 +34,9 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
     # combine periods
     gather(mode, trips, -year, -facet_var) %>%
     separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
+    filter(mode != "SCHOOL_BUS") %>%
 
     # join consolidated mode information
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
     group_by(facet_var, year, mode) %>%
     summarise(trips = sum(trips))
 
@@ -67,6 +56,13 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
                        share = TRUE) {
 
   df <- extract_trips(db, facet_var, facet_levels)
+
+  #consolidate modes
+  df <- df %>%
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
+    group_by(facet_var, year, mode) %>%
+    summarise(trips = sum(trips))
 
   if(share) {
     df <- df %>%
@@ -107,9 +103,17 @@ compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels) %>%
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
+    group_by(facet_var, year, mode) %>%
+    summarise(trips = sum(trips)) %>%
     rename(ref = trips)
   # current scenario
   fcom <- extract_trips(db2, facet_var, facet_levels) %>%
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
+    group_by(facet_var, year, mode) %>%
+    summarise(trips = sum(trips)) %>%
     rename(com = trips)
 
   df <- left_join(fref, fcom) %>%
