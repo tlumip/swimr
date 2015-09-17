@@ -223,6 +223,33 @@ compare_vht(db1, db2, "MPO")
 ```
 
 ## Mode Split
+
+```{r tab_trips, results='asis'}
+trips <- left_join(
+  extract_trips(db1, "MPO") %>% rename(reference = trips),
+  extract_trips(db2, "MPO") %>% rename(current = trips)
+) %>%
+  filter(year %in% years) %>%
+  mutate(
+    diff = (current - reference) / reference * 100,
+    diff = ifelse(is.na(diff), 0, diff))
+ 
+ref <- yearly_summary(trips, "facet_var", "reference")
+cur <- yearly_summary(trips, "facet_var", "current")
+diff <- yearly_summary(trips, "facet_var", "diff")
+
+trips <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
+
+names(trips) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(trips, caption = "Total Trips by MPO", digits = 2)
+```
+
+
+
 ```{r mode_share, fig.cap="Share of trips produced by mode"}
 plot_trips(db2, facet, facet_levels, share = TRUE)
 ```
