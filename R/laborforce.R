@@ -18,6 +18,8 @@
 #'
 #' @return A \code{data_frame} with the participation rate in each facet region
 #'   in each transport model year.
+#'
+#' @export
 extract_lfpr <- function(db,
                          facet_var = c("BZONE", "MPO", "COUNTY",
                                        "DOT_REGION", "STATE"),
@@ -87,6 +89,8 @@ extract_lfpr <- function(db,
 #'   which levels to include.
 #'
 #' @return a ggplot2 plot object.
+#'
+#' @export
 plot_lfpr <- function(db,
                       color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
                                     "STATE"),
@@ -125,7 +129,77 @@ plot_lfpr <- function(db,
 }
 
 
+#' Plot LFPR Volatility in a Region
+#'
+#' This
+#'
+#' @param db Scenario database.
+#' @param level Level at which to calculate volatility over time. Smaller
+#'   levels, such as BZONE will show higher volatility.
+#' @param scope a filtering criteria to limit the scope of the
+#' @param ggmap if TRUE, return a ggmap background
+#'
+#'
+#' @return a ggplot2 object.
+#'
+plot_lfpr_volatility <- function(db,
+                                 level = c("BZONE", "COUNTY", "MPO",
+                                           "ODOT_REGION", "ALDREGION", "STATE"),
+                                 scope = NULL,
+                                 ggmap = FALSE){
 
-lpfr_volatility <- function(db) {
+  if(!is.null(scope)){
+
+    # determine the list of levels in the scope.
+    zt <- zones_data %>%
+      filter_(.dots = scope) %>%
+      select_(level) %>%
+      group_by_(level) %>%
+      slice(1)
+
+
+    df <- extract_lfpr(db, level) %>%
+      # trim to scope
+      inner_join(zt)
+
+  } else {
+    df <- extract_lfpr(db, level)
+  }
+
+  # calculate volatility as the standard deviation of the growth rates.
+  df <- df %>%
+    group_by_(level) %>%
+    arrange(year) %>%
+    mutate(
+      rate = (lead(lfpr) - lfpr) / lfpr * 100
+    ) %>%
+    summarise(
+      volatility = sd(rate, na.rm = TRUE)
+    )
+
+
+  # plot volatility as the
+  dt <- zones %>%
+    inner_join(df)
+
+  if(ggmap){
+    map <- get_map(
+      bbox(as.matrix(dt[, c("long", "lat")])),
+      source = "stamen", color = "bw", maptype = "toner"
+    )
+
+    p <- ggmap(map, extent = "dev")
+  } else {
+    p <- ggplot() +
+      coord_map("conic", lat0 = 43) +
+      theme_bw()
+  }
+
+  p + geom_polygon(
+    data = dt,
+    alpha = 0.5,
+    aes_string(x = "long", y = "lat", fill = "volatility", group = "group")
+  ) +
+    scale_fill_gradient("Volatility in LFPR", low = "white", high = "red")
 
 }
