@@ -77,23 +77,50 @@ extract_lfpr <- function(db,
 #' are looking for work.
 #'
 #' @param db The scenario sqlite database.
-#' @param facet_var Field to facet by: "MPO", "COUNTY", or "STATE".
+#' @param color_var Field to color by: c("BZONE", "MPO", "COUNTY", "DOT_REGION",
+#'   "STATE")
+#' @param color_levels A character vector of the variable specifiying
+#'   which levels to include.
+#' @param facet_var Field to facet by: c("MPO", "COUNTY", "DOT_REGION",
+#'   "STATE")
 #' @param facet_levels A character vector of the variable specifiying
 #'   which levels to include.
 #'
 #' @return a ggplot2 plot object.
-plot_lfpr <- function(db, facet_var = c("MPO", "COUNTY", "STATE"),
-                     facet_levels = NULL) {
+plot_lfpr <- function(db,
+                      color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
+                                    "STATE"),
+                      color_levels = NULL,
+                      facet_var = NULL,
+                      facet_levels = NULL) {
 
-  df <- extract_lfpr(db, facet_var, facet_levels)
+  # Simple plot of groups as colors
+  if(is.null(facet_var)){
 
-  p <- ggplot(df, aes(x = year, y = lfpr, color = facet_var)) +
-    geom_path() +
+    df <- extract_lfpr(db, color_var, color_levels)
+    p <- ggplot(df, aes_string(x = "year", y = "lfpr", color = color_var)) +
+      geom_path()
+  } else {
+
+    # get lookup table grouping color variables to facet variables
+    zt <- zones_data %>%
+      group_by_(color_var, facet_var) %>%
+      slice(1) %>% ungroup() %>%
+      select_(color_var, facet_var)
+
+    df <- extract_lfpr(db, color_var, color_levels) %>%
+      left_join(zt)
+
+    p <- ggplot(
+      df, aes_string(x = "year", y = "lfpr", color = color_var)) +
+      geom_path() +
+      facet_wrap(as.formula(paste("~", facet_var)))
+  }
+
+  p +
     xlab("Year") + ylab("Labor Force Participation Rate (%)") +
-    scale_color_discrete(facet_var) +
+    scale_color_discrete(color_var) +
     theme_bw()
-
-  return(p)
 
 }
 
