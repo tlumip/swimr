@@ -48,13 +48,22 @@ zones_shp <- readShapePoly(
 
 
 zones_data <- zones_shp@data %>%
-  mutate(id = as.character(row_number() - 1)) %>%
   tbl_df() %>%
-  select(NO, ALDREGION, AZONE, BZONE, AREASQFT, id)
+  transmute(
+    NO,
+    id = as.character(row_number() - 1),
+    AZONE = as.numeric(as.character(AZONE)),
+    BZONE,
+    COUNTY = as.character(COUNTY),
+    ALDREGION = as.character(ALDREGION),
+    DOT_REGION,
+    STATE = as.character(STATE)
+  )
 
 zones <- fortify(zones_shp) %>% tbl_df() %>%
   left_join(zones_data, by = "id")
 
-devtools::use_data(zones)
+devtools::use_data(zones, overwrite = TRUE)
+devtools::use_data(zones_data, overwite = TRUE)
 
 
