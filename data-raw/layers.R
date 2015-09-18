@@ -56,14 +56,17 @@ zones_data <- zones_shp@data %>%
     BZONE,
     COUNTY = as.character(COUNTY),
     ALDREGION = as.character(ALDREGION),
+    MPO = as.character(MPO),
     DOT_REGION,
     STATE = as.character(STATE)
   )
+
+
 
 zones <- fortify(zones_shp) %>% tbl_df() %>%
   left_join(zones_data, by = "id")
 
 devtools::use_data(zones, overwrite = TRUE)
-devtools::use_data(zones_data, overwite = TRUE)
+devtools::use_data(zones_data, overwrite = TRUE)
 
 
