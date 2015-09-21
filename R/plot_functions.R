@@ -155,8 +155,11 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     df <- extract_se(db, color_var, color_levels, controls)
 
     p <- ggplot(df) +
-      geom_line(aes(x = year, y = y, color = county, lty = data)) +
-      scale_linetype_manual("Data", values = c("dashed", "solid"))
+      geom_line(aes(x = year, y = y, color = county, lty = data))
+
+    if(controls){
+      p <- p + scale_linetype_manual("Data", values = c("dashed", "solid"))
+    }
 
   } else { # MPO plot without controls
 
