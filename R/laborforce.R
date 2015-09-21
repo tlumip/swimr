@@ -134,7 +134,9 @@ plot_lfpr <- function(db,
 
 #' Plot LFPR Volatility in a Region
 #'
-#' This
+#' This function calculates the volatility of the labor force participation rate
+#' at an arbitrary geographic level. Volatility is defined as the standard
+#' deviation of the percent growth rate of LFPR between consecutive periods.
 #'
 #' @param db Scenario database.
 #' @param level Level at which to calculate volatility over time. Smaller
@@ -145,9 +147,10 @@ plot_lfpr <- function(db,
 #'
 #' @return a ggplot2 object.
 #'
+#' @export
 plot_lfpr_volatility <- function(db,
                                  level = c("BZONE", "COUNTY", "MPO",
-                                           "ODOT_REGION", "ALDREGION", "STATE"),
+                                           "ALDREGION", "STATE"),
                                  scope = NULL,
                                  ggmap = FALSE){
 
@@ -191,7 +194,8 @@ plot_lfpr_volatility <- function(db,
       source = "stamen", color = "bw", maptype = "toner"
     )
 
-    p <- ggmap(map, extent = "dev")
+    p <- ggmap(map, extent = "dev") +
+      theme_bw()
   } else {
     p <- ggplot() +
       coord_map("conic", lat0 = 43) +
