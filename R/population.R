@@ -302,3 +302,79 @@ pop_rate <- function(db, counties = NULL) {
 
 }
 
+#' Discover outlying counties
+#'
+#' A major question we face is identifying whether the modeled population growth
+#' rate in a region is "reasonable." To date reasonableness has been subjective,
+#' but this function provides quantitative methodologies to calculate this.
+#'
+#' @param db The swim database
+#' @param counties A character vector of counties to calculate.
+#' @param method The method by which unreasonable counties are identified. See
+#'   "Details".
+#'
+#' @return A data frame with information on each county's conformity with
+#'   historical trends.
+#'
+#' @details If \code{method = "count"} (default), the number of years for which
+#'   the annualized population growth rate lies outside of the historical
+#'   confidence interval. If \code{method = "pval"}, a data frame of swim scenario
+#'   years with with the $p$-value of the annualized growth rate on the
+#'   distribution defined by historical data.
+#'
+#' @export
+#'
+#' @seealso \code{\link{pop_rate}}
+#'
+discover_outlying_rates <- function(db, counties = NULL,
+                                    method = c("count", "pval")){
+
+
+  # get annualized population growth rate in each year, and stash in column
+  rates <- pop_rate(db, counties) %>%
+    group_by(county) %>%
+    mutate(
+      census = ifelse(data == "Census", rate, NA),
+      swim   = ifelse(data == "SWIM", rate, NA)
+    )
+
+  if(method == "pval"){
+
+    get_pval <- function(x, y){
+      # get pvalue for each model year given historical rate distribution
+      pnorm(y, mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+    }
+
+    r <- rates %>%
+      mutate(
+        pval = get_pval(census, swim)
+      ) %>%
+      filter(!is.na(y)) %>%
+      filter(data == "SWIM") %>%
+      select(county, year, data, pop, pval)
+
+  } else if(method == "count"){
+
+    count_insideci <- function(x, y) {
+      y <- y[!is.na(y)]
+
+      # what percent of y falls inside confidence interval of f?
+      low <- mean(x, na.rm = TRUE) - 1.96 * sd(x, na.rm = TRUE)
+      hi  <- mean(x, na.rm = TRUE) + 1.96 * sd(x, na.rm = TRUE)
+
+      inside <- ifelse(y >= low & y <= hi, TRUE, FALSE)
+
+      return(sum(inside) / length(y))
+
+    }
+
+    r <- rates %>%
+      group_by(county) %>%
+      summarise(
+        inside_ci = count_insideci(census, swim)
+      )
+  }
+
+  return(r)
+
+}
