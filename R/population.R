@@ -243,3 +243,5 @@ plot_history <- function(db, counties) {
     scale_color_discrete("County") +
     theme_bw()
 }
+
+
