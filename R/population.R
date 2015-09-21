@@ -228,7 +228,7 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 #'
 #' @return a ggplot2 object
 #' @export
-plot_history <- function(db, counties) {
+plot_history <- function(db, counties = NULL) {
 
   df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
     filter(var == "population") %>%
