@@ -330,5 +330,21 @@ compare_employment(db1, db2, facet, facet_levels)
 compare_employment(db1, db2)
 ```
 
+## Workforce Participation
 
 
+```{r plot_wapr, fig.cap="Workforce participation."}
+plot_wapr(db2, facet, facet_levels)
+```
+
+```{r plot_wapr_mpo, fig.cap="Workforce participation - all MPO's."}
+plot_wapr(db2, "MPO")
+```
+
+```{r compare_wapr, fig.cap="Comparison of workforce participation by sector."}
+compare_wapr(db1, db2, facet, facet_levels)
+```
+
+```{r compare_wapr_mpo, fig.cap="Comparison of workforce participation by sector - all MPO's."}
+compare_wapr(db1, db2, "MPO")
+```
