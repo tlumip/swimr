@@ -106,7 +106,7 @@ for(r in 1:9){
 ```
 
 
-# Labor Force Participation
+# Adult Work Participation
 
 
 ```{r lpfr}
@@ -115,7 +115,7 @@ for(r in 1:9){
   counties <- zones_data %>%
     filter(DOT_REGION == r)
   
-  p <- plot_lfpr(db2, "COUNTY", counties$COUNTY)
+  p <- plot_wapr(db2, "COUNTY", counties$COUNTY)
  
   print(p + ggtitle(paste("Region", r)))
 }
@@ -123,24 +123,24 @@ for(r in 1:9){
 
 ## Volatility
 
-```{r mpo_volatility, fig.cap="Volatility in labor force participation, MPO."}
-plot_lfpr_volatility(db2, "MPO", ggmap = TRUE)
+```{r mpo_volatility, fig.cap="Volatility in adult work participation, MPO."}
+plot_wapr_volatility(db2, "MPO", ggmap = TRUE)
 ```
 
-```{r county_volatility, fig.cap="Volatility in labor force participation, Counties."}
-plot_lfpr_volatility(db2, "COUNTY", ggmap = TRUE)
+```{r county_volatility, fig.cap="Volatility in adult work participation, Counties."}
+plot_wapr_volatility(db2, "COUNTY", ggmap = TRUE)
 ```
 
 ### Portland
-```{r pdx_volatility, fig.cap = "Volatility in labor force participation, Portland and Salem Beta Zones"}
-plot_lfpr_volatility(db2, "BZONE", 
+```{r pdx_volatility, fig.cap = "Volatility in adult work participation, Portland and Salem Beta Zones"}
+plot_wapr_volatility(db2, "BZONE", 
                      scope = ~ MPO == c("Metro", "SalemKeizer"),
                      ggmap = TRUE)
 ```
 
 
-```{r bend_volatility, fig.cap = "Volatility in labor force participation, Portland and Salem Beta Zones"}
-plot_lfpr_volatility(db2, "BZONE", 
+```{r bend_volatility, fig.cap = "Volatility in adult work participation, Portland and Salem Beta Zones"}
+plot_wapr_volatility(db2, "BZONE", 
                      scope = ~ MPO == c("Bend"),
                      ggmap = TRUE)
 ```

@@ -8,8 +8,12 @@
 #' This function returns the number of workers in each facet region divided
 #' by the number of individuals fifteen years and older in that region. The
 #' definition of a "worker" in a travel model is different than the BLS definition
-#' in that travel modesl do not consider unemployed individuals who are looking
+#' in that travel models do not consider unemployed individuals who are looking
 #' for work.
+#'
+#' We call our definition "workers to adult population ratio," or "WAPR". Again,
+#' it corresponds to the labor force participation rate but is not precisely
+#' defined.
 #'
 #' @param db The scenario sqlite database.
 #' @param facet_var Field to facet by: "MPO", "COUNTY", or "STATE".
@@ -20,7 +24,7 @@
 #'   in each transport model year.
 #'
 #' @export
-extract_lfpr <- function(db,
+extract_wapr <- function(db,
                          facet_var = c("BZONE", "MPO", "COUNTY",
                                        "DOT_REGION", "STATE"),
                          facet_levels = NULL, color_levels = NULL) {
@@ -55,10 +59,10 @@ extract_lfpr <- function(db,
       laborforce = sum(laborforce)
     ) %>%
 
-    # calculate lfpr
+    # calculate wapr
     collect() %>%
     mutate(
-      lfpr = workers / laborforce * 100,
+      wapr = workers / laborforce * 100,
       year = as.numeric(TSTEP) + 1990
     ) %>%
     ungroup() %>%
@@ -81,6 +85,8 @@ extract_lfpr <- function(db,
 #' definition in that travel modesl do not consider unemployed individuals who
 #' are looking for work.
 #'
+#' We call our definition "workers to adult population ratio," or "WAPR".
+#'
 #' @param db The scenario sqlite database.
 #' @param color_var Field to color by: c("BZONE", "MPO", "COUNTY", "DOT_REGION",
 #'   "STATE")
@@ -94,7 +100,7 @@ extract_lfpr <- function(db,
 #' @return a ggplot2 plot object.
 #'
 #' @export
-plot_lfpr <- function(db,
+plot_wapr <- function(db,
                       color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
                                     "STATE"),
                       color_levels = NULL,
@@ -104,8 +110,8 @@ plot_lfpr <- function(db,
   # Simple plot of groups as colors
   if(is.null(facet_var)){
 
-    df <- extract_lfpr(db, color_var, color_levels)
-    p <- ggplot(df, aes_string(x = "year", y = "lfpr", color = color_var)) +
+    df <- extract_wapr(db, color_var, color_levels)
+    p <- ggplot(df, aes_string(x = "year", y = "wapr", color = color_var)) +
       geom_path()
   } else {
 
@@ -115,11 +121,11 @@ plot_lfpr <- function(db,
       slice(1) %>% ungroup() %>%
       select_(color_var, facet_var)
 
-    df <- extract_lfpr(db, color_var, color_levels) %>%
+    df <- extract_wapr(db, color_var, color_levels) %>%
       left_join(zt)
 
     p <- ggplot(
-      df, aes_string(x = "year", y = "lfpr", color = color_var)) +
+      df, aes_string(x = "year", y = "wapr", color = color_var)) +
       geom_path() +
       facet_wrap(as.formula(paste("~", facet_var)))
   }
@@ -132,11 +138,11 @@ plot_lfpr <- function(db,
 }
 
 
-#' Plot LFPR Volatility in a Region
+#' Plot WAPR Volatility in a Region
 #'
-#' This function calculates the volatility of the labor force participation rate
+#' This function calculates the volatility of worker to adult population ratio
 #' at an arbitrary geographic level. Volatility is defined as the standard
-#' deviation of the percent growth rate of LFPR between consecutive periods.
+#' deviation of the percent growth rate of wapr between consecutive periods.
 #'
 #' @param db Scenario database.
 #' @param level Level at which to calculate volatility over time. Smaller
@@ -148,7 +154,7 @@ plot_lfpr <- function(db,
 #' @return a ggplot2 object.
 #'
 #' @export
-plot_lfpr_volatility <- function(db,
+plot_wapr_volatility <- function(db,
                                  level = c("BZONE", "COUNTY", "MPO",
                                            "ALDREGION", "STATE"),
                                  scope = NULL,
@@ -164,12 +170,12 @@ plot_lfpr_volatility <- function(db,
       slice(1)
 
 
-    df <- extract_lfpr(db, level) %>%
+    df <- extract_wapr(db, level) %>%
       # trim to scope
       inner_join(zt)
 
   } else {
-    df <- extract_lfpr(db, level)
+    df <- extract_wapr(db, level)
   }
 
   # calculate volatility as the standard deviation of the growth rates.
@@ -177,7 +183,7 @@ plot_lfpr_volatility <- function(db,
     group_by_(level) %>%
     arrange(year) %>%
     mutate(
-      rate = (lead(lfpr) - lfpr) / lfpr * 100
+      rate = (lead(wapr) - wapr) / wapr * 100
     ) %>%
     summarise(
       volatility = sd(rate, na.rm = TRUE)
@@ -207,6 +213,6 @@ plot_lfpr_volatility <- function(db,
     alpha = 0.5,
     aes_string(x = "long", y = "lat", fill = "volatility", group = "group")
   ) +
-    scale_fill_gradient("Volatility in LFPR", low = "white", high = "red")
+    scale_fill_gradient("Volatility in WAPR", low = "white", high = "red")
 
 }
