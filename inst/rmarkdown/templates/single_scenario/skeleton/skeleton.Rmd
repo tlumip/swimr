@@ -226,3 +226,13 @@ plot_employment(db, facet, facet_levels)
 ```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
 plot_employment(db)
 ```
+
+## Labor Force Participation^[Specifically, the ratio of workers to individuals 15 or older.]
+
+```{r plot_wapr, fig.cap = "Workforce participation."}
+plot_wapr(db, facet, facet_levels)
+```
+
+```{r plot_wapr, fig.cap = "Workforce participation."}
+plot_wapr(db, "MPO")
+```
