@@ -12,7 +12,7 @@ output:
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
-  echo = FALSE, message = FALSE,
+  echo = FALSE, message = FALSE, warning = FALSE,
   fig.keep = TRUE, fig.path = "./figures/",
   fig.width=8, fig.height=6
 )
@@ -22,6 +22,8 @@ library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 library(ggplot2)
 library(swimr)
+library(ggmap)
+library(maptools)
 ```
 
 ```{r figrefs}
@@ -121,4 +123,24 @@ for(r in 1:9){
 
 ## Volatility
 
+```{r mpo_volatility, fig.cap="Volatility in labor force participation, MPO."}
+plot_lfpr_volatility(db2, "MPO", ggmap = TRUE)
+```
 
+```{r county_volatility, fig.cap="Volatility in labor force participation, Counties."}
+plot_lfpr_volatility(db2, "COUNTY", ggmap = TRUE)
+```
+
+### Portland
+```{r pdx_volatility, fig.cap = "Volatility in labor force participation, Portland and Salem Beta Zones"}
+plot_lfpr_volatility(db2, "BZONE", 
+                     scope = ~ MPO == c("Metro", "SalemKeizer"),
+                     ggmap = TRUE)
+```
+
+
+```{r bend_volatility, fig.cap = "Volatility in labor force participation, Portland and Salem Beta Zones"}
+plot_lfpr_volatility(db2, "BZONE", 
+                     scope = ~ MPO == c("Bend"),
+                     ggmap = TRUE)
+```
