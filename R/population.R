@@ -302,6 +302,29 @@ pop_rate <- function(db, counties = NULL) {
 
 }
 
+#' Plot annualized growth rates
+#'
+#' This function returns a box plot comparing the annualized population growth
+#' rates in a set of counties. This can help identify problems that the model
+#' may be having relative to historical trends.
+#'
+#' @param db the Swim database.
+#' @param counties A character vector of counties to display.
+#'
+#' @export
+#'
+plot_rates <- function(db, counties) {
+
+  rates <- pop_rate(db, counties)
+
+  ggplot(rates, aes(x = county, y = rate, color = data)) +
+    geom_boxplot() +
+    geom_point(position = "jitter") +
+    xlab("County") + ylab("Annualized Growth Rates") +
+    theme_bw()
+
+}
+
 #' Discover outlying counties
 #'
 #' A major question we face is identifying whether the modeled population growth
