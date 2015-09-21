@@ -244,4 +244,61 @@ plot_history <- function(db, counties = NULL) {
     theme_bw()
 }
 
+#' Determine annualized population growth rates.
+#'
+#' This function calculates the annualized growth rate between Census years and
+#' between SWIM population synthesizer runs.
+#'
+#' @param db Swim database.
+#' @param counties If not null (default), a character vector of counties to plot.
+#'
+#' @export
+#' @import zoo
+pop_rate <- function(db, counties = NULL) {
+
+
+  # get the population in every year
+  df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
+    filter(var == "population") %>%
+    filter(data == "SWIM") %>%
+    select(-var) %>%
+    rbind_list(., historical_pop %>% mutate(data = "Census")) %>%
+    arrange(year)
+
+  if(!is.null(counties)){
+    # if a list of counties is given, filter to that
+    df <- df %>% filter(county %in% counties)
+  } else {
+    # only show counties in oregon
+    df <- df %>%
+      filter(
+        county %in% unique(zones_data %>% filter(STATE == "OR") %>% .$COUNTY)
+      )
+  }
+
+  # function to interpolate between values
+  interpolate <- function(x, year){
+    zoo::na.approx(x, year)
+  }
+
+  #expand to include all years
+  df <- tbl_df(expand.grid(
+    year = min(df$year):max(df$year),
+    county = unique(df$county)
+  )) %>%
+    mutate(
+      data = ifelse(year < 2010, "Census", "SWIM")
+    ) %>%
+    left_join(df) %>%
+
+    # Interpolate population and calculate annual growth rate
+    group_by(county) %>%
+    mutate(
+      pop = interpolate(y, year),
+      rate = (lead(pop) - pop) / pop * 100
+    )
+
+  return(df)
+
+}
 
