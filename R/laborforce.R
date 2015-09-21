@@ -216,3 +216,36 @@ plot_wapr_volatility <- function(db,
     scale_fill_gradient("Volatility in WAPR", low = "white", high = "red")
 
 }
+
+#' Compare workforce participation in two scenarios
+#'
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#'
+#' @return ggplot2 object
+#' @export
+compare_wapr <- function(db1, db2,
+                         facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
+                                      "STATE"),
+                         facet_levels = NULL) {
+
+  ref <- extract_wapr(db1, facet_var, facet_levels) %>%
+    rename(ref = wapr) %>%
+    select(-workers, -laborforce)
+  com <- extract_wapr(db2, facet_var, facet_levels) %>%
+    rename(com = wapr) %>%
+    select(-workers, -laborforce)
+
+  df <- left_join(ref, com) %>%
+    mutate(diff = (com - ref) / ref * 100)
+
+
+  ggplot(df,
+         aes_string(x = "year", y = "diff", color = facet_var)) +
+    geom_path() +
+    xlab("Year") + ylab("Percent difference (current - reference).") +
+    theme_bw()
+}
