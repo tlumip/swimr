@@ -119,6 +119,24 @@ for(r in 1:5){
 }
 ```
 
+### Counties Outside Historical Trend
+```{r identify_counties}
+problem_counties <- discover_outlying_rates(db,  method = "count") %>%
+  filter(inside_ci < .9)
+
+kable(problem_counties)
+```
+
+```{r plot_counties, fig.cap = "Historical population trend for unusual counties."}
+plot_history(db, problem_counties$county) +
+    scale_y_log10()
+```
+
+```{r plot_rates, fig.cap = "Distribution of annualized growth rates in unusual counties."}
+plot_rates(db, problem_counties$county)
+```
+
+
 
 # Adult Work Participation
 
