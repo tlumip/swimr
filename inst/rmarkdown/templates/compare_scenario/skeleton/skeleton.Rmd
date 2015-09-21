@@ -123,6 +123,10 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 plot_sevar(db2, facet, facet_levels)
 ```
 
+```{r plot_history, fig.cap="Historical population trends in selected areas."}
+plot_history(db2, facet_levels)
+```
+
 
 ```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
 compare_sevar(db1, db2, facet, facet_levels)

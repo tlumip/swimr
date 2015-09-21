@@ -100,6 +100,10 @@ plot_sevar(db, facet, facet_levels)
 plot_sevar(db, "MPO")
 ```
 
+```{r plot_history, fig.cap="Historical population trends in selected areas."}
+plot_history(db, facet_levels)
+```
+
 
 # Transportation 
 

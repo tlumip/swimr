@@ -105,6 +105,20 @@ for(r in 1:9){
 }
 ```
 
+## Compared to Historical Trends
+```{r historical}
+for(r in 1:5){
+  
+  counties <- zones_data %>%
+    filter(DOT_REGION == r)
+  
+  p <- plot_history(db1, unique(counties$COUNTY)) +
+    scale_y_log10()
+  
+  print(p + ggtitle(paste("Region", r)))
+}
+```
+
 
 # Adult Work Participation
 
