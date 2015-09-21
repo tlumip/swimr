@@ -4,8 +4,8 @@
 \alias{plot_lfpr_volatility}
 \title{Plot LFPR Volatility in a Region}
 \usage{
-plot_lfpr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ODOT_REGION",
-  "ALDREGION", "STATE"), scope = NULL, ggmap = FALSE)
+plot_lfpr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ALDREGION",
+  "STATE"), scope = NULL, ggmap = FALSE)
 }
 \arguments{
 \item{db}{Scenario database.}
@@ -21,6 +21,8 @@ levels, such as BZONE will show higher volatility.}
 a ggplot2 object.
 }
 \description{
-This
+This function calculates the volatility of the labor force participation rate
+at an arbitrary geographic level. Volatility is defined as the standard
+deviation of the percent growth rate of LFPR between consecutive periods.
 }
 
