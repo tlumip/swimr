@@ -220,3 +220,26 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     xlab("Year") + ylab("Percent difference (current - reference).") +
     theme_bw()
 }
+
+#' Plot population with controls and historical data.
+#'
+#' @param db Swim database.
+#' @param counties If not null (default), a character vector of counties to plot.
+#'
+#' @return a ggplot2 object
+#' @export
+plot_history <- function(db, counties) {
+
+  df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
+    filter(var == "population") %>%
+    select(-var) %>%
+    rbind_list(., historical_pop %>% mutate(data = "Census")) %>%
+    filter(county %in% counties)
+
+  ggplot(df, aes(x = year, y = y, color = county, lty = data)) +
+    geom_path() +
+    xlab("Year") + ylab("Population") +
+    scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
+    scale_color_discrete("County") +
+    theme_bw()
+}
