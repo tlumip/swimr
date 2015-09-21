@@ -41,7 +41,10 @@ extract_lfpr <- function(db,
 
     # if no levels specified, then keep all
     if(!is.null(facet_levels)){
-      df <- df %>% filter(facet_var %in% facet_levels)
+
+      df <- df %>%
+        mutate_("facet_var" = facet_var) %>%
+        filter(facet_var %in% facet_levels)
     }
 
   df <- df %>%
