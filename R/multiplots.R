@@ -37,16 +37,37 @@ multiple_sevar <- function(dbset, db_names,
   ) %>%
     mutate_("facet_var" = tolower(facet_var))
 
+    facet_wrap(~ facet_var, scales = "free_y") +
+    ylab(variable) + xlab("Year") +
+    theme_bw()
 
-  p <- ggplot(
-    df,
-    aes(x = year, y = y, color = scenario)
-  ) +
-    geom_path() +
+  # add control data if desired
+  if(control){
+    p <- ggplot(
+      data = df %>%
+        # only need control once
+        filter(data != "Control" | scenario == names(dbset)[1]) %>%
+        mutate(scenario = ifelse(data == "Control", "Control", scenario)),
+      aes(x = year, y = y, color = scenario, lty = data)
+    ) +
+      scale_linetype_manual("source",
+                            values = c("dotted", rep("solid", length(dbset))))
+  } else {
+    p <- ggplot(
+      data = df %>%
+        filter(data != "Control"),
+      aes(x = year, y = y, color = scenario)
+    )
+
+  }
+
+  p <- p + geom_path() +
     facet_wrap(~ facet_var, scales = "free_y") +
     ylab(variable) + xlab("Year") +
     theme_bw()
 
   return(p)
+
+
 
 }
