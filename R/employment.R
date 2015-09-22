@@ -59,6 +59,9 @@ extract_employment <- function(db,
     # join grouping variable
     left_join(grouping, by = "BZONE") %>%
     filter(facet_var %in% facet_levels) %>%
+    group_by(facet_var, ACTIVITY, TSTEP) %>%
+    summarise(emp = sum(Employment)) %>%
+    ungroup() %>%
     collect() %>%
 
     # consolidate employment categories
@@ -67,10 +70,9 @@ extract_employment <- function(db,
       year = as.numeric(TSTEP) + 1990
     ) %>%
     left_join(emp_types, by = "ACTIVITY") %>%
+    group_by(facet_var, ACTIVITY, year) %>%
+    summarise(emp = sum(emp))
 
-    # summarize
-    group_by(facet_var, emp_type, year) %>%
-    summarise(emp = sum(Employment))
 
 
   return(employment)
