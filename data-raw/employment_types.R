@@ -83,4 +83,19 @@ employment_types <- data_frame(
 
 devtools::use_data(employment_types, overwrite = TRUE)
 
+# define consolidated employment types
+emp_types <- data_frame(
+  ACTIVITY = c(
+    "CNST", "ENGY", "ENT", "FIRE", "GOV", "HIED", "HLTH", "HOSP",
+    "INFO", "K12", "MFG", "RES", "RET", "SERV", "TRNS", "UTL", "WHSL"
+  ),
+  emp_type = c(
+    "Const/Man/Transp", "Energy/Resources", "Retail",
+    "Public Services", "Public Services", "Education", "Health", "Health",
+    "Services", "Education", "Const/Man/Transp", "Energy/Resources",
+    "Retail", "Services", "Const/Man/Transp",
+    "Energy/Resources", "Const/Man/Transp"
+  )
+)
 
+devtools::use_data(emp_types, overwrite = TRUE)
