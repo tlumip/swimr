@@ -54,7 +54,7 @@ extract_employment <- function(db,
       year = as.numeric(TSTEP) + 1990
     ) %>%
     left_join(emp_types, by = "ACTIVITY") %>%
-    group_by(facet_var, ACTIVITY, year) %>%
+    group_by(facet_var, emp_type, year) %>%
     summarise(emp = sum(emp))
 
 
@@ -164,15 +164,14 @@ multiple_employment <- function(dbset, db_names,
       extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
         mutate(scenario = names(dbset)[[i]])
     )
-  ) %>%
-    mutate_(facet_var = "facet_var")
+  )
 
   ggplot(
     df,
     aes_string(x = "year", y = "emp", color = "scenario")
   ) +
     geom_path() +
-    facet_grid(facet_var ~ ACTIVITY) +
+    facet_grid(facet_var ~ emp_type, scales = "free_y") +
     xlab("Year") + ylab("Employment") +
     theme_bw()
 
