@@ -156,3 +156,40 @@ compare_employment <- function(db1, db2,
     theme_bw()
 }
 
+#' Compare Employment by sector across multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+#' @return a ggplot2 object.
+#'
+#' @export
+multiple_employment <- function(dbset, db_names,
+                                facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
+                                facet_levels = NULL,
+                                type_levels = NULL) {
+
+  # get the employment table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  ) %>%
+    mutate_(facet_var = "facet_var")
+
+  ggplot(
+    df,
+    aes_string(x = "year", y = "emp", color = "scenario")
+  ) +
+    geom_path() +
+    facet_grid(facet_var ~ ACTIVITY) +
+    xlab("Year") + ylab("Employment") +
+    theme_bw()
+
+}
