@@ -36,22 +36,6 @@ extract_employment <- function(db,
     type_levels <- employment_types$naics1
   }
 
-  # define consolidated employment types
-  emp_types <- data_frame(
-    ACTIVITY = c(
-      "CNST", "ENGY", "ENT", "FIRE", "GOV", "HIED", "HLTH", "HOSP",
-      "INFO", "K12", "MFG", "RES", "RET", "SERV", "TRNS", "UTL", "WHSL"
-    ),
-    emp_type = c(
-      "Construction/Manufacturing", "Energy/Utilities", "Retail/Entertainment",
-      "Public Services", "Public Services", "Education", "Health", "Health",
-      "Services", "Education", "Construction/Manufacturing", "Resources",
-      "Retail/Entertainment", "Services", "Transportation/Warehousing",
-      "Energy/Utilities", "Transportation/Warehousing"
-    )
-  )
-
-
   employment <- tbl(db, "ActivityLocations") %>%
     select(BZONE, ACTIVITY, TSTEP, Employment) %>%
     filter(Employment > 0) %>%
@@ -59,6 +43,9 @@ extract_employment <- function(db,
     # join grouping variable
     left_join(grouping, by = "BZONE") %>%
     filter(facet_var %in% facet_levels) %>%
+    group_by(facet_var, ACTIVITY, TSTEP) %>%
+    summarise(emp = sum(Employment)) %>%
+    ungroup() %>%
     collect() %>%
 
     # consolidate employment categories
@@ -67,10 +54,9 @@ extract_employment <- function(db,
       year = as.numeric(TSTEP) + 1990
     ) %>%
     left_join(emp_types, by = "ACTIVITY") %>%
-
-    # summarize
     group_by(facet_var, emp_type, year) %>%
-    summarise(emp = sum(Employment))
+    summarise(emp = sum(emp))
+
 
 
   return(employment)
@@ -154,3 +140,39 @@ compare_employment <- function(db1, db2,
     theme_bw()
 }
 
+#' Compare Employment by sector across multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+#' @return a ggplot2 object.
+#'
+#' @export
+multiple_employment <- function(dbset, db_names,
+                                facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
+                                facet_levels = NULL,
+                                type_levels = NULL) {
+
+  # get the employment table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  )
+
+  ggplot(
+    df,
+    aes_string(x = "year", y = "emp", color = "scenario")
+  ) +
+    geom_path() +
+    facet_grid(facet_var ~ emp_type, scales = "free_y") +
+    xlab("Year") + ylab("Employment") +
+    theme_bw()
+
+}

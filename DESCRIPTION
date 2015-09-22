@@ -1,8 +1,8 @@
 Package: swimr
 Type: Package
 Title: Functions for Looking at Swim
-Version: 0.2.3
-Date: 2015-06-19
+Version: 0.2.4
+Date: 2015-09-22
 Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
   person("Alex", "Bettinardi", email = "Alexander.O.BETTINARDI@odot.state.or.us", role = c("aut"))
@@ -14,7 +14,7 @@ Depends:
   R (>= 3.1.2),
   dplyr (>= 0.4.3),
   ggplot2 (>= 1.0.0),
-  tidyr (>= 0.3.0),
+  tidyr (>= 0.3.0)
 Suggests: knitr
 Imports:
   dplyrExtras,
