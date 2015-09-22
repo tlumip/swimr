@@ -37,12 +37,9 @@ multiple_sevar <- function(dbset, db_names,
   ) %>%
     mutate_("facet_var" = names(.)[1])
 
-    facet_wrap(~ facet_var, scales = "free_y") +
-    ylab(variable) + xlab("Year") +
-    theme_bw()
 
   # add control data if desired
-  if(control){
+  if(controls){
     p <- ggplot(
       data = df %>%
         # only need control once
