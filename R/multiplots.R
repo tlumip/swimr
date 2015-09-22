@@ -11,8 +11,8 @@
 #'   can print OEA forecast.
 #'
 #' @return a ggplot2 object.
-#' @export
 #'
+#' @export
 multiple_sevar <- function(dbset, db_names,
                            variable = c("population", "employment"),
                            facet_var = c("MPO", "COUNTY"),
@@ -65,6 +65,43 @@ multiple_sevar <- function(dbset, db_names,
 
   return(p)
 
+}
 
+
+#' Compare WAPR  across multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#  @param facet_var Field to facet by.
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#' @param controls If \code{facet_var = "COUNTY" & variable = "employment"} then
+#'   can print OEA forecast.
+#'
+#' @return a ggplot2 object.
+#'
+#' @export
+multiple_wapr <- function(dbset, db_names,
+                          facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL ) {
+
+  # get the wapr table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_wapr(dbset[[i]], facet_var, facet_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  ) %>%
+    mutate_("facet_var" = facet_var)
+
+  ggplot(
+    df,
+    aes_string(x = "year", y = "wapr", color = "scenario")
+  ) +
+    geom_path() +
+    facet_wrap(~ facet_var) +
+    xlab("Year") + ylab("Labor force participation") +
+    theme_bw()
 
 }
