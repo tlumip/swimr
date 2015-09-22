@@ -35,7 +35,7 @@ multiple_sevar <- function(dbset, db_names,
         filter(var == variable)
     )
   ) %>%
-    mutate_("facet_var" = tolower(facet_var))
+    mutate_("facet_var" = names(.)[1])
 
     facet_wrap(~ facet_var, scales = "free_y") +
     ylab(variable) + xlab("Year") +
