@@ -14,6 +14,20 @@
 #' @source Reconstructed from data provided by Alex Bettinardi
 "county_controls"
 
+#' Historical county population
+#'
+#' A dataset containing the historical population from the decennial census of
+#' population and housing for Oregon from 1930-2010
+#'
+#' @format A data frame with 324 observations.
+#' \describe{
+#'   \item{county}{name of the county in Oregon}
+#'   \item{year}{1930-2010 by decennial.}
+#'   \item{y}{The population count (coded as y for joining to interior data).}
+#' }
+#' @source Reconstructed from data provided by Rick Donnelly
+"historical_pop"
+
 
 #' Floor types
 #'

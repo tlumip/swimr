@@ -22,3 +22,16 @@ fac_types <- data_frame(
 )
 
 #devtools::use_data(fac_types)
+
+mode_types <- data_frame(
+  mode = c(
+    "BIKE", "DA", "DR_TRAN", "SCHOOL_BUS", "SR2", "SR3P",
+    "TRK", "WALK", "WK_TRAN"
+  ),
+  consolidated_mode = c(
+    "non-motorized", "auto", "transit", "school", "auto",
+    "auto", "truck", "non-motorized", "transit"
+  )
+)
+
+#devtools::use_data(mode_types)

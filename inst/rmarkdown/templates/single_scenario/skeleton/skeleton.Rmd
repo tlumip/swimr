@@ -39,7 +39,8 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
+ref_db <- "~/Documents/projects/swim/FinalReference_Test.db"
+db <- src_sqlite(ref_db) # reference
 # update to reflect scope of analysis
 facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
@@ -57,9 +58,9 @@ In this report we will focus on `r facet`-level aggregations for
 ```{r scenario, results='asis'}
 # update to reflect current scenario
 scen_info <- data_frame(
-  Name = "FinalReference_Test",
+  Name = basename(ref_db),
   Scenario = "Reference scenario",
-  `Date in S3` = "Aug 03 16:26:07 GMT-400 2015"
+  `File date` = file.info(ref_db)$mtime
 )
 
 kable(scen_info, caption = "Scenario Information")
@@ -97,6 +98,10 @@ plot_sevar(db, facet, facet_levels)
 
 ```{r plot_se_mpo, fig.cap="Population and employment - all MPOs."}
 plot_sevar(db, "MPO")
+```
+
+```{r plot_history, fig.cap="Historical population trends in selected areas."}
+plot_history(db, facet_levels)
 ```
 
 
@@ -156,6 +161,27 @@ plot_vht(db)
 
 
 ## Mode Split
+```{r tab_trips, results='asis'}
+trips <- extract_trips(db, "MPO") %>%
+  filter(year %in% years) %>%
+  group_by(year, facet_var) %>%
+  summarise(trips = sum(trips)) %>%
+  yearly_summary("facet_var", "trips")
+
+kable(trips, caption = "Total Trips by MPO", digits = 2)
+```
+
+```{r tab_trips, results='asis'}
+tab_mode <- extract_trips(db, "MPO", facet_levels = c("Metro", "OOO")) %>%
+  filter(year %in% years) %>%
+  filter(facet_var == "Metro") %>%
+  group_by(year, mode) %>%
+  summarise(trips = sum(trips)) %>%
+  yearly_summary("mode", "trips")
+
+kable(tab_mode, caption = "Metro MPO Trips by Mode", digits = 2)
+```
+
 ```{r mode_share, fig.cap="Share of trips produced by mode"}
 plot_trips(db, facet, facet_levels, share = TRUE)
 ```
@@ -203,4 +229,14 @@ plot_employment(db, facet, facet_levels)
 
 ```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
 plot_employment(db)
+```
+
+## Labor Force Participation^[Specifically, the ratio of workers to individuals 15 or older.]
+
+```{r plot_wapr, fig.cap = "Workforce participation."}
+plot_wapr(db, facet, facet_levels)
+```
+
+```{r plot_wapr, fig.cap = "Workforce participation."}
+plot_wapr(db, "MPO")
 ```

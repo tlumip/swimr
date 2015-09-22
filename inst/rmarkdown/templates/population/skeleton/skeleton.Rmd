@@ -1,0 +1,178 @@
+---
+title: "Population and Employment"
+author: "Parsons Brinckerhoff"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    fig_caption: true
+    theme: spacelab
+---
+
+```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE, message = FALSE, warning = FALSE,
+  fig.keep = TRUE, fig.path = "./figures/",
+  fig.width=8, fig.height=6
+)
+
+
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+library(ggplot2)
+library(swimr)
+library(ggmap)
+library(maptools)
+```
+
+```{r figrefs}
+library(kfigr)
+# wrappers for short use
+rtab <- function(tag){
+  figr(tag, TRUE, TRUE, "Table")
+}
+
+rfig <- function(tag){
+  figr(tag, TRUE, TRUE, "Figure")
+}
+```
+
+
+```{r setdb}
+# update to reflect scenario location
+ref_db <- "~/Documents/projects/swim/FinalReference_Test.db" # reference
+cur_db <- "~/Documents/projects/swim/Extra_Floorspace_wCongestion.db" # current
+db1 <- src_sqlite(ref_db) 
+db2 <- src_sqlite(cur_db) 
+```
+
+# Scenario Description
+
+
+```{r scenario, results='asis'}
+scen_info <- data_frame(
+  Name = c("Reference", "Current"),
+  Scenario = c(basename(ref_db), basename(cur_db)),
+  `File Date` = c(file.info(ref_db)$mtime, file.info(cur_db)$mtime)
+)
+
+kable(scen_info, caption = "Scenario Information")
+```
+
+# ODOT Regions
+In this report we group figures by ODOT regions.^[As a note, ODOT's region
+definitions divide counties (and TLUMIP model zones). These are approximate
+definitions that keep counties in a single region.]
+
+```{r odot}
+ggplot(zones, aes(x = long, y = lat, fill = factor(DOT_REGION), group = group)) +
+  geom_polygon() +
+  coord_map("conic", lat0 = 43)
+```
+
+
+
+# Population by ODOT Region
+
+
+```{r popemp}
+for(r in 1:9){
+  
+  counties <- zones_data %>%
+    filter(DOT_REGION == r)
+  
+  if(r > 5){ # no controls outside state
+    p <- plot_sevar(db2, "COUNTY", counties$COUNTY, controls = FALSE)
+  } else {
+    p <- plot_sevar(db2, "COUNTY", counties$COUNTY, controls = TRUE)
+  }
+  
+  print(p + ggtitle(paste("Region", r)))
+}
+```
+
+## Compared to Reference
+```{r comparison}
+for(r in 1:9){
+  
+  counties <- zones_data %>%
+    filter(DOT_REGION == r)
+  
+  p <- compare_sevar(db1, db2, "COUNTY", counties$COUNTY)
+  
+  print(p + ggtitle(paste("Region", r)))
+}
+```
+
+## Compared to Historical Trends
+```{r historical}
+for(r in 1:5){
+  
+  counties <- zones_data %>%
+    filter(DOT_REGION == r)
+  
+  p <- plot_history(db1, unique(counties$COUNTY)) +
+    scale_y_log10()
+  
+  print(p + ggtitle(paste("Region", r)))
+}
+```
+
+### Counties Outside Historical Trend
+```{r identify_counties}
+problem_counties <- discover_outlying_rates(db2,  method = "count") %>%
+  filter(inside_ci < .9)
+
+kable(problem_counties)
+```
+
+```{r plot_counties, fig.cap = "Historical population trend for unusual counties."}
+plot_history(db2, problem_counties$county) +
+    scale_y_log10()
+```
+
+```{r plot_rates, fig.cap = "Distribution of annualized growth rates in unusual counties."}
+plot_rates(db2, problem_counties$county)
+```
+
+
+
+# Adult Work Participation
+
+
+```{r lpfr}
+for(r in 1:9){
+  
+  counties <- zones_data %>%
+    filter(DOT_REGION == r)
+  
+  p <- plot_wapr(db2, "COUNTY", counties$COUNTY)
+ 
+  print(p + ggtitle(paste("Region", r)))
+}
+```
+
+## Volatility
+
+```{r mpo_volatility, fig.cap="Volatility in adult work participation, MPO."}
+plot_wapr_volatility(db2, "MPO", ggmap = TRUE)
+```
+
+```{r county_volatility, fig.cap="Volatility in adult work participation, Counties."}
+plot_wapr_volatility(db2, "COUNTY", ggmap = TRUE)
+```
+
+### Portland
+```{r pdx_volatility, fig.cap = "Volatility in adult work participation, Portland and Salem Beta Zones"}
+plot_wapr_volatility(db2, "BZONE", 
+                     scope = ~ MPO == c("Metro", "SalemKeizer"),
+                     ggmap = TRUE)
+```
+
+
+```{r bend_volatility, fig.cap = "Volatility in adult work participation, Portland and Salem Beta Zones"}
+plot_wapr_volatility(db2, "BZONE", 
+                     scope = ~ MPO == c("Bend"),
+                     ggmap = TRUE)
+```

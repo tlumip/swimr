@@ -39,8 +39,10 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-db1 <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
-db2 <- src_sqlite("~/Documents/projects/swim/Extra_Floorspace_wCongestion.db") # current
+ref_db <- "~/Documents/projects/swim/FinalReference_Test.db" # reference
+cur_db <- "~/Documents/projects/swim/Extra_Floorspace_wCongestion.db" # current
+db1 <- src_sqlite(ref_db) 
+db2 <- src_sqlite(cur_db) 
 # update to reflect scope of analysis
 facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
@@ -58,9 +60,8 @@ In this report we will focus on `r facet`-level aggregations for
 # update to reflect current scenario
 scen_info <- data_frame(
   Name = c("Reference", "Current"),
-  Scenario = c("Reference scenario", "Extra Floorspace"),
-  `Date in S3` = c("Aug 03 16:26:07 GMT-400 2015", 
-                   "")
+  Scenario = c(basename(ref_db), basename(cur_db)),
+  `File Date` = c(file.info(ref_db)$mtime, file.info(cur_db)$mtime)
 )
 
 kable(scen_info, caption = "Scenario Information")
@@ -120,6 +121,10 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 
 ```{r plot_se, fig.cap="Population and employment in selected areas."}
 plot_sevar(db2, facet, facet_levels)
+```
+
+```{r plot_history, fig.cap="Historical population trends in selected areas."}
+plot_history(db2, facet_levels)
 ```
 
 
@@ -222,6 +227,33 @@ compare_vht(db1, db2, "MPO")
 ```
 
 ## Mode Split
+
+```{r tab_trips, results='asis'}
+trips <- left_join(
+  extract_trips(db1, "MPO") %>% rename(reference = trips),
+  extract_trips(db2, "MPO") %>% rename(current = trips)
+) %>%
+  filter(year %in% years) %>%
+  mutate(
+    diff = (current - reference) / reference * 100,
+    diff = ifelse(is.na(diff), 0, diff))
+ 
+ref <- yearly_summary(trips, "facet_var", "reference")
+cur <- yearly_summary(trips, "facet_var", "current")
+diff <- yearly_summary(trips, "facet_var", "diff")
+
+trips <- left_join(ref, cur, by = "facet_var") %>%
+  left_join(diff, by = "facet_var")
+
+names(trips) <- c("MPO", 
+                paste(rep(c("Reference", "Current", "Pct diff"), 
+                          each = length(years)),
+                      rep(years, 3)))
+kable(trips, caption = "Total Trips by MPO", digits = 2)
+```
+
+
+
 ```{r mode_share, fig.cap="Share of trips produced by mode"}
 plot_trips(db2, facet, facet_levels, share = TRUE)
 ```
@@ -302,5 +334,21 @@ compare_employment(db1, db2, facet, facet_levels)
 compare_employment(db1, db2)
 ```
 
+## Workforce Participation
 
 
+```{r plot_wapr, fig.cap="Workforce participation."}
+plot_wapr(db2, facet, facet_levels)
+```
+
+```{r plot_wapr_mpo, fig.cap="Workforce participation - all MPO's."}
+plot_wapr(db2, "MPO")
+```
+
+```{r compare_wapr, fig.cap="Comparison of workforce participation by sector."}
+compare_wapr(db1, db2, facet, facet_levels)
+```
+
+```{r compare_wapr_mpo, fig.cap="Comparison of workforce participation by sector - all MPO's."}
+compare_wapr(db1, db2, "MPO")
+```
