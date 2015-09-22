@@ -36,22 +36,6 @@ extract_employment <- function(db,
     type_levels <- employment_types$naics1
   }
 
-  # define consolidated employment types
-  emp_types <- data_frame(
-    ACTIVITY = c(
-      "CNST", "ENGY", "ENT", "FIRE", "GOV", "HIED", "HLTH", "HOSP",
-      "INFO", "K12", "MFG", "RES", "RET", "SERV", "TRNS", "UTL", "WHSL"
-    ),
-    emp_type = c(
-      "Construction/Manufacturing", "Energy/Utilities", "Retail/Entertainment",
-      "Public Services", "Public Services", "Education", "Health", "Health",
-      "Services", "Education", "Construction/Manufacturing", "Resources",
-      "Retail/Entertainment", "Services", "Transportation/Warehousing",
-      "Energy/Utilities", "Transportation/Warehousing"
-    )
-  )
-
-
   employment <- tbl(db, "ActivityLocations") %>%
     select(BZONE, ACTIVITY, TSTEP, Employment) %>%
     filter(Employment > 0) %>%
