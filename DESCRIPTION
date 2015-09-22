@@ -10,7 +10,13 @@ Authors@R: c(
 Description: This package collects several R functions that are used in visualizing the Oregon Statewide Integrated Model (SWIM) outputs.
 License: file LICENSE
 LazyData: TRUE
-Depends: R (>= 3.1.2)
+Depends:
+  R (>= 3.1.2),
+  dplyr (>= 0.4.3),
+  ggplot2 (>= 1.0.0),
+  tidyr (>= 0.3.0),
 Suggests: knitr
-Imports: dplyr, dplyrExtras, ggplot2, tidyr, kfigr
+Imports:
+  dplyrExtras,
+  kfigr
 VignetteBuilder: knitr
