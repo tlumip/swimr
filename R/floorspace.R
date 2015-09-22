@@ -172,7 +172,7 @@ multiple_floorspace <- function(dbset, db_names,
   ) +
     geom_path() +
     facet_grid(facet_var ~ floor_type, scales = "free_y") +
-    xlab("Year") + ylab("Labor force participation") +
+    xlab("Year") + ylab("New floor space") +
     scale_x_log10() +
     theme_bw()
 
