@@ -38,6 +38,12 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
 
     # join consolidated mode information
     group_by(facet_var, year, mode) %>%
+    summarise(trips = sum(trips)) %>%
+
+    #consolidate modes
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
+    group_by(facet_var, year, mode) %>%
     summarise(trips = sum(trips))
 
 }
@@ -57,12 +63,6 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
 
   df <- extract_trips(db, facet_var, facet_levels)
 
-  #consolidate modes
-  df <- df %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips))
 
   if(share) {
     df <- df %>%
@@ -103,17 +103,9 @@ compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels) %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips)) %>%
     rename(ref = trips)
   # current scenario
   fcom <- extract_trips(db2, facet_var, facet_levels) %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips)) %>%
     rename(com = trips)
 
   df <- left_join(fref, fcom) %>%
