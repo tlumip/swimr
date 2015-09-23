@@ -408,3 +408,39 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     xlab("Year") + ylab("Percent difference in VHT.") +
     theme_bw()
 }
+
+#' Compare VMT between multiple scenarios
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#'
+#' @return A ggplot2 object showing VHT by facility type in each facet level
+#'   over time.
+#'
+#' @export
+multiple_vmt <- function(dbset, db_names,
+                           facet_var = c("MPO", "COUNTY", "STATE"),
+                           facet_levels = NULL ){
+
+  # get the trips table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_vmt(dbset[[i]], facet_var, facet_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  )
+
+  p <- ggplot(
+    df,
+    aes(x = year, y = vmt, color = scenario)
+  )
+
+  p + geom_path() +
+    facet_grid(facet_var ~ FacType, scales = "free_y") +
+    ylab("VMT") + xlab("Year") +
+    theme_bw()
+
+}
