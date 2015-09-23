@@ -4,16 +4,26 @@
 \alias{extract_trips}
 \title{Extract trips from scenario}
 \usage{
-extract_trips(db, facet_var = "MPO", facet_levels = NULL)
+extract_trips(db, facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
+  "truck"))
 }
 \arguments{
 \item{db}{the scenario database.}
 
-\item{facet_var}{Defaults to MPO}
+\item{facet_var}{The region to summarize by.}
 
-\item{facet_levels}{defaults to all}
+\item{facet_levels}{Regions to include in summary.}
+
+\item{color_levels}{Modes to include in summary. Defaults to all modes other
+  than \code{school}. See consolidated modes in \link{mode_types}.}
+}
+\value{
+A data frame with total trips originating in the region by mode and
+  year.
 }
 \description{
-Extract trips from scenario
+This function looks at the trip matrix for a scenario and summarizes trips on
+the origin end by mode and region of origin.
 }
 

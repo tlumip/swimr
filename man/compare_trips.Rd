@@ -4,17 +4,24 @@
 \alias{compare_trips}
 \title{Compare Trips}
 \usage{
-compare_trips(db1, db2, facet_var = "MPO", facet_levels = NULL)
+compare_trips(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
+  "truck"))
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
+\item{facet_var}{The region to summarize by.}
 
-\item{facet_levels}{A character vector of the facet variable specifiying
-  which levels to include.}
+\item{facet_levels}{Regions to include in summary.}
+
+\item{color_levels}{Modes to include in summary. Defaults to all modes other
+  than \code{school}. See consolidated modes in \link{mode_types}.}
+}
+\value{
+A ggplot2 object.
 }
 \description{
 Compare Trips

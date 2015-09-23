@@ -1,13 +1,25 @@
 #' Extract trips from scenario
 #'
+#' This function looks at the trip matrix for a scenario and summarizes trips on
+#' the origin end by mode and region of origin.
+#'
 #' @param db the scenario database.
-#' @param facet_var Defaults to MPO
-#' @param facet_levels defaults to all
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#'
+#' @return A data frame with total trips originating in the region by mode and
+#'   year.
 #'
 #' @import dplyr
 #' @import tidyr
 #' @export
-extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
+extract_trips <- function(db,
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          color_levels = c("auto", "transit",
+                                           "non-motorized", "truck")){
 
   df <- tbl(db, "TRIPMATRIX") %>%
     # determine the origin MPO of the trip
@@ -48,21 +60,28 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
 
 }
 
-#' Plot Trips by MPO
+#' Plot Trip productions
 #'
 #' @param db the scenario database.
-#' @param facet_var Defaults to MPO
-#' @param facet_levels defaults to all
-#' @param share Plot mode split.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#' @param share Plot mode share instead of total trips? Defaults to \code{TRUE}.
+#'
+#' @return A ggplot2 object.
 #'
 #' @import dplyr
 #' @import tidyr
 #' @export
-plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
-                       share = TRUE) {
+plot_trips <- function(db,
+                       facet_var = c("MPO", "COUNTY", "STATE"),
+                       facet_levels = NULL,
+                       color_levels = c("auto", "transit",
+                                        "non-motorized", "truck"),
+                       share = TRUE){
 
-  df <- extract_trips(db, facet_var, facet_levels)
-
+  df <- extract_trips(db, facet_var, facet_levels, color_levels)
 
   if(share) {
     df <- df %>%
@@ -91,15 +110,21 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
 
 #' Compare Trips
 #'
-#'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
-#' @param facet_levels A character vector of the facet variable specifiying
-#'   which levels to include.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#'
+#' @return A ggplot2 object.
 #'
 #' @export
-compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
+compare_trips <- function(db1, db2,
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          color_levels = c("auto", "transit",
+                                           "non-motorized", "truck")){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels) %>%
