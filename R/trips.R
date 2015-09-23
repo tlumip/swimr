@@ -122,7 +122,7 @@ compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
 
   p +
     xlab("Year") +
-    ylab("Percent difference in number of trips produced (current - reference)") +
+    ylab("Percent difference in trip productions (current - reference)") +
     theme_bw()
 
 }
