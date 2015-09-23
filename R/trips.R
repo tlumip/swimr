@@ -40,11 +40,11 @@ extract_trips <- function(db,
     group_by(facet_var, TSTEP) %>%
     summarise_each(funs(sum), -TSTEP, -facet_var) %>%
     ungroup() %>% collect() %>%
-    mutate(year = as.numeric(TSTEP) + 1990) %>%
-    select(-TSTEP) %>%
 
     # combine periods
-    gather(mode, trips, -year, -facet_var) %>%
+    gather(mode, trips, am_BIKE:pm_WK_TRAN) %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    select(-TSTEP) %>%
     separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
     filter(mode != "SCHOOL_BUS") %>%
 
@@ -55,8 +55,10 @@ extract_trips <- function(db,
     #consolidate modes
     left_join(mode_types) %>%
     mutate(mode = consolidated_mode) %>%
+    filter(mode %in% color_levels) %>%
     group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips))
+    summarise(trips = sum(trips)) %>%
+    ungroup()
 
 }
 
