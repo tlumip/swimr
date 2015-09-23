@@ -153,3 +153,42 @@ compare_trips <- function(db1, db2,
     theme_bw()
 
 }
+
+
+#' Plot trips in multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param variable One of \code{c("population", "employment")} defining which
+#'   socioeconomic variable to include in
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+multiple_trips <- function(dbset, db_names,
+                           facet_var = c("MPO", "COUNTY", "STATE"),
+                           facet_levels = NULL,
+                           color_levels = c("auto", "transit",
+                                            "non-motorized", "truck")){
+
+  # get the trips table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_trips(dbset[[i]], facet_var, facet_levels, color_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  )
+
+  p <- ggplot(
+    df,
+    aes(x = year, y = trips, color = scenario)
+  )
+
+  p + geom_path() +
+    facet_grid(mode ~ facet_var, scales = "free_y") +
+    ylab("Total Trips") + xlab("Year") +
+    theme_bw()
+
+}
+
