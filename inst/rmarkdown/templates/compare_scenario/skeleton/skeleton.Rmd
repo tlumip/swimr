@@ -297,6 +297,31 @@ plot_pct_cong(db2, congested_voc = 1.2)
 compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
 ```
 
+
+## TLFD
+
+```{r plot_tlfd, fig.cap = "Trip length frequency distribution."}
+plot_tlfd(db2, facet, facet_levels, bin_width = 1, max_bin = 30)
+```
+
+```{r compare_tlfd, fig.cap = "Comparison of trip length frequency distribution."}
+compare_tlfd(db1, db2, facet, facet_levels, bin_width = 1, max_bin = 30)
+```
+
+
+```{r plot_tlfd_mpo, fig.cap = "Trip length frequency distribution - all MPO's."}
+plot_tlfd(db2, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"),
+          bin_width = 1, max_bin = 30)
+```
+
+```{r compare_tlfd_mpo, fig.cap = "Comparison of trip length frequency distribution - all MPO's."}
+compare_tlfd(db1, db2, "MPO", 
+             c("Bend", "Corvallis", "EugeneSpringfield", 
+               "Metro", "NonMPO", "RogueValley", "SalemKeizer"), 
+             bin_width = 1, max_bin = 30)
+```
+
 # Economics
 
 ## Built Floorspace
