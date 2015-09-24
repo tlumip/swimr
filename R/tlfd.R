@@ -85,3 +85,36 @@ extract_tlfd <- function(db,
 
 }
 
+
+#' Plot a trip length frequency distribution
+#'
+#' @param db The scenario database.
+#' @param region_var The region to aggregate to.
+#' @param regions The regions to return.  If \code{NULL}, returns all.
+#' @param bin_width The width of bins to use in the trip length frequency
+#'   distribution. Defaults to 1.
+#'
+#' @return A ggplot2 object.
+#'
+#' @export
+#'
+plot_tlfd <- function(db,
+                      region_var = c("MPO", "COUNTY", "STATE"),
+                      regions = NULL,
+                      bin_width = 1, max_bin = 50){
+
+  tlfd <- extract_tlfd(db, region_var, regions, bin_width, max_bin) %>%
+    mutate_("region_var" = region_var)
+
+  p <- ggplot(tlfd,
+         aes(x = dist, y = freq, group = year, color = year)) +
+    geom_line(alpha = 0.5) +
+    scale_color_gradient(low = "red", high = "blue") +
+    facet_wrap(~ region_var) +
+    ylab("Frequency") + xlab("Miles") +
+    theme_bw()
+
+  return(p)
+
+}
+
