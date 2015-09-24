@@ -1,11 +1,14 @@
-#' Extract trip length frequency data
+#' Extract trip length frequency distribution data
 #'
 #' @param db The scenario database.
 #' @param region_var The region to aggregate to.
 #' @param regions The regions to return.  If \code{NULL}, returns all.
 #' @param bin_width The width of bins to use in the trip length frequency
 #'   distribution. Defaults to 1.
+#' @param max_bin The maximum bin size to return.
 #'
+#' @return A data frame with the trip length frequency distribution by year
+#'   and region.
 #'
 #' @importFrom plyr round_any
 #' @export
@@ -13,7 +16,7 @@
 extract_tlfd <- function(db,
                          region_var = c("MPO", "COUNTY", "STATE"),
                          regions = NULL,
-                         bin_width = 1){
+                         bin_width = 1, max_bin = 100){
 
   # get travel distance skim between zones
   skim <- tbl(db, "SKIM") %>%
@@ -56,7 +59,9 @@ extract_tlfd <- function(db,
     # bin distances
     mutate(
       pk_dist = plyr::round_any(pk_dist, bin_width, floor),
-      op_dist = plyr::round_any(op_dist, bin_width, floor)
+      pk_dist = pmin(pk_dist, max_bin),
+      op_dist = plyr::round_any(op_dist, bin_width, floor),
+      op_dist = pmin(op_dist, max_bin)
     ) %>%
 
     # reshape data
