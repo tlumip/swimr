@@ -155,7 +155,7 @@ compare_tlfd <- function(db1, db2,
     geom_line(alpha = 0.5) +
     scale_color_gradient(low = "red", high = "blue") +
     facet_wrap(~ region_var) +
-    ylab("Frequency") + xlab("Miles") +
+    ylab("Difference in Frequency (reference - current)") + xlab("Miles") +
     theme_bw()
 
   return(p)
