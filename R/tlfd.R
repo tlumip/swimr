@@ -70,7 +70,10 @@ extract_tlfd <- function(db,
 
     # get frequency
     group_by_(region_var, "TSTEP") %>%
-    mutate(freq = auto / sum(auto))
+    mutate(
+      freq = auto / sum(auto),
+      year = as.numeric(TSTEP) + 1990
+    )
 
 
   return(tlfd)
