@@ -78,7 +78,8 @@ extract_tlfd <- function(db,
     mutate(
       freq = auto / sum(auto),
       year = as.numeric(TSTEP) + 1990
-    )
+    ) %>%
+    ungroup()
 
 
   return(tlfd)
