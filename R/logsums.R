@@ -54,3 +54,45 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL){
     select(AZONE, year, logsum)
 
 }
+
+#' Map destination choice logsums from a single scenario
+#'
+#' @inheritParams extract_logsums
+#' @param ggmap If TRUE, then include a ggmap background.
+#' @param year The year in which to plot the logsums.
+#'
+#' @import ggmap
+#' @import ggplot2
+#' @importFrom sp bbox
+#' @export
+plot_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
+                         year = 2010){
+
+  df <- extract_logsums(db, scope, purposes) %>%
+    filter(year == year) %>%
+    mutate(logsum = cut_interval(logsum, 5))
+
+  dt <- zones %>%
+    inner_join(df, by = "AZONE")
+
+  if(ggmap){
+    map <- get_map(
+      sp::bbox(as.matrix(dt[, c("long", "lat")])),
+      source = "stamen", color = "bw", maptype = "toner"
+    )
+
+    p <- ggmap(map, extent = "dev") +
+      theme_bw()
+  } else {
+    p <- ggplot() +
+      coord_map("conic", lat0 = 43) +
+      theme_bw()
+  }
+
+  p + geom_polygon(
+    data = dt,
+    alpha = 0.3,
+    aes_string(x = "long", y = "lat", fill = "logsum", group = "group")
+  ) +
+    scale_fill_brewer(paste(year, "logsums"), palette = "BrBG")
+}
