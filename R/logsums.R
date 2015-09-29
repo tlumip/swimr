@@ -7,13 +7,15 @@
 #' @param db The scenario sqlite database.
 #' @param scope a filtering criteria to limit the scope of the dataframe
 #' @param purposes a vector of trip purposes to include in the average logsum.
+#' @param agg_var The region variable on which to aggregate logsums.
 #'
 #' @export
 #'
 #' @return a ggmap object
 #' @import dplyr
 #'
-extract_logsums <- function(db, scope = NULL, purposes = NULL){
+extract_logsums <- function(db, scope = NULL, purposes = NULL,
+                            agg_var = "AZONE"){
 
   if(is.null(purposes)){
     # all purposes: currently no WORK_BASED
@@ -51,7 +53,13 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL){
 
     # trim to scope
     inner_join(zt) %>% ungroup() %>%
-    select(AZONE, year, logsum)
+
+    # collapse to aggregation level
+    group_by_(agg_var, "year") %>%
+    summarise(logsum = mean(logsum)) %>%
+
+    select_(agg_var, "year", "logsum")
+
 
 }
 
