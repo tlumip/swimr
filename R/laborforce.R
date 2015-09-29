@@ -147,7 +147,7 @@ plot_wapr <- function(db,
 #' @param db Scenario database.
 #' @param level Level at which to calculate volatility over time. Smaller
 #'   levels, such as BZONE will show higher volatility.
-#' @param scope a filtering criteria to limit the scope of the
+#' @param scope a filtering criteria to limit the scope of the dataframe
 #' @param ggmap if TRUE, return a ggmap background
 #'
 #'
