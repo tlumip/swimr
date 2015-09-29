@@ -1,5 +1,9 @@
 #' Extract destination choice logsums
 #'
+#' The logsums are provided at production-side beta zones, by purpose and market
+#' segment. This function aggregates market segments by averaging and purposes
+#' by summation (sum of all purpose logsums faced by the average user).
+#'
 #' @param db The scenario sqlite database.
 #' @param scope a filtering criteria to limit the scope of the dataframe
 #' @param purposes a vector of trip purposes to include in the average logsum.
@@ -34,11 +38,19 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL){
   }
 
   df %>%
+    # collapse market segments
+    group_by(BZONE, PURPOSE, TSTEP) %>%
+    summarise(logsum = mean(AVGLOGSUM)) %>%
+
+    # collapse purposes
     group_by(BZONE, TSTEP) %>%
-    summarise(AVGLOGSUM = mean(AVGLOGSUM)) %>%
+    summarise(logsum = sum(logsum)) %>%
+
     collect() %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
 
     # trim to scope
-    inner_join(zt)
+    inner_join(zt) %>% ungroup() %>%
+    select(AZONE, year, logsum)
 
 }
