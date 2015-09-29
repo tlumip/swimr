@@ -65,7 +65,7 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL){
 #' @import ggplot2
 #' @importFrom sp bbox
 #' @export
-plot_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
+map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
                          year = 2010){
 
   df <- extract_logsums(db, scope, purposes) %>%
@@ -96,3 +96,7 @@ plot_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
   ) +
     scale_fill_brewer(paste(year, "logsums"), palette = "BrBG")
 }
+
+
+
+#
