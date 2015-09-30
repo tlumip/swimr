@@ -58,7 +58,8 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
     group_by_(agg_var, "year") %>%
     summarise(logsum = mean(logsum)) %>%
 
-    select_(agg_var, "year", "logsum")
+    select_(agg_var, "year", "logsum") %>%
+    ungroup()
 
 
 }
@@ -67,21 +68,22 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
 #'
 #' @inheritParams extract_logsums
 #' @param ggmap If TRUE, then include a ggmap background.
-#' @param year The year in which to plot the logsums.
+#' @param show_year The year in which to plot the logsums.
 #'
 #' @import ggmap
 #' @import ggplot2
 #' @importFrom sp bbox
 #' @export
 map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
-                         year = 2010){
+                        show_year = 2010){
 
-  df <- extract_logsums(db, scope, purposes) %>%
-    filter(year == year) %>%
-    mutate(logsum = cut_interval(logsum, 5))
+  df <- extract_logsums(db, scope = scope, purposes = purposes,
+                        agg_var = "BZONE") %>%
+    filter(year == show_year) %>%
+    mutate(logsum = cut_number(logsum, 5))
 
   dt <- zones %>%
-    inner_join(df, by = "AZONE")
+    inner_join(df, by = "BZONE")
 
   if(ggmap){
     map <- get_map(
@@ -176,3 +178,4 @@ compare_logsums <- function(db1, db2,
     xlab("Year") + ylab("Percent difference between average logsums") +
     theme_bw()
 
+}
