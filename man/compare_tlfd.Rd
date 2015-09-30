@@ -17,7 +17,9 @@ compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
 \item{bin_width}{The width of bins to use in the trip length frequency
-  distribution. Defaults to 1.}
+distribution. Defaults to 1.}
+
+\item{max_bin}{The maximum bin value. Defaults to 50.}
 }
 \value{
 A ggplot2 object.

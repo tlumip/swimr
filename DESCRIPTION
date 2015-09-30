@@ -12,11 +12,15 @@ License: file LICENSE
 LazyData: TRUE
 Depends:
   R (>= 3.1.2),
+  plyr (>= 1.8.3),
   dplyr (>= 0.4.3),
   ggplot2 (>= 1.0.0),
   tidyr (>= 0.3.0)
 Suggests: knitr
 Imports:
-  dplyrExtras,
-  kfigr
+  dplyrExtras (>= 0.1.1),
+  kfigr (>= 1.2),
+  zoo (>= 1.7.12),
+  ggmap(>= 2.5.2),
+  sp (>= 1.2.0)
 VignetteBuilder: knitr

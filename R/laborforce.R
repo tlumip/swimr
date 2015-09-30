@@ -255,7 +255,7 @@ compare_wapr <- function(db1, db2,
 #'
 #' @param dbset A list of connections to SWIM databases.
 #' @param db_names A character vector naming the scenarios.
-#  @param facet_var Field to facet by.
+#' @param facet_var Field to facet by.
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
 #'

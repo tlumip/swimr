@@ -8,6 +8,10 @@ compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
   "DOT_REGION"), color_levels = NULL)
 }
 \arguments{
+\item{db1}{The reference scenario VIZ database.}
+
+\item{db2}{The current scenario VIZ database.}
+
 \item{color_var}{The variable to color the plot by.}
 
 \item{color_levels}{The variable to}
