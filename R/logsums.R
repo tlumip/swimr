@@ -137,3 +137,42 @@ plot_logsums <- function(db,
     xlab("Year") + ylab("Average destination choice log sum") +
     theme_bw()
 
+}
+
+
+#' Compare logsums from two scenarios
+#'
+#' @inheritParams plot_logsums
+#'
+#' @export
+compare_logsums <- function(db1, db2,
+                            color_var = c("COUNTY", "MPO", "ALDREGION",
+                                          "STATE", "DOT_REGION"),
+                            color_levels = NULL){
+
+
+  ref <- extract_logsums(db1, scope = NULL, purposes = NULL,
+                         agg_var = color_var) %>%
+    rename(ref = logsum)
+
+  cur <- extract_logsums(db2, scope = NULL, purposes = NULL,
+                         agg_var = color_var) %>%
+    rename(cur = logsum)
+
+  df <- left_join(ref, cur) %>%
+    mutate(pct_diff = (cur - ref) / ref * 100)
+
+  # if no levels given, then  use all
+  if(!is.null(color_levels)){
+    df <- df %>%
+      mutate_("color_var" = color_var) %>%
+      filter(color_var %in% color_levels)
+  }
+
+  ggplot(df,
+         aes_string(x = "year", y = "pct_diff", color = color_var)) +
+    geom_line() +
+    scale_color_discrete(color_var) +
+    xlab("Year") + ylab("Percent difference between average logsums") +
+    theme_bw()
+
