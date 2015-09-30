@@ -107,4 +107,33 @@ map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
 
 
 
-#
+#' Plot average logsums over time for a single scenario
+#'
+#' @inheritParams extract_logsums
+#'
+#' @param color_var The variable to color the plot by.
+#' @param color_levels The variable to
+#'
+#' @export
+plot_logsums <- function(db,
+                         color_var = c("COUNTY", "MPO", "ALDREGION",
+                                       "STATE", "DOT_REGION"),
+                         color_levels = NULL){
+
+  df <- extract_logsums(db, scope = NULL, purposes = NULL,
+                        agg_var = color_var)
+
+  # if no levels given, then  use all
+  if(!is.null(color_levels)){
+    df <- df %>%
+      mutate_("color_var" = color_var) %>%
+      filter(color_var %in% color_levels)
+  }
+
+  ggplot(df,
+         aes_string(x = "year", y = "logsum", color = color_var)) +
+    geom_line() +
+    scale_color_discrete(color_var) +
+    xlab("Year") + ylab("Average destination choice log sum") +
+    theme_bw()
+
