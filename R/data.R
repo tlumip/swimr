@@ -84,6 +84,18 @@
 "ref_counts"
 
 
+#' Consolidated transport modes
+#'
+#' A dataset mapping modes in the trip matrix to consolidated values for plotting.
+#'
+#' @format A data frame with 9 observations.
+#' \describe{
+#'   \item{mode}{The mode in the TRIPMATRIX} \item{consolidated_mode}{One of
+#'   five modes: auto, transit, school, truck, and non-motorized.}
+#' }
+#'
+"mode_types"
+
 #' Link table
 #'
 #' A fortified shapefile containing link attributes

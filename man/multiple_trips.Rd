@@ -19,9 +19,6 @@ multiple_trips(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{color_levels}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
-
-\item{variable}{One of \code{c("population", "employment")} defining which
-socioeconomic variable to include in}
 }
 \description{
 Plot trips in multiple scenarios.

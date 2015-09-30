@@ -94,6 +94,7 @@ extract_tlfd <- function(db,
 #' @param regions The regions to return.  If \code{NULL}, returns all.
 #' @param bin_width The width of bins to use in the trip length frequency
 #'   distribution. Defaults to 1.
+#' @param max_bin The maximum bin value. Defaults to 50.
 #'
 #' @return A ggplot2 object.
 #'
@@ -124,10 +125,7 @@ plot_tlfd <- function(db,
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param region_var The region to aggregate to.
-#' @param regions The regions to return.  If \code{NULL}, returns all.
-#' @param bin_width The width of bins to use in the trip length frequency
-#'   distribution. Defaults to 1.
+#' @inheritParams plot_tlfd
 #'
 #' @return A ggplot2 object.
 #'

@@ -145,6 +145,8 @@ plot_logsums <- function(db,
 #' Compare logsums from two scenarios
 #'
 #' @inheritParams plot_logsums
+#' @param db1 The reference scenario VIZ database.
+#' @param db2 The current scenario VIZ database.
 #'
 #' @export
 compare_logsums <- function(db1, db2,

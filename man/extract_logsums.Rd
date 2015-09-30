@@ -4,7 +4,7 @@
 \alias{extract_logsums}
 \title{Extract destination choice logsums}
 \usage{
-extract_logsums(db, scope = NULL, purposes = NULL)
+extract_logsums(db, scope = NULL, purposes = NULL, agg_var = "AZONE")
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -12,6 +12,8 @@ extract_logsums(db, scope = NULL, purposes = NULL)
 \item{scope}{a filtering criteria to limit the scope of the dataframe}
 
 \item{purposes}{a vector of trip purposes to include in the average logsum.}
+
+\item{agg_var}{The region variable on which to aggregate logsums.}
 }
 \value{
 a ggmap object

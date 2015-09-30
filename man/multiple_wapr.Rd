@@ -12,6 +12,8 @@ multiple_wapr(dbset, db_names, facet_var = c("BZONE", "MPO", "COUNTY",
 
 \item{db_names}{A character vector naming the scenarios.}
 
+\item{facet_var}{Field to facet by.}
+
 \item{facet_levels}{A character vector of the facet variable specifiying
   which levels to include.}
 }
