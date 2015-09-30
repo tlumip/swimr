@@ -147,7 +147,7 @@ plot_wapr <- function(db,
 #' @param db Scenario database.
 #' @param level Level at which to calculate volatility over time. Smaller
 #'   levels, such as BZONE will show higher volatility.
-#' @param scope a filtering criteria to limit the scope of the
+#' @param scope a filtering criteria to limit the scope of the dataframe
 #' @param ggmap if TRUE, return a ggmap background
 #'
 #'
@@ -248,4 +248,42 @@ compare_wapr <- function(db1, db2,
     geom_path() +
     xlab("Year") + ylab("Percent difference (current - reference).") +
     theme_bw()
+}
+
+
+#' Compare WAPR  across multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param facet_var Field to facet by.
+#' @param facet_levels A character vector of the facet variable specifiying
+#'   which levels to include.
+#'
+#' @return a ggplot2 object.
+#'
+#'
+#' @export
+multiple_wapr <- function(dbset, db_names,
+                          facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL ) {
+
+  # get the wapr table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_wapr(dbset[[i]], facet_var, facet_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  ) %>%
+    mutate_("facet_var" = facet_var)
+
+  ggplot(
+    df,
+    aes_string(x = "year", y = "wapr", color = "scenario")
+  ) +
+    geom_path() +
+    facet_wrap(~ facet_var) +
+    xlab("Year") + ylab("Labor force participation") +
+    theme_bw()
+
 }

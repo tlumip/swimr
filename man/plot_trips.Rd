@@ -2,20 +2,28 @@
 % Please edit documentation in R/trips.R
 \name{plot_trips}
 \alias{plot_trips}
-\title{Plot Trips by MPO}
+\title{Plot Trip productions}
 \usage{
-plot_trips(db, facet_var = "MPO", facet_levels = NULL, share = TRUE)
+plot_trips(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
+  color_levels = c("auto", "transit", "non-motorized", "truck"),
+  share = TRUE)
 }
 \arguments{
 \item{db}{the scenario database.}
 
-\item{facet_var}{Defaults to MPO}
+\item{facet_var}{The region to summarize by.}
 
-\item{facet_levels}{defaults to all}
+\item{facet_levels}{Regions to include in summary.}
 
-\item{share}{Plot mode split.}
+\item{color_levels}{Modes to include in summary. Defaults to all modes other
+than \code{school}. See consolidated modes in \link{mode_types}.}
+
+\item{share}{Plot mode share instead of total trips? Defaults to \code{TRUE}.}
+}
+\value{
+A ggplot2 object.
 }
 \description{
-Plot Trips by MPO
+Plot Trip productions
 }
 

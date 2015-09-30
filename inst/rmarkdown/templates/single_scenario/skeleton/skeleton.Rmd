@@ -210,6 +210,19 @@ plot_pct_cong(db, congested_voc = 1.2)
 ```
 
 
+## TLFD
+
+```{r plot_tlfd, fig.cap = "Trip length frequency distribution."}
+plot_tlfd(db, facet, facet_levels, bin_width = 1, max_bin = 30)
+```
+
+
+```{r plot_tlfd, fig.cap = "Trip length frequency distribution - all MPO's."}
+plot_tlfd(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"),
+          bin_width = 1, max_bin = 30)
+```
+
 # Economics
 
 ## Built Floorspace

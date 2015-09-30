@@ -1,13 +1,25 @@
 #' Extract trips from scenario
 #'
+#' This function looks at the trip matrix for a scenario and summarizes trips on
+#' the origin end by mode and region of origin.
+#'
 #' @param db the scenario database.
-#' @param facet_var Defaults to MPO
-#' @param facet_levels defaults to all
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#'
+#' @return A data frame with total trips originating in the region by mode and
+#'   year.
 #'
 #' @import dplyr
 #' @import tidyr
 #' @export
-extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
+extract_trips <- function(db,
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          color_levels = c("auto", "transit",
+                                           "non-motorized", "truck")){
 
   df <- tbl(db, "TRIPMATRIX") %>%
     # determine the origin MPO of the trip
@@ -28,41 +40,50 @@ extract_trips <- function(db, facet_var = "MPO", facet_levels = NULL){
     group_by(facet_var, TSTEP) %>%
     summarise_each(funs(sum), -TSTEP, -facet_var) %>%
     ungroup() %>% collect() %>%
-    mutate(year = as.numeric(TSTEP) + 1990) %>%
-    select(-TSTEP) %>%
 
     # combine periods
-    gather(mode, trips, -year, -facet_var) %>%
+    gather(mode, trips, am_BIKE:pm_WK_TRAN) %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    select(-TSTEP) %>%
     separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
     filter(mode != "SCHOOL_BUS") %>%
 
     # join consolidated mode information
     group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips))
+    summarise(trips = sum(trips)) %>%
+
+    #consolidate modes
+    left_join(mode_types) %>%
+    mutate(mode = consolidated_mode) %>%
+    filter(mode %in% color_levels) %>%
+    group_by(facet_var, year, mode) %>%
+    summarise(trips = sum(trips)) %>%
+    ungroup()
 
 }
 
-#' Plot Trips by MPO
+#' Plot Trip productions
 #'
 #' @param db the scenario database.
-#' @param facet_var Defaults to MPO
-#' @param facet_levels defaults to all
-#' @param share Plot mode split.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#' @param share Plot mode share instead of total trips? Defaults to \code{TRUE}.
+#'
+#' @return A ggplot2 object.
 #'
 #' @import dplyr
 #' @import tidyr
 #' @export
-plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
-                       share = TRUE) {
+plot_trips <- function(db,
+                       facet_var = c("MPO", "COUNTY", "STATE"),
+                       facet_levels = NULL,
+                       color_levels = c("auto", "transit",
+                                        "non-motorized", "truck"),
+                       share = TRUE){
 
-  df <- extract_trips(db, facet_var, facet_levels)
-
-  #consolidate modes
-  df <- df %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips))
+  df <- extract_trips(db, facet_var, facet_levels, color_levels)
 
   if(share) {
     df <- df %>%
@@ -91,29 +112,27 @@ plot_trips <- function(db, facet_var = "MPO", facet_levels = NULL,
 
 #' Compare Trips
 #'
-#'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
-#' @param facet_levels A character vector of the facet variable specifiying
-#'   which levels to include.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#'
+#' @return A ggplot2 object.
 #'
 #' @export
-compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
+compare_trips <- function(db1, db2,
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          color_levels = c("auto", "transit",
+                                           "non-motorized", "truck")){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels) %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips)) %>%
     rename(ref = trips)
   # current scenario
   fcom <- extract_trips(db2, facet_var, facet_levels) %>%
-    left_join(mode_types) %>%
-    mutate(mode = consolidated_mode) %>%
-    group_by(facet_var, year, mode) %>%
-    summarise(trips = sum(trips)) %>%
     rename(com = trips)
 
   df <- left_join(fref, fcom) %>%
@@ -130,7 +149,44 @@ compare_trips <- function(db1, db2, facet_var = "MPO", facet_levels = NULL){
 
   p +
     xlab("Year") +
-    ylab("Percent difference in number of trips produced (current - reference)") +
+    ylab("Percent difference in trip productions (current - reference)") +
     theme_bw()
 
 }
+
+
+#' Plot trips in multiple scenarios.
+#'
+#' @param dbset A list of connections to SWIM databases.
+#' @param db_names A character vector naming the scenarios.
+#' @param facet_var The region to summarize by.
+#' @param facet_levels Regions to include in summary.
+#' @param color_levels Modes to include in summary. Defaults to all modes other
+#'   than \code{school}. See consolidated modes in \link{mode_types}.
+multiple_trips <- function(dbset, db_names,
+                           facet_var = c("MPO", "COUNTY", "STATE"),
+                           facet_levels = NULL,
+                           color_levels = c("auto", "transit",
+                                            "non-motorized", "truck")){
+
+  # get the trips table for every scenario.
+  names(dbset) <- db_names
+  df <- rbind_all(
+    lapply(seq_along(dbset), function(i)
+      extract_trips(dbset[[i]], facet_var, facet_levels, color_levels) %>%
+        mutate(scenario = names(dbset)[[i]])
+    )
+  )
+
+  p <- ggplot(
+    df,
+    aes(x = year, y = trips, color = scenario)
+  )
+
+  p + geom_path() +
+    facet_grid(mode ~ facet_var, scales = "free_y") +
+    ylab("Total Trips") + xlab("Year") +
+    theme_bw()
+
+}
+
