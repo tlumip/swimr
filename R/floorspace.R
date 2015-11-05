@@ -63,6 +63,70 @@ extract_floorspace <- function(db,
 }
 
 
+#' Extract rent price
+#'
+#' This function extracts the occupancy rate by floortype from a scenario over
+#' time.
+#' @param db The scenario database.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+extract_rents <- function(db,
+                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_levels = NULL,
+                          type_levels = NULL){
+
+  # set facet variable; if null then default to MPO
+  if(is.null(facet_var)){
+    facet_var = "MPO"
+  }
+
+  grouping <- tbl(db, "BZONE") %>%
+    select_("BZONE", "facet_var" = facet_var)
+
+  # get levels of facet_var if none given
+  if(is.null(facet_levels)){
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect() %>%
+      slice(1) %>% .$facet_var
+
+    facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
+  }
+
+  # get levels of floortype
+  if(is.null(type_levels)){
+    type_levels <- floor_types$floor_type
+  }
+
+  df <- tbl(db, "ExchangeResults") %>%
+    transmute(
+      BZONE,
+      year = TSTEP + 1990,
+      commodity = COMMODITY,
+      supply = Supply,
+      price = Price
+    ) %>%
+
+    # join facet and filter desired levels
+    filter(commodity %in% floor_types$commodity) %>%
+    left_join(grouping, by = "BZONE") %>%
+    filter(facet_var %in% facet_levels) %>%
+
+
+    # filter to floortypes that the user requests and regroup
+    collect() %>%
+    left_join(floor_types, by = "commodity") %>%
+    filter(floor_type %in% type_levels) %>%
+    filter(supply > 0) %>% # only count if it's available.
+
+    # summarise within facet and year
+    group_by(facet_var, year, floor_type) %>%
+    summarise(supply = sum(supply), price = mean(price))
+
+  return(df)
+}
+
 
 #' Plot floorspace over time
 #'
