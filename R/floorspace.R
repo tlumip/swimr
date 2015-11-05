@@ -128,9 +128,9 @@ extract_rents <- function(db,
 }
 
 
-#' Plot floorspace over time
+#' Plot floorspace statistics over time
 #'
-#' This function plots the available floorspace by type over time facetted by a
+#' This function plots the constructed floorspace by type over time facetted by a
 #' variable chosen from the zone attributes table.
 #'
 #' @param db The scenario database.
@@ -138,6 +138,7 @@ extract_rents <- function(db,
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
 #' @param type_levels The types of floorspace to show in the plot.
+#' @param price Print price instead of floorspace.
 #'
 #'
 #' @return A ggplot2 object showing the floorspace by type and and year.
@@ -146,9 +147,16 @@ extract_rents <- function(db,
 plot_floorspace <- function(db,
                             facet_var = c("MPO", "COUNTY", "STATE"),
                             facet_levels = NULL,
-                            type_levels = NULL ){
+                            type_levels = NULL, price = FALSE){
 
-  floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels)
+  if(price){
+    floorspace <- extract_rents(db, facet_var, facet_levels, type_levels) %>%
+      mutate(floor = price)
+    ylabel = "Rent [$/sqft]"
+  } else {
+    floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels)
+    ylabel <- "Floorspace [sqft]"
+  }
 
   # make plot
   ggplot(floorspace,
@@ -158,7 +166,7 @@ plot_floorspace <- function(db,
     facet_wrap( ~ facet_var) +
 
     scale_y_log10() +
-    xlab("Year") + ylab("Floor Space [sqft]") +
+    xlab("Year") + ylab(ylabel) +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
@@ -171,27 +179,40 @@ plot_floorspace <- function(db,
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
 #' @param type_levels The types of floorspace to show in the plot.
+#' @param price Print price instead of floorspace.
 #'
 #' @export
 #'
 compare_floorspace <- function(db1, db2,
                                facet_var = c("MPO", "COUNTY", "STATE"),
                                facet_levels = NULL,
-                               type_levels = NULL){
+                               type_levels = NULL, price = FALSE){
 
   # get the reference scenario data
-  fref <- extract_floorspace(db1, facet_var, facet_levels, type_levels) %>%
-    rename(floor_ref = floor, built_ref = built)
+  if(price){
+    fref <- extract_rents(db1, facet_var, facet_levels, type_levels) %>%
+      select(facet_var, year, floor_type, floor_ref = price)
 
-  # get the comparison scenario
-  fcom <- extract_floorspace(db2, facet_var, facet_levels, type_levels) %>%
-    rename(floor_com = floor, built_com = built)
+    # get the comparison scenario
+    fcom <- extract_rents(db2, facet_var, facet_levels, type_levels) %>%
+      select(facet_var, year, floor_type, floor_com = price)
+
+    ylabel <- "Percent difference (current - reference) in rent price"
+  } else {
+    fref <- extract_floorspace(db1, facet_var, facet_levels, type_levels) %>%
+      select(facet_var, year, floor_type, floor_ref = built)
+
+    # get the comparison scenario
+    fcom <- extract_floorspace(db2, facet_var, facet_levels, type_levels) %>%
+      select(facet_var, year, floor_type, floor_com = built)
+
+    ylabel <- "Percent difference (current - reference) in floor area"
+  }
 
   f <- left_join(fref, fcom) %>%
-    gather(var, value, floor_ref:built_com) %>%
+    gather(var, value, floor_ref:floor_com) %>%
     separate(var, c("var", "scenario")) %>%
     spread(scenario, value, fill = NA) %>%
-    filter(var == "built") %>%
     mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
@@ -199,7 +220,7 @@ compare_floorspace <- function(db1, db2,
          aes(x = year, y = diff, color = floor_type)) +
     geom_path() +
     facet_wrap( ~ facet_var) +
-    xlab("Year") + ylab("Percent difference (current - reference) in floor area") +
+    xlab("Year") + ylab(ylabel) +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
@@ -211,6 +232,7 @@ compare_floorspace <- function(db1, db2,
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
 #' @param type_levels The types of floorspace to show in the plot.
+#' @param price Print price instead of floorspace.
 #'
 #' @return a ggplot2 object.
 #'
@@ -218,27 +240,46 @@ compare_floorspace <- function(db1, db2,
 multiple_floorspace <- function(dbset, db_names,
                                 facet_var = c("MPO", "COUNTY", "STATE"),
                                 facet_levels = NULL,
-                                type_levels = NULL) {
+                                type_levels = NULL, price = FALSE) {
 
   # get the wapr table for every scenario.
   names(dbset) <- db_names
-  df <- rbind_all(
-    lapply(seq_along(dbset), function(i)
-      extract_floorspace(dbset[[i]], facet_var, facet_levels, type_levels) %>%
-        mutate(scenario = names(dbset)[[i]])
-    )
-  ) %>%
-    mutate_(facet_var = "facet_var")
+
+  if(price){
+    df <- rbind_all(
+      lapply(seq_along(dbset), function(i)
+        extract_rents(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+          mutate(scenario = names(dbset)[[i]])
+      )
+    ) %>%
+      mutate_(facet_var = "facet_var") %>%
+      mutate(floor = price)
+
+    ylabel <- "Rent price"
+
+  } else {
+    df <- rbind_all(
+      lapply(seq_along(dbset), function(i)
+        extract_floorspace(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+          mutate(scenario = names(dbset)[[i]])
+      )
+    ) %>%
+      mutate_(facet_var = "facet_var") %>%
+      mutate(floor = built)
+
+    ylabel <- "New floor space"
+  }
 
   ggplot(
     df,
-    aes_string(x = "year", y = "built", color = "scenario")
+    aes_string(x = "year", y = "floor", color = "scenario")
   ) +
     geom_path() +
     facet_grid(facet_var ~ floor_type, scales = "free_y") +
-    xlab("Year") + ylab("New floor space") +
+    xlab("Year") + ylab(ylabel) +
     scale_x_log10() +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
+
 
