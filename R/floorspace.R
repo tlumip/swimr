@@ -62,6 +62,69 @@ extract_floorspace <- function(db,
   return(floorspace)
 }
 
+#' Extract occupancy rate
+#'
+#' This function extracts the total value of floorspace sold in each region by
+#' floor_type.
+#' @param db The scenario database.
+#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
+#' @param facet_levels The levels of the facet variable to keep. Defaults to all
+#'   levels other than external stations.
+#' @param type_levels The types of employment to show in the plot.
+#'
+#' @return A data frame with the total dollars sold.
+#'
+#' @export
+extract_volume <- function(db,
+                              facet_var = c("MPO", "COUNTY", "STATE"),
+                              facet_levels = NULL,
+                              type_levels = NULL){
+
+  # get floorspace available
+  total <- extract_floorspace(db, facet_var, facet_levels, type_levels)
+
+  # set facet variable; if null then default to MPO
+  if(is.null(facet_var)){
+    facet_var = "MPO"
+  }
+
+  grouping <- tbl(db, "BZONE") %>%
+    select_("BZONE", "facet_var" = facet_var)
+
+  # get levels of facet_var if none given
+  if(is.null(facet_levels)){
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect() %>%
+      slice(1) %>% .$facet_var
+
+    facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
+  }
+
+  # get levels of floortype
+  if(is.null(type_levels)){
+    type_levels <- floor_types$floor_type
+  }
+
+  # get floorspace purchased from buy/sell matrix
+  df <- tbl(db, "BuySellMatrix") %>%
+    # filter to floortypes
+    filter(FROMBZONE == TOBZONE) %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    select(BZONE = FROMBZONE, year, matches("FLR")) %>%
+    left_join(grouping) %>%
+    ungroup() %>%
+    group_by(facet_var, year) %>%
+    summarise_each(funs(sum)) %>%
+
+    collect() %>%
+    gather(commodity, used, -BZONE, -year, -facet_var) %>%
+    mutate(commodity = gsub("BuySell_", "", commodity)) %>%
+    left_join(floor_types) %>%
+    filter(floor_type %in% type_levels) %>%
+    group_by(facet_var, year, floor_type) %>%
+    summarize(volume = sum(used))
+
+
+}
 
 #' Extract rent price
 #'
