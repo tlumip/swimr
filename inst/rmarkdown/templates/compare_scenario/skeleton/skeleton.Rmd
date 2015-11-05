@@ -17,10 +17,6 @@ opts_chunk$set(
   fig.width=8, fig.height=6
 )
 
-
-library(dplyr, warn.conflicts = FALSE)
-library(tidyr)
-library(ggplot2)
 library(swimr)
 ```
 
