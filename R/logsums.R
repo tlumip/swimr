@@ -92,11 +92,11 @@ map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
     )
 
     p <- ggmap(map, extent = "dev") +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   } else {
     p <- ggplot() +
       coord_map("conic", lat0 = 43) +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   }
 
   p + geom_polygon(
@@ -137,7 +137,7 @@ plot_logsums <- function(db,
     geom_line() +
     scale_color_discrete(color_var) +
     xlab("Year") + ylab("Average destination choice log sum") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -178,6 +178,6 @@ compare_logsums <- function(db1, db2,
     geom_line() +
     scale_color_discrete(color_var) +
     xlab("Year") + ylab("Percent difference between average logsums") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }

@@ -95,7 +95,7 @@ plot_floorspace <- function(db,
 
     scale_y_log10() +
     xlab("Year") + ylab("Floor Space [sqft]") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -136,7 +136,7 @@ compare_floorspace <- function(db1, db2,
     geom_path() +
     facet_wrap( ~ facet_var) +
     xlab("Year") + ylab("Percent difference (current - reference) in floor area") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare floorspace by type across multiple scenarios.
@@ -174,7 +174,7 @@ multiple_floorspace <- function(dbset, db_names,
     facet_grid(facet_var ~ floor_type, scales = "free_y") +
     xlab("Year") + ylab("New floor space") +
     scale_x_log10() +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 

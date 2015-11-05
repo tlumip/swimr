@@ -94,7 +94,7 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
     facet_wrap(~ facet_var) +
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Vehicle Miles Traveled") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -132,7 +132,7 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     facet_wrap(~facet_var) +
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VMT.") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 
@@ -241,7 +241,7 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent of PM VMT on Congested Links") +
     facet_wrap(~ facet_var) +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -283,7 +283,7 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
     facet_wrap(~ facet_var) +
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Difference in Percent of PM VMT on Congested Links.") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -368,7 +368,7 @@ plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   p +
     xlab("Year") + ylab("Vehicle Hours Traveled") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -406,7 +406,7 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     facet_wrap(~facet_var) +
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VHT.") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare VMT between multiple scenarios
@@ -441,6 +441,6 @@ multiple_vmt <- function(dbset, db_names,
   p + geom_path() +
     facet_grid(facet_var ~ FacType, scales = "free_y") +
     ylab("VMT") + xlab("Year") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }

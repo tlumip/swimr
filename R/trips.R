@@ -106,7 +106,7 @@ plot_trips <- function(db,
     geom_path()  +
     facet_wrap( ~ facet_var) +
     xlab("Year") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -150,7 +150,7 @@ compare_trips <- function(db1, db2,
   p +
     xlab("Year") +
     ylab("Percent difference in trip productions (current - reference)") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -186,7 +186,7 @@ multiple_trips <- function(dbset, db_names,
   p + geom_path() +
     facet_grid(mode ~ facet_var, scales = "free_y") +
     ylab("Total Trips") + xlab("Year") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 

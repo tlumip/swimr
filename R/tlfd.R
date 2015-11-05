@@ -114,7 +114,7 @@ plot_tlfd <- function(db,
     scale_color_gradient(low = "red", high = "blue") +
     facet_wrap(~ region_var) +
     ylab("Frequency") + xlab("Miles") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   return(p)
 
@@ -154,7 +154,7 @@ compare_tlfd <- function(db1, db2,
     scale_color_gradient(low = "red", high = "blue") +
     facet_wrap(~ region_var) +
     ylab("Difference in Frequency (reference - current)") + xlab("Miles") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   return(p)
 
