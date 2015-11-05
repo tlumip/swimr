@@ -115,15 +115,6 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
 
-```{r plot_se, fig.cap="Population and employment in selected areas."}
-plot_sevar(db2, facet, facet_levels)
-```
-
-```{r plot_history, fig.cap="Historical population trends in selected areas."}
-plot_history(db2, facet_levels)
-```
-
-
 ```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
 compare_sevar(db1, db2, facet, facet_levels)
 ```
@@ -164,16 +155,8 @@ kable(vmt, caption = "VMT by MPO", digits = 2)
 ```
 
 
-```{r plot_vmt, fig.cap="VMT by facility type."}
-plot_vmt(db2, facet, facet_levels)
-```
-
 ```{r compare_vmt, fig.cap="Comparison of VMT by facility type."}
 compare_vmt(db1, db2, facet, facet_levels)
-```
-
-```{r plot_vmt_mpo, fig.cap="VMT by facility type - all MPO's."}
-plot_vmt(db2, "MPO")
 ```
 
 ```{r compare_vmt_mpo, fig.cap="Comparison of VMT by facility type - all MPO's."}
@@ -205,17 +188,8 @@ names(vht) <- c("MPO",
 kable(vht, caption = "VHT by MPO", digits = 2)
 ```
 
-
-```{r plot_vht, fig.cap="VHT by facility type."}
-plot_vht(db2, facet, facet_levels)
-```
-
 ```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
 compare_vht(db1, db2, facet, facet_levels)
-```
-
-```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
-plot_vht(db2)
 ```
 
 ```{r compare_vht_mpo, fig.cap="Comparison of VHT by facility type - all MPO's."}
@@ -250,22 +224,6 @@ kable(trips, caption = "Total Trips by MPO", digits = 2)
 
 
 
-```{r mode_share, fig.cap="Share of trips produced by mode"}
-plot_trips(db2, facet, facet_levels, share = TRUE)
-```
-
-```{r mode_share_mpo, fig.cap="Share of trips produced by mode - all MPOs"}
-plot_trips(db2,  share = TRUE)
-```
-
-```{r mode_vol, fig.cap="Total trips produced by mode."}
-plot_trips(db2, facet, facet_levels, share = FALSE)
-```
-
-```{r mode_vol_mpo, fig.cap="Total trips produced by mode - all MPOs"}
-plot_trips(db2, share = FALSE)
-```
-
 
 ```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
 compare_trips(db1, db2, facet, facet_levels)
@@ -277,17 +235,14 @@ compare_trips(db1, db2)
 
 ## Congested Links
 
-```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
-plot_pct_cong(db2, facet, facet_levels, congested_voc = 1.2)
-```
+Congestion is defined as having a peak period volume 1.2 times greater than the
+link capacity. These plots show show the percent of PM period VMT travelling on
+such links in the region.
 
 ```{r compare_cong, fig.cap="Comparison of congested PM VMT."}
 compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
 ```
 
-```{r plot_cong_mpo, fig.cap="Percent of PM VMT on congested links - all MPO's."}
-plot_pct_cong(db2, congested_voc = 1.2)
-```
 
 ```{r compare_cong_mpo, fig.cap="Comparison of congested PM VMT - all MPO's."}
 compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
@@ -296,20 +251,11 @@ compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
 
 ## TLFD
 
-```{r plot_tlfd, fig.cap = "Trip length frequency distribution."}
-plot_tlfd(db2, facet, facet_levels, bin_width = 1, max_bin = 30)
-```
 
 ```{r compare_tlfd, fig.cap = "Comparison of trip length frequency distribution."}
 compare_tlfd(db1, db2, facet, facet_levels, bin_width = 1, max_bin = 30)
 ```
 
-
-```{r plot_tlfd_mpo, fig.cap = "Trip length frequency distribution - all MPO's."}
-plot_tlfd(db2, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
-                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"),
-          bin_width = 1, max_bin = 30)
-```
 
 ```{r compare_tlfd_mpo, fig.cap = "Comparison of trip length frequency distribution - all MPO's."}
 compare_tlfd(db1, db2, "MPO", 
@@ -321,13 +267,6 @@ compare_tlfd(db1, db2, "MPO",
 # Economics
 
 ## Built Floorspace
-```{r plot_floorspace, fig.cap="Floorspace by type."}
-plot_floorspace(db2, facet, facet_levels)
-```
-
-```{r plot_floorspace_mpo, fig.cap="Floorspace by type - all MPO's."}
-plot_floorspace(db2)
-```
 
 ```{r compare_floorspace, fig.cap="Comparison of floorspace by type."}
 compare_floorspace(db1, db2, facet, facet_levels)
@@ -339,14 +278,6 @@ compare_floorspace(db1, db2)
 
 ## Employment
 
-```{r plot_employment, fig.cap="Labor output by sector."}
-plot_employment(db2, facet, facet_levels)
-```
-
-```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
-plot_employment(db2)
-```
-
 ```{r compare_employment, fig.cap="Comparison of labor output by sector."}
 compare_employment(db1, db2, facet, facet_levels)
 ```
@@ -357,14 +288,6 @@ compare_employment(db1, db2)
 
 ## Workforce Participation
 
-
-```{r plot_wapr, fig.cap="Workforce participation."}
-plot_wapr(db2, facet, facet_levels)
-```
-
-```{r plot_wapr_mpo, fig.cap="Workforce participation - all MPO's."}
-plot_wapr(db2, "MPO")
-```
 
 ```{r compare_wapr, fig.cap="Comparison of workforce participation by sector."}
 compare_wapr(db1, db2, facet, facet_levels)
