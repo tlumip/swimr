@@ -129,10 +129,10 @@ compare_trips <- function(db1, db2,
                                            "non-motorized", "truck")){
 
   # reference scenario
-  fref <- extract_trips(db1, facet_var, facet_levels) %>%
+  fref <- extract_trips(db1, facet_var, facet_levels, color_levels) %>%
     rename(ref = trips)
   # current scenario
-  fcom <- extract_trips(db2, facet_var, facet_levels) %>%
+  fcom <- extract_trips(db2, facet_var, facet_levels, color_levels) %>%
     rename(com = trips)
 
   df <- left_join(fref, fcom) %>%
