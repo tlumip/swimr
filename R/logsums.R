@@ -10,10 +10,7 @@
 #' @param agg_var The region variable on which to aggregate logsums.
 #'
 #' @export
-#'
 #' @return a ggmap object
-#' @import dplyr
-#'
 extract_logsums <- function(db, scope = NULL, purposes = NULL,
                             agg_var = "AZONE"){
 
@@ -70,8 +67,6 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
 #' @param ggmap If TRUE, then include a ggmap background.
 #' @param show_year The year in which to plot the logsums.
 #'
-#' @import ggmap
-#' @import ggplot2
 #' @importFrom sp bbox
 #' @export
 map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,

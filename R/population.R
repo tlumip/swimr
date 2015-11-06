@@ -11,9 +11,6 @@
 #' value of the variable at each time stage going across the columns.
 #'
 #' @export
-#'
-#' @import dplyr
-#' @import tidyr
 yearly_summary <- function(df, group, var){
   df %>%
     group_by_(group, "year") %>%
@@ -140,10 +137,6 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 #'   and population over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
                        color_levels = NULL, controls = TRUE
                        ){
@@ -191,10 +184,6 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #'   and population over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
                           facet_levels = NULL){
 
@@ -314,7 +303,6 @@ pop_rate <- function(db, counties = NULL) {
 #' @param counties A character vector of counties to display.
 #'
 #' @export
-#'
 plot_rates <- function(db, counties) {
 
   rates <- pop_rate(db, counties)
@@ -348,7 +336,6 @@ plot_rates <- function(db, counties) {
 #'   distribution defined by historical data.
 #'
 #' @export
-#'
 #' @seealso \code{\link{pop_rate}}
 #'
 discover_outlying_rates <- function(db, counties = NULL,

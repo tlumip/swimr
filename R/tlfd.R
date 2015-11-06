@@ -12,7 +12,6 @@
 #'
 #' @importFrom plyr round_any
 #' @export
-#'
 extract_tlfd <- function(db,
                          region_var = c("MPO", "COUNTY", "STATE"),
                          regions = NULL,
@@ -99,7 +98,6 @@ extract_tlfd <- function(db,
 #' @return A ggplot2 object.
 #'
 #' @export
-#'
 plot_tlfd <- function(db,
                       region_var = c("MPO", "COUNTY", "STATE"),
                       regions = NULL,
@@ -130,7 +128,6 @@ plot_tlfd <- function(db,
 #' @return A ggplot2 object.
 #'
 #' @export
-#'
 compare_tlfd <- function(db1, db2,
                          region_var = c("MPO", "COUNTY", "STATE"),
                          regions = NULL,

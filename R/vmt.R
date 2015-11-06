@@ -7,7 +7,6 @@
 #'   \code{NULL}, meaning print all levels.
 #'
 #' @return A data frame with VMT summarized by facility type and facet variable.
-#' @import dplyr dplyrExtras
 #'
 #' @export
 extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
@@ -78,9 +77,6 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 #' @return A ggplot2 object showing VMT by facility type in each facet level
 #'   over time.
 #'
-#' @import dplyr ggplot2
-#'
-#'
 #' @export
 plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 
@@ -110,10 +106,6 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 #'   over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
                           facet_levels = NULL){
 
@@ -148,8 +140,7 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 #' @return A data frame with the percent of congested links by facet level and
 #'   facility type in each year.
 #'
-#' @import dplyr tidyr
-#'
+#' @export
 extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
                          congested_voc = 0.9){
 
@@ -225,8 +216,6 @@ extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 #' @return A ggplot2 figure object.
 #'
 #' @export
-#' @import dplyr ggplot2
-#'
 plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
                           congested_voc = 0.9){
 
@@ -262,8 +251,6 @@ plot_pct_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
 #' @return A ggplot2 figure object.
 #'
 #' @export
-#' @import dplyr ggplot2
-#'
 compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
                              congested_voc = 0.9){
 
@@ -297,9 +284,6 @@ compare_pct_cong <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 #' @return A data frame with the
 #'
 #' @export
-#'
-#' @import dplyr tidyr
-#'
 extract_vht <- function(db, facet_var, facet_levels = NULL){
 
   # Get lookup table of zones to grouping variable.
@@ -351,8 +335,6 @@ extract_vht <- function(db, facet_var, facet_levels = NULL){
 #' @return A ggplot2 figure object.
 #'
 #' @export
-#' @import dplyr ggplot2
-#'
 plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   df <- extract_vht(db, facet_var, facet_levels)
@@ -384,10 +366,6 @@ plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 #'   over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
                         facet_levels = NULL){
 

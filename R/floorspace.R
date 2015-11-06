@@ -136,6 +136,7 @@ extract_volume <- function(db,
 #'   levels other than external stations.
 #' @param type_levels The types of employment to show in the plot.
 #'
+#' @export
 extract_rents <- function(db,
                           facet_var = c("MPO", "COUNTY", "STATE"),
                           facet_levels = NULL,
@@ -247,7 +248,6 @@ plot_floorspace <- function(db,
 #' @param price Print price instead of floorspace.
 #'
 #' @export
-#'
 compare_floorspace <- function(db1, db2,
                                facet_var = c("MPO", "COUNTY", "STATE"),
                                facet_levels = NULL,
@@ -373,7 +373,6 @@ plot_occupancy <- function(db,
 #' @return A ggplot2 plot object
 #'
 #' @export
-#'
 compare_occupancy <- function(db1, db2,
                               facet_var = c("MPO", "COUNTY", "STATE"),
                               facet_levels = NULL,

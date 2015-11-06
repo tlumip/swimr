@@ -5,7 +5,6 @@
 #'   parameters.
 #'
 #' @export
-#'
 extract_modelwide <- function(db, filters){
 
 
@@ -29,7 +28,6 @@ extract_modelwide <- function(db, filters){
 #'   parameters.
 #'
 #' @export
-#'
 plot_modelwide <- function(db, filters){
 
   df <- extract_modelwide(db, filters)
