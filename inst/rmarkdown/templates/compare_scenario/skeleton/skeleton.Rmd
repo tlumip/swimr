@@ -35,8 +35,8 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-ref_db <- "~/Documents/projects/swim/FinalReference_Test.db" # reference
-cur_db <- "~/Documents/projects/swim/Extra_Floorspace_wCongestion.db" # current
+ref_db <- "~/Documents/projects/swim/AA_Decay_TravelCost.db" # reference
+cur_db <- "~/Documents/projects/swim/AA_Decay_TravelCost_2xPDX.db" # current
 db1 <- src_sqlite(ref_db) 
 db2 <- src_sqlite(cur_db) 
 # update to reflect scope of analysis
@@ -274,6 +274,23 @@ compare_floorspace(db1, db2, facet, facet_levels)
 
 ```{r compare_floorspace_mpo, fig.cap="Comparison of floorspace by type - all MPO's."}
 compare_floorspace(db1, db2)
+```
+
+## Rent and occupancy rates
+```{r compare_rent, fig.cap = "Unit rent by floorspace type."}
+compare_floorspace(db1, db2, facet, facet_levels, price = TRUE)
+```
+
+```{r compare_rent_mpo, fig.cap = "Unit rent by floorspace type - all MPO's"}
+compare_floorspace(db1, db2, price = TRUE)
+```
+
+```{r compare_occupancy, fig.cap = "Occupancy rate by floorspace type."}
+compare_occupancy(db1, db2, facet, facet_levels)
+```
+
+```{r compare_occupancy_mpo, fig.cap = "Occupancy rate by floorspace type - all MPO's"}
+compare_occupancy(db1, db2)
 ```
 
 ## Employment

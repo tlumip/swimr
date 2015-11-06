@@ -35,7 +35,7 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-ref_db <- "~/Documents/projects/swim/FinalReference_Test.db"
+ref_db <- "~/Documents/projects/swim/AA_Decay_TravelCost.db"
 db <- src_sqlite(ref_db) # reference
 # update to reflect scope of analysis
 facet <- "COUNTY" 
@@ -229,6 +229,24 @@ plot_floorspace(db, facet, facet_levels)
 ```{r plot_floorspace_mpo, fig.cap="Floorspace by type - all MPO's."}
 plot_floorspace(db)
 ```
+
+## Rent and Occupancy Rate
+```{r plot_rent, fig.cap = "Unit rent by floorspace type."}
+plot_floorspace(db, facet, facet_levels, price = TRUE)
+```
+
+```{r plot_rent_mpo, fig.cap = "Unit rent by floorspace type - all MPO's"}
+plot_floorspace(db, price = TRUE)
+```
+
+```{r plot_occupancy, fig.cap = "Occupancy rate by floorspace type."}
+plot_occupancy(db, facet, facet_levels)
+```
+
+```{r plot_occupancy_mpo, fig.cap = "Occupancy rate by floorspace type - all MPO's"}
+plot_occupancy(db)
+```
+
 
 ## Employment
 
