@@ -9,10 +9,10 @@ output:
     theme: spacelab
 ---
 
-```{r setup, echo = FALSE, message=FALSE}
+```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
-  echo = FALSE, message = FALSE,
+  echo = FALSE, message = FALSE, warning = FALSE,
   fig.keep = TRUE, fig.path = "./figures/",
   fig.width=8, fig.height=6
 )
