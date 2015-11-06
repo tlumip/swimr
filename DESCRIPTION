@@ -7,20 +7,23 @@ Authors@R: c(
   person("Greg", "Macfarlane", email = "macfarlaneg@pbworld.com", role = c("aut", "cre")),
   person("Alex", "Bettinardi", email = "Alexander.O.BETTINARDI@odot.state.or.us", role = c("aut"))
   )
-Description: This package collects several R functions that are used in visualizing the Oregon Statewide Integrated Model (SWIM) outputs.
+Description: This package collects several R functions that are used in
+    visualizing the Oregon Statewide Integrated Model (SWIM) outputs.
 License: file LICENSE
 LazyData: TRUE
 Depends:
-  R (>= 3.1.2),
-  plyr (>= 1.8.3),
-  dplyr (>= 0.4.3),
-  ggplot2 (>= 1.0.0),
-  tidyr (>= 0.3.0)
-Suggests: knitr
+    R (>= 3.1.2),
+    plyr (>= 1.8.3),
+    dplyr (>= 0.4.3),
+    ggplot2 (>= 1.0.0),
+    tidyr (>= 0.3.0)
+Suggests:
+    knitr
 Imports:
-  dplyrExtras (>= 0.1.1),
-  kfigr (>= 1.2),
-  zoo (>= 1.7.12),
-  ggmap(>= 2.5.2),
-  sp (>= 1.2.0)
+    dplyrExtras (>= 0.1.1),
+    kfigr (>= 1.2),
+    zoo (>= 1.7.12),
+    ggmap(>= 2.5.2),
+    sp (>= 1.2.0)
 VignetteBuilder: knitr
+RoxygenNote: 5.0.0
