@@ -220,11 +220,11 @@ plot_tlfd(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
 ```
 
 ## Log Sums
-```{r plot_logsum, fig.cap = "Mode choice model logsums."}
+```{r plot_logsum, fig.cap = "Destination choice model logsums."}
 plot_logsums(db, facet, facet_levels)
 ```
 
-```{r plot_logsum, fig.cap = "Mode choice model logsums - all MPO's"}
+```{r plot_logsum_mpo, fig.cap = "Destination choice model logsums - all MPO's"}
 plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
                        "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
@@ -268,6 +268,18 @@ plot_employment(db, facet, facet_levels)
 ```{r plot_employment_mpo, fig.cap="Labor output by sector - all MPO's."}
 plot_employment(db)
 ```
+
+## GDP
+
+```{r plot_gdp, fig.cap="Comparison of labor output by sector."}
+plot_gdp(db, facet, facet_levels)
+```
+
+```{r plot_gdp_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+plot_gdp(db)
+```
+
+
 
 ## Labor Force Participation^[Specifically, the ratio of workers to individuals 15 or older.]
 

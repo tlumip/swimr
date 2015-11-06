@@ -269,7 +269,7 @@ compare_tlfd(db1, db2, "MPO",
 compare_logsums(db1, db2, facet, facet_levels)
 ```
 
-```{r compare_logsum, fig.cap = "Mode choice model logsums - all MPO's"}
+```{r compare_logsum_mpo, fig.cap = "Mode choice model logsums - all MPO's"}
 compare_logsums(db1, db2, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
                        "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
@@ -312,6 +312,16 @@ compare_employment(db1, db2, facet, facet_levels)
 ```{r compare_employment_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
 compare_employment(db1, db2)
 ```
+
+## GDP
+```{r compare_gdp, fig.cap="Comparison of labor output by sector."}
+compare_gdp(db1, db2, facet, facet_levels)
+```
+
+```{r compare_gdp_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+compare_gdp(db1, db2)
+```
+
 
 ## Workforce Participation
 
