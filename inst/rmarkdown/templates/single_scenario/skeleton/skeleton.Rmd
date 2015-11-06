@@ -219,6 +219,17 @@ plot_tlfd(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
           bin_width = 1, max_bin = 30)
 ```
 
+## Log Sums
+```{r plot_logsum, fig.cap = "Mode choice model logsums."}
+plot_logsums(db, facet, facet_levels)
+```
+
+```{r plot_logsum, fig.cap = "Mode choice model logsums - all MPO's"}
+plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
+```
+
+
 # Economics
 
 ## Built Floorspace

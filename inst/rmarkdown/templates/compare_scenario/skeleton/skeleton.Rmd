@@ -264,6 +264,16 @@ compare_tlfd(db1, db2, "MPO",
              bin_width = 1, max_bin = 30)
 ```
 
+## Log Sums
+```{r compare_logsum, fig.cap = "Mode choice model logsums."}
+compare_logsums(db1, db2, facet, facet_levels)
+```
+
+```{r compare_logsum, fig.cap = "Mode choice model logsums - all MPO's"}
+compare_logsums(db1, db2, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
+```
+
 # Economics
 
 ## Built Floorspace
