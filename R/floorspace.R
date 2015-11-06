@@ -168,11 +168,13 @@ extract_rents <- function(db,
       year = TSTEP + 1990,
       commodity = COMMODITY,
       supply = Supply,
-      price = Price
+      price = Price,
+      bought = BoughtQuantity
     ) %>%
-
     # join facet and filter desired levels
     filter(commodity %in% floor_types$commodity) %>%
+    filter(supply > 0) %>% # only count if it's available.
+
     left_join(grouping, by = "BZONE") %>%
     filter(facet_var %in% facet_levels) %>%
 
@@ -181,11 +183,11 @@ extract_rents <- function(db,
     collect() %>%
     left_join(floor_types, by = "commodity") %>%
     filter(floor_type %in% type_levels) %>%
-    filter(supply > 0) %>% # only count if it's available.
 
     # summarise within facet and year
     group_by(facet_var, year, floor_type) %>%
-    summarise(supply = sum(supply), price = mean(price))
+    summarise(supply = sum(supply), price = mean(price), bought = sum(bought)) %>%
+    mutate(occrate = bought / supply)
 
   return(df)
 }
@@ -345,4 +347,51 @@ multiple_floorspace <- function(dbset, db_names,
 
 }
 
+#' Plot occupancy in a scenario over time.
+#'
+#' @inheritParams extract_rents
+#' @return A ggplot2 plot object.
+#'
+#' @export
+plot_occupancy <- function(db,
+                           facet_var = c("MPO", "COUNTY", "STATE"),
+                           facet_levels = NULL,
+                           type_levels = NULL){
 
+  rents <- extract_rents(db, facet_var, facet_levels, type_levels)
+
+  ggplot(rents,  aes(x = year, y = occrate, color = floor_type) ) +
+    geom_path() +
+    facet_wrap(~ facet_var) +
+    xlab("Year") + ylab("Occupancy Rate") +
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+}
+
+#' Compare occupancy in a scenario over time.
+#'
+#' @inheritParams extract_rents
+#' @return A ggplot2 plot object
+#'
+#' @export
+#'
+compare_occupancy <- function(db1, db2,
+                              facet_var = c("MPO", "COUNTY", "STATE"),
+                              facet_levels = NULL,
+                              type_levels = NULL){
+
+  fref <- extract_rents(db1, facet_var, facet_levels, type_levels) %>%
+    select(facet_var, year, floor_type, rate_ref = occrate)
+
+  fcom <- extract_rents(db2, facet_var, facet_levels, type_levels) %>%
+    select(facet_var, year, floor_type, rate_com = occrate)
+
+  df <- left_join(fref, fcom) %>%
+    mutate(pct_diff = (rate_com - rate_ref) / rate_ref * 100)
+
+  ggplot(df,  aes(x = year, y = pct_diff, color = floor_type) ) +
+    geom_path() +
+    facet_wrap(~ facet_var) +
+    xlab("Year") + ylab("Percent difference in occupancy rate") +
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+
+}
