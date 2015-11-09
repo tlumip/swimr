@@ -14,6 +14,9 @@ extract_wapr(db, facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
 
 \item{facet_levels}{A character vector of the variable specifiying
 which levels to include.}
+
+\item{color_levels}{A character vector of the industry sectors to include.
+Defaults to all.}
 }
 \value{
 A \code{data_frame} with the participation rate in each facet region

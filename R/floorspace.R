@@ -369,7 +369,7 @@ plot_occupancy <- function(db,
 
 #' Compare occupancy in a scenario over time.
 #'
-#' @inheritParams extract_rents
+#' @inheritParams compare_floorspace
 #' @return A ggplot2 plot object
 #'
 #' @export

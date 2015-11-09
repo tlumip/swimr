@@ -16,6 +16,9 @@ compare_gdp(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{facet_levels}{A character vector of the variable specifiying
 which levels to include.}
+
+\item{color_levels}{A character vector of the industry sectors to include.
+Defaults to all.}
 }
 \value{
 ggplot2 object
