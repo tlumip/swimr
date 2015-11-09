@@ -11,9 +11,6 @@
 #' value of the variable at each time stage going across the columns.
 #'
 #' @export
-#'
-#' @import dplyr
-#' @import tidyr
 yearly_summary <- function(df, group, var){
   df %>%
     group_by_(group, "year") %>%
@@ -140,10 +137,6 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 #'   and population over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
                        color_levels = NULL, controls = TRUE
                        ){
@@ -175,7 +168,7 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     scale_y_log10() +
     facet_grid(. ~ var, scales = "free_y") +
     xlab("Year") + ylab("Count") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 
@@ -191,10 +184,6 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #'   and population over time.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import tidyr
-#' @import dplyr
 compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
                           facet_levels = NULL){
 
@@ -218,7 +207,8 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     geom_path() +
     facet_wrap(~ facet_var) +
     xlab("Year") + ylab("Percent difference (current - reference).") +
-    theme_bw()
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Plot population with controls and historical data.
@@ -241,7 +231,8 @@ plot_history <- function(db, counties = NULL) {
     xlab("Year") + ylab("Population") +
     scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
     scale_color_discrete("County") +
-    theme_bw()
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Determine annualized population growth rates.
@@ -312,7 +303,6 @@ pop_rate <- function(db, counties = NULL) {
 #' @param counties A character vector of counties to display.
 #'
 #' @export
-#'
 plot_rates <- function(db, counties) {
 
   rates <- pop_rate(db, counties)
@@ -321,7 +311,7 @@ plot_rates <- function(db, counties) {
     geom_boxplot() +
     geom_point(position = "jitter") +
     xlab("County") + ylab("Annualized Growth Rates") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -346,7 +336,6 @@ plot_rates <- function(db, counties) {
 #'   distribution defined by historical data.
 #'
 #' @export
-#'
 #' @seealso \code{\link{pop_rate}}
 #'
 discover_outlying_rates <- function(db, counties = NULL,
@@ -412,7 +401,7 @@ discover_outlying_rates <- function(db, counties = NULL,
 #' @param facet_var Field to facet by: either "MPO" or "COUNTY".
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
-#'   @param controls If \code{facet_var = "COUNTY" & variable = "employment"}
+#' @param controls If \code{facet_var = "COUNTY" & variable = "employment"}
 #'     then can print OEA forecast.
 #'
 #' @return a ggplot2 object.
@@ -467,7 +456,9 @@ multiple_sevar <- function(dbset, db_names,
   p <- p + geom_path() +
     facet_wrap(~ facet_var, scales = "free_y") +
     ylab(variable) + xlab("Year") +
-    theme_bw()
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 30))
+
 
   return(p)
 

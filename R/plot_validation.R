@@ -39,7 +39,7 @@ plot_validation <- function(db){
 
     ylab("Assigned Volume") +
     xlab("Observed AADT") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   p
 }

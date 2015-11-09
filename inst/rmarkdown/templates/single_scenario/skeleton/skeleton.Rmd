@@ -9,18 +9,14 @@ output:
     theme: spacelab
 ---
 
-```{r setup, echo = FALSE, message=FALSE}
+```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
-  echo = FALSE, message = FALSE,
+  echo = FALSE, message = FALSE, warning = FALSE,
   fig.keep = TRUE, fig.path = "./figures/",
   fig.width=8, fig.height=6
 )
 
-
-library(dplyr, warn.conflicts = FALSE)
-library(tidyr)
-library(ggplot2)
 library(swimr)
 ```
 
@@ -39,7 +35,7 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-ref_db <- "~/Documents/projects/swim/FinalReference_Test.db"
+ref_db <- "~/Documents/projects/swim/AA_Decay_TravelCost.db"
 db <- src_sqlite(ref_db) # reference
 # update to reflect scope of analysis
 facet <- "COUNTY" 
@@ -171,7 +167,7 @@ trips <- extract_trips(db, "MPO") %>%
 kable(trips, caption = "Total Trips by MPO", digits = 2)
 ```
 
-```{r tab_trips, results='asis'}
+```{r tab_trips_mpo, results='asis'}
 tab_mode <- extract_trips(db, "MPO", facet_levels = c("Metro", "OOO")) %>%
   filter(year %in% years) %>%
   filter(facet_var == "Metro") %>%
@@ -217,11 +213,22 @@ plot_tlfd(db, facet, facet_levels, bin_width = 1, max_bin = 30)
 ```
 
 
-```{r plot_tlfd, fig.cap = "Trip length frequency distribution - all MPO's."}
+```{r plot_tlfd_mpo, fig.cap = "Trip length frequency distribution - all MPO's."}
 plot_tlfd(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
                        "Metro", "NonMPO", "RogueValley", "SalemKeizer"),
           bin_width = 1, max_bin = 30)
 ```
+
+## Log Sums
+```{r plot_logsum, fig.cap = "Destination choice model logsums."}
+plot_logsums(db, facet, facet_levels)
+```
+
+```{r plot_logsum_mpo, fig.cap = "Destination choice model logsums - all MPO's"}
+plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
+```
+
 
 # Economics
 
@@ -234,6 +241,24 @@ plot_floorspace(db, facet, facet_levels)
 plot_floorspace(db)
 ```
 
+## Rent and Occupancy Rate
+```{r plot_rent, fig.cap = "Unit rent by floorspace type."}
+plot_floorspace(db, facet, facet_levels, price = TRUE)
+```
+
+```{r plot_rent_mpo, fig.cap = "Unit rent by floorspace type - all MPO's"}
+plot_floorspace(db, price = TRUE)
+```
+
+```{r plot_occupancy, fig.cap = "Occupancy rate by floorspace type."}
+plot_occupancy(db, facet, facet_levels)
+```
+
+```{r plot_occupancy_mpo, fig.cap = "Occupancy rate by floorspace type - all MPO's"}
+plot_occupancy(db)
+```
+
+
 ## Employment
 
 ```{r plot_employment, fig.cap="Labor output by sector."}
@@ -244,12 +269,24 @@ plot_employment(db, facet, facet_levels)
 plot_employment(db)
 ```
 
+## GDP
+
+```{r plot_gdp, fig.cap="Comparison of labor output by sector."}
+plot_gdp(db, facet, facet_levels)
+```
+
+```{r plot_gdp_mpo, fig.cap="Comparison of labor output by sector - all MPO's."}
+plot_gdp(db)
+```
+
+
+
 ## Labor Force Participation^[Specifically, the ratio of workers to individuals 15 or older.]
 
 ```{r plot_wapr, fig.cap = "Workforce participation."}
 plot_wapr(db, facet, facet_levels)
 ```
 
-```{r plot_wapr, fig.cap = "Workforce participation."}
+```{r plot_wapr_mpo, fig.cap = "Workforce participation."}
 plot_wapr(db, "MPO")
 ```

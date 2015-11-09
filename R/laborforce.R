@@ -19,6 +19,8 @@
 #' @param facet_var Field to facet by: "MPO", "COUNTY", or "STATE".
 #' @param facet_levels A character vector of the variable specifiying
 #'   which levels to include.
+#' @param color_levels A character vector of the industry sectors to include.
+#'   Defaults to all.
 #'
 #' @return A \code{data_frame} with the participation rate in each facet region
 #'   in each transport model year.
@@ -133,7 +135,7 @@ plot_wapr <- function(db,
   p +
     xlab("Year") + ylab("Labor Force Participation Rate (%)") +
     scale_color_discrete(color_var) +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -201,11 +203,11 @@ plot_wapr_volatility <- function(db,
     )
 
     p <- ggmap(map, extent = "dev") +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   } else {
     p <- ggplot() +
       coord_map("conic", lat0 = 43) +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   }
 
   p + geom_polygon(
@@ -247,7 +249,7 @@ compare_wapr <- function(db1, db2,
          aes_string(x = "year", y = "diff", color = facet_var)) +
     geom_path() +
     xlab("Year") + ylab("Percent difference (current - reference).") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 
@@ -284,6 +286,6 @@ multiple_wapr <- function(dbset, db_names,
     geom_path() +
     facet_wrap(~ facet_var) +
     xlab("Year") + ylab("Labor force participation") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }

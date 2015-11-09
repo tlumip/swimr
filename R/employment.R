@@ -93,7 +93,7 @@ plot_employment <- function(db,
     scale_y_log10() +
     xlab("Year") + ylab("Employees") +
     scale_color_discrete("Sector") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -137,7 +137,7 @@ compare_employment <- function(db1, db2,
     xlab("Year") +
     ylab("Percent difference (current - reference) in Number of Employees") +
     scale_color_discrete("Sector") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare Employment by sector across multiple scenarios.
@@ -173,6 +173,6 @@ multiple_employment <- function(dbset, db_names,
     geom_path() +
     facet_grid(facet_var ~ emp_type, scales = "free_y") +
     xlab("Year") + ylab("Employment") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }

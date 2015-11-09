@@ -10,10 +10,7 @@
 #' @param agg_var The region variable on which to aggregate logsums.
 #'
 #' @export
-#'
 #' @return a ggmap object
-#' @import dplyr
-#'
 extract_logsums <- function(db, scope = NULL, purposes = NULL,
                             agg_var = "AZONE"){
 
@@ -70,8 +67,6 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
 #' @param ggmap If TRUE, then include a ggmap background.
 #' @param show_year The year in which to plot the logsums.
 #'
-#' @import ggmap
-#' @import ggplot2
 #' @importFrom sp bbox
 #' @export
 map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
@@ -92,11 +87,11 @@ map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
     )
 
     p <- ggmap(map, extent = "dev") +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   } else {
     p <- ggplot() +
       coord_map("conic", lat0 = 43) +
-      theme_bw()
+      theme_bw() + theme(axis.text.x = element_text(angle = 30))
   }
 
   p + geom_polygon(
@@ -137,7 +132,7 @@ plot_logsums <- function(db,
     geom_line() +
     scale_color_discrete(color_var) +
     xlab("Year") + ylab("Average destination choice log sum") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -178,6 +173,6 @@ compare_logsums <- function(db1, db2,
     geom_line() +
     scale_color_discrete(color_var) +
     xlab("Year") + ylab("Percent difference between average logsums") +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }

@@ -5,7 +5,6 @@
 #'   parameters.
 #'
 #' @export
-#'
 extract_modelwide <- function(db, filters){
 
 
@@ -29,13 +28,12 @@ extract_modelwide <- function(db, filters){
 #'   parameters.
 #'
 #' @export
-#'
 plot_modelwide <- function(db, filters){
 
   df <- extract_modelwide(db, filters)
 
   p <- ggplot(df, aes(x = year, y = VALUE, color = DATA)) +
     geom_path() +
-    theme_bw()
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
