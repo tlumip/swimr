@@ -14,6 +14,9 @@ plot_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
 
 \item{facet_levels}{A character vector of the variable specifiying
 which levels to include.}
+
+\item{color_levels}{A character vector of the industry sectors to include.
+Defaults to all.}
 }
 \value{
 a ggplot2 plot object.

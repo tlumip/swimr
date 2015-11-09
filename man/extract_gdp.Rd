@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdp.R
 \name{extract_gdp}
 \alias{extract_gdp}
-\title{Extract total wages}
+\title{Extract GDP of Labor}
 \usage{
 extract_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"),
   facet_levels = NULL, color_levels = NULL)
@@ -14,6 +14,9 @@ extract_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{facet_levels}{A character vector of the variable specifiying
 which levels to include.}
+
+\item{color_levels}{A character vector of the industry sectors to include.
+Defaults to all.}
 }
 \value{
 A \code{data_frame} with the participation rate in each facet region

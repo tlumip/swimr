@@ -17,10 +17,11 @@ socioeconomic variable to include in}
 
 \item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
 
+\item{controls}{If \code{facet_var = "COUNTY" & variable = "employment"}
+then can print OEA forecast.}
+
 \item{facet_levels}{A character vector of the facet variable specifiying
-which levels to include.
-@param controls If \code{facet_var = "COUNTY" & variable = "employment"}
-  then can print OEA forecast.}
+which levels to include.}
 }
 \value{
 a ggplot2 object.

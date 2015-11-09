@@ -1,4 +1,4 @@
-#' Extract total wages
+#' Extract GDP of Labor
 #'
 #' This function returns the total dollar value of all the labor sold by a
 #' collection of zones over time.
@@ -7,6 +7,8 @@
 #' @param facet_var Field to facet by: "MPO", "COUNTY", or "STATE".
 #' @param facet_levels A character vector of the variable specifiying
 #'   which levels to include.
+#' @param color_levels A character vector of the industry sectors to include.
+#'   Defaults to all.
 #'
 #' @return A \code{data_frame} with the participation rate in each facet region
 #'   in each transport model year.
