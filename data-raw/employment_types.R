@@ -47,8 +47,8 @@ employment_types <- data_frame(
     "33 - D1", "33 - D2", "33 - D3", "33 - D4",
     "61 - Education",
     "21 - Energy",
-    "54 - Professional Services",
     "72 - Food Services",
+    "54 - Professional Services",
     "92 - Public Administration",
     "92 - Public Administration",
     "62 - Health",
@@ -91,7 +91,7 @@ emp_types <- data_frame(
   ),
   emp_type = c(
     "Const/Man/Transp", "Energy/Resources", "Retail",
-    "Public Services", "Public Services", "Education", "Health", "Health",
+    "Services", "Public Services", "Education", "Health", "Health",
     "Services", "Education", "Const/Man/Transp", "Energy/Resources",
     "Retail", "Services", "Const/Man/Transp",
     "Energy/Resources", "Const/Man/Transp"
