@@ -105,3 +105,8 @@
 #'
 #' A fortified shapefile containing the zone geometries
 "zones"
+
+#' Zone Shapefile
+#'
+#' A SpatialPolygonsDataFrame of the zone system for plotting in leaflet.
+"zones_shp"

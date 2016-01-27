@@ -26,4 +26,4 @@ Imports:
     ggmap(>= 2.5.2),
     sp (>= 1.2.0)
 VignetteBuilder: knitr
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
