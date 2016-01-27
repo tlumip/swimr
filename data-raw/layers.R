@@ -1,6 +1,7 @@
 # link and zone shapefiles converted to R objects
 library(maptools)
 library(ggmap)
+library(readr)
 library(rgdal)
 
 options(stringsAsFactors = FALSE)
@@ -41,14 +42,15 @@ devtools::use_data(links)
 
 # zones
 zones_shp <- readShapePoly(
-  "data-raw/zones_zone.SHP",
+  "data-raw/zones_zone.shp",
   proj4string = ogic
 ) %>%
   spTransform(., wgs84)
 
+regions <- read_csv("data-raw/regions.csv")
 
-zones_data <- zones_shp@data %>%
-  tbl_df() %>%
+zones_shp@data <- zones_shp@data %>%
+  left_join(regions) %>%
   transmute(
     NO,
     id = as.character(row_number() - 1),
@@ -62,11 +64,11 @@ zones_data <- zones_shp@data %>%
   )
 
 
-
 zones <- fortify(zones_shp) %>% tbl_df() %>%
-  left_join(zones_data, by = "id")
+  left_join(zones_shp@data, by = "id")
 
 devtools::use_data(zones, overwrite = TRUE)
 devtools::use_data(zones_data, overwrite = TRUE)
+devtools::use_data(zones_shp, overwrite = TRUE)
 
 
