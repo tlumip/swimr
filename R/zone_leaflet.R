@@ -1,3 +1,39 @@
+#' Extract data for leaflet zone plots
+#'
+#' @inheritParams change_leaflet
+#'
+extract_changedata <- function(db, year1, year2 = NULL){
+
+  if(is.null(year2),
+
+  # pre-construct growth rate function call in order to mix variables
+  # and field names. See vignettes("nse") for details.
+  grt_exp <- lazyeval::interp(
+    ~ calc_exprate(p1, p2, year1, year2) * 100,
+    p1 = as.name(year1), p2 = as.name(year2))
+
+  # Get socioeconomic data from database.
+  se <- tbl(db, "AZONE") %>%
+    transmute(AZONE, pop = POPULATION, emp = EMPLOYMENT,
+              hh = TOTALHHS, year = TSTEP + 1990) %>%
+    filter(year %in% c(year1, year2)) %>%
+    collect() %>%
+    gather(variable, value, -AZONE, -year) %>%
+    spread(year, value) %>%
+
+    # calculate implied growth rate
+    mutate_("rate" = grt_exp) %>%
+
+    # reformat
+    gather(period, value, -AZONE, -variable) %>%
+    unite(var, c(variable, period)) %>%
+    spread(var, value, fill = NA)
+
+  se
+
+}
+
+
 #' Construct a base leaflet zone plot
 #'
 #' This function creates a standard leaflet base image that we can add
