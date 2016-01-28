@@ -1,3 +1,63 @@
+#' Leaflet plot of change over time in one scenario.
+#'
+#' @param db The scenario database
+#' @param year1 T
+#'
+#' @details This function creates an interactive Leaflet plot of the alpha zone
+#'   system, showing annualized implied growth rates of key socioeconomic
+#'   variables between two years. For instance, the user can select 2010 and
+#'   2030 as analysis years, and the plot will show the implied average
+#'   exponential growth rate between them.
+#'
+#'   As a note, SWIM does not generate alpha-zone level statistics in years when
+#'   the transport model does not run. If the user asks for year that does not
+#'   exist, then the plot will use the nearest available year.
+#'
+#' @import leaflet
+#'
+#' @export
+change_leaflet <- function(db, year1 = 2010, year2 = 2030){
+
+  # Get nearest years in db to year1 and year2
+  #
+  # The database doesn't have population and employment at
+  # alpha zone level in years where the transport model doesn't run.
+  # This simply corrects the value of year1 and year 2 if the user asks for
+  # a year that doesn't exist.
+  years <- 1990 + as.numeric(names(table(
+    tbl(db, "AZONE") %>% select(TSTEP) %>% collect() %>% .$TSTEP)))
+  year1 <- years[which(abs(years - year1) == min(abs(years - year1)))]
+  year2 <- years[which(abs(years - year2) == min(abs(years - year2)))]
+
+  # Get scenario information and put it onto the shapefile for
+  # leaflet plotting.
+  shp <- zones_shp
+  shp@data <- shp@data %>%
+    left_join(extract_zonedata(db, year1, year2))
+
+
+  zone_leaflet(shp) %>%
+    addPolygons(
+      group = "Population", fill = TRUE, color = FALSE,
+      fillColor = ~colorNumeric("Reds", domain = NULL)(pop_rate),
+      popup = change_popup(shp, "pop", year1, year2)
+    ) %>%
+    addPolygons(
+      group = "Employment", fill = TRUE, color = FALSE,
+      fillColor = ~colorNumeric("Blues", domain = NULL)(emp_rate),
+      popup = change_popup(shp, "emp", year1, year2)
+    ) %>%
+    addPolygons(
+      group = "HH", fill = TRUE, color = FALSE,
+      fillColor = ~colorNumeric("Greens", domain = NULL)(emp_rate),
+      popup = change_popup(shp, "hh", year1, year2)
+    ) %>%
+    addLayersControl(
+      overlayGroups = c("Population", "Employment", "HH"),
+      options = layersControlOptions(collapsed = FALSE)
+    )
+
+}
 #' Extract se data for leaflet zone plots
 #'
 #' @inheritParams change_leaflet
@@ -5,7 +65,7 @@
 #' @details If \code{year2 = NULL}, then will return only the values from year 1
 #'   and will not calculate the implied exponential growth rate.
 #'
-extract_changedata <- function(db, year1, year2 = NULL){
+extract_zonedata <- function(db, year1, year2 = NULL){
 
   if(is.null(year2)){
     year2 <- year1
