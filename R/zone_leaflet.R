@@ -143,3 +143,27 @@ change_popup <- function(shp, var, year1, year2){
 
 }
 
+
+#' Build diff popup tag for leaflet
+#'
+#' @inheritParams zone_leaflet
+#' @inheritParams diff_leaflet
+#' @param var Variable to create popup tag for (e.g., \code{"pop"})
+#'
+diff_popup <- function(shp, var, scen_names){
+  # build popup
+  zone_info <- paste0("<strong>Alpha Zone: </strong>", shp@data$AZONE)
+
+  var_info <- paste0(
+    "<strong>", scen_names[1], " ", var, ": </strong>",
+    shp@data[, paste0(var, "_x")], "<br>",
+    "<strong>", scen_names[2], " ", var, ": </strong>",
+    shp@data[, paste0(var, "_y")], "<br>",
+    "<strong>Difference </strong>",
+    round(shp@data[, paste0(var, "_diff")], digits = 3), "%"
+  )
+
+  paste(zone_info, var_info, sep = "</br>")
+
+}
+
