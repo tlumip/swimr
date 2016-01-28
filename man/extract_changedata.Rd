@@ -2,9 +2,9 @@
 % Please edit documentation in R/zone_leaflet.R
 \name{extract_changedata}
 \alias{extract_changedata}
-\title{Extract data for leaflet zone plots}
+\title{Extract se data for leaflet zone plots}
 \usage{
-extract_changedata(db, year1, year2)
+extract_changedata(db, year1, year2 = NULL)
 }
 \arguments{
 \item{db}{The scenario database}
@@ -12,6 +12,10 @@ extract_changedata(db, year1, year2)
 \item{year1}{T}
 }
 \description{
-Extract data for leaflet zone plots
+Extract se data for leaflet zone plots
+}
+\details{
+If \code{year2 = NULL}, then will return only the values from year 1
+  and will not calculate the implied exponential growth rate.
 }
 

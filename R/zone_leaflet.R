@@ -1,10 +1,15 @@
-#' Extract data for leaflet zone plots
+#' Extract se data for leaflet zone plots
 #'
 #' @inheritParams change_leaflet
 #'
+#' @details If \code{year2 = NULL}, then will return only the values from year 1
+#'   and will not calculate the implied exponential growth rate.
+#'
 extract_changedata <- function(db, year1, year2 = NULL){
 
-  if(is.null(year2),
+  if(is.null(year2)){
+    year2 <- year1
+  }
 
   # pre-construct growth rate function call in order to mix variables
   # and field names. See vignettes("nse") for details.
@@ -19,17 +24,19 @@ extract_changedata <- function(db, year1, year2 = NULL){
     filter(year %in% c(year1, year2)) %>%
     collect() %>%
     gather(variable, value, -AZONE, -year) %>%
-    spread(year, value) %>%
+    spread(year, value)
 
-    # calculate implied growth rate
-    mutate_("rate" = grt_exp) %>%
+  if(year2 != year1){
+    se <- se %>%
+      # calculate implied growth rate
+      mutate_("rate" = grt_exp)
+  }
 
-    # reformat
+  # reformat
+  se %>%
     gather(period, value, -AZONE, -variable) %>%
     unite(var, c(variable, period)) %>%
     spread(var, value, fill = NA)
-
-  se
 
 }
 
