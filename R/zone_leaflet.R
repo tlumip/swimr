@@ -58,6 +58,76 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
     )
 
 }
+
+#' Leaflet plot of difference between two scenarios.
+#'
+#' @param db1 Reference scenario VIZ database connection.
+#' @param db2 Current scenario VIZ database connection.
+#' @param year Year in which to compare the two scenarios.
+#' @param scen_names Names of the scenarios in the comparison. Defaults to
+#'   "Reference", "Current".
+#'
+#' @import leaflet
+#'
+#' @export
+diff_leaflet <- function(db1, db2, year,
+                         scen_names = c("Reference", "Current")){
+
+  # Get nearest years in db to year
+  #
+  # The database doesn't have population and employment at
+  # alpha zone level in years where the transport model doesn't run.
+  # This simply corrects the value of year if the user asks for
+  # a year that doesn't exist.
+  years <- 1990 + as.numeric(names(table(
+    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect() %>% .$TSTEP)))
+  year <- years[which(abs(years - year) == min(abs(years - year)))]
+
+  # get se data from both years and join together ----
+  se <- extract_zonedata(db1, year) %>%
+    left_join(extract_zonedata(db2, year), by = "AZONE") %>%
+    gather(var, value, -AZONE) %>%
+    separate(var, c("variable", "year", "sc")) %>%
+    select(-year) %>%
+    spread(sc, value) %>%
+
+    # calculate percent difference between scenarios
+    mutate(diff = (y - x) / x * 100) %>%
+    gather(type, value, x:diff) %>%
+    unite(var, c(variable, type)) %>%
+    spread(var, value)
+
+  # Get scenario information and put it onto the shapefile for
+  # leaflet plotting.
+  shp <- zones_shp
+  shp@data <- shp@data %>%
+    left_join(se, by = "AZONE")
+
+
+
+  zone_leaflet(shp) %>%
+    addPolygons(
+      group = "Population", fill = TRUE, color = FALSE,
+      fillColor = ~colorQuantile("Reds", domain = NULL)(pop_diff),
+      popup = diff_popup(shp, "pop", scen_names)
+    ) %>%
+    addPolygons(
+      group = "Employment", fill = TRUE, color = FALSE,
+      fillColor = ~colorQuantile("Blues", domain = NULL)(emp_diff),
+      popup = diff_popup(shp, "emp", scen_names)
+    ) %>%
+    addPolygons(
+      group = "HH", fill = TRUE, color = FALSE,
+      fillColor = ~colorQuantile("Greens", domain = NULL)(hh_diff),
+      popup = diff_popup(shp, "hh", scen_names)
+    ) %>%
+    addLayersControl(
+      overlayGroups = c("Population", "Employment", "HH"),
+      options = layersControlOptions(collapsed = FALSE)
+    )
+
+}
+
 #' Extract se data for leaflet zone plots
 #'
 #' @inheritParams change_leaflet
