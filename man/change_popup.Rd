@@ -2,7 +2,7 @@
 % Please edit documentation in R/zone_leaflet.R
 \name{change_popup}
 \alias{change_popup}
-\title{Build popup tag for leaflet}
+\title{Build change popup tag for leaflet}
 \usage{
 change_popup(shp, var, year1, year2)
 }
@@ -15,6 +15,6 @@ plotting fields already appended.}
 \item{year1}{T}
 }
 \description{
-Build popup tag for leaflet
+Build change popup tag for leaflet
 }
 

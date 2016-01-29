@@ -83,7 +83,7 @@ diff_leaflet <- function(db1, db2, year,
     tbl(db1, "AZONE") %>% select(TSTEP) %>% collect() %>% .$TSTEP)))
   year <- years[which(abs(years - year) == min(abs(years - year)))]
 
-  # get se data from both years and join together ----
+  # get se data from both scenarios and join together ----
   se <- extract_zonedata(db1, year) %>%
     left_join(extract_zonedata(db2, year), by = "AZONE") %>%
     gather(var, value, -AZONE) %>%
@@ -102,8 +102,6 @@ diff_leaflet <- function(db1, db2, year,
   shp <- zones_shp
   shp@data <- shp@data %>%
     left_join(se, by = "AZONE")
-
-
 
   zone_leaflet(shp) %>%
     addPolygons(
@@ -190,7 +188,7 @@ zone_leaflet <- function(shp){
 }
 
 
-#' Build popup tag for leaflet
+#' Build change popup tag for leaflet
 #'
 #' @inheritParams zone_leaflet
 #' @inheritParams change_leaflet
