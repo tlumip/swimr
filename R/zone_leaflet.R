@@ -91,8 +91,8 @@ diff_leaflet <- function(db1, db2, year,
     select(-year) %>%
     spread(sc, value) %>%
 
-    # calculate percent difference between scenarios
-    mutate(diff = (y - x) / x * 100) %>%
+    # calculate absolute difference between scenarios
+    mutate(diff = y - x) %>%
     gather(type, value, x:diff) %>%
     unite(var, c(variable, type)) %>%
     spread(var, value)
@@ -104,34 +104,30 @@ diff_leaflet <- function(db1, db2, year,
     left_join(se, by = "AZONE")
 
   # Create a palette for
-  pal <- colorFactor(
+  pal <- colorNumeric(
     palette = "PRGn",
-    domain = cut_diverror(-100:200)
+    domain = exaggerate_diff(shp@data$pop_diff)
   )
 
   zone_leaflet(shp) %>%
     addPolygons(
       group = "Population", stroke = FALSE,
-      color = ~pal(cut_diverror(pop_diff)),
+      color = ~pal(exaggerate_diff(pop_diff)),
       popup = diff_popup(shp, "pop", scen_names)
     ) %>%
     addPolygons(
       group = "Employment", stroke = FALSE,
-      color = ~pal(cut_diverror(emp_diff)),
+      color = ~pal(exaggerate_diff(emp_diff)),
       popup = diff_popup(shp, "emp", scen_names)
     ) %>%
     addPolygons(
       group = "HH", stroke = FALSE,
-      color = ~pal(cut_diverror(hh_diff)),
+      color = ~pal(exaggerate_diff(hh_diff)),
       popup = diff_popup(shp, "hh", scen_names)
     ) %>%
     addLayersControl(
       overlayGroups = c("Population", "Employment", "HH"),
       options = layersControlOptions(collapsed = FALSE)
-    ) %>%
-    addLegend(
-      "bottomright", pal = pal, values = ~cut_diverror(pop_diff),
-      title = "Percent Change"
     ) %>%
     hideGroup("Employment") %>% hideGroup("Households")
 
@@ -239,7 +235,7 @@ diff_popup <- function(shp, var, scen_names){
     "<strong>", scen_names[2], " ", var, ": </strong>",
     shp@data[, paste0(var, "_y")], "<br>",
     "<strong>Difference </strong>",
-    round(shp@data[, paste0(var, "_diff")], digits = 3), "%"
+    round(shp@data[, paste0(var, "_diff")], digits = 3)
   )
 
   paste(zone_info, var_info, sep = "</br>")

@@ -18,7 +18,20 @@ cut_diverror <- function(x){
   cut(x, breaks = c(-Inf, rev(-1 * brks), 0, brks, Inf))
 }
 
+exaggerate_diff <- function(x){
+  log(abs(x) + 1e-5) * sign(x)
+}
 
+
+#' Cut growth rates into ranges
+#'
+#' @param x a vector of error measurements
+#' @return a factor showing the bin
+#'
+cut_grt <- function(x){
+  brks <- c(0.05, 0.10,  0.20, 1) * 100
+  cut(x, breaks = c(-Inf, rev(-1 * brks), 0, brks, Inf))
+}
 
 
 #' Return all levels of a factor other than external stations
