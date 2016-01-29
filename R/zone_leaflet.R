@@ -103,26 +103,37 @@ diff_leaflet <- function(db1, db2, year,
   shp@data <- shp@data %>%
     left_join(se, by = "AZONE")
 
+  # Create a palette for
+  pal <- colorFactor(
+    palette = "PRGn",
+    domain = cut_diverror(-100:200)
+  )
+
   zone_leaflet(shp) %>%
     addPolygons(
-      group = "Population", fill = TRUE, color = FALSE,
-      fillColor = ~colorQuantile("Reds", domain = NULL)(pop_diff),
+      group = "Population", stroke = FALSE,
+      color = ~pal(cut_diverror(pop_diff)),
       popup = diff_popup(shp, "pop", scen_names)
     ) %>%
     addPolygons(
-      group = "Employment", fill = TRUE, color = FALSE,
-      fillColor = ~colorQuantile("Blues", domain = NULL)(emp_diff),
+      group = "Employment", stroke = FALSE,
+      color = ~pal(cut_diverror(emp_diff)),
       popup = diff_popup(shp, "emp", scen_names)
     ) %>%
     addPolygons(
-      group = "HH", fill = TRUE, color = FALSE,
-      fillColor = ~colorQuantile("Greens", domain = NULL)(hh_diff),
+      group = "HH", stroke = FALSE,
+      color = ~pal(cut_diverror(hh_diff)),
       popup = diff_popup(shp, "hh", scen_names)
     ) %>%
     addLayersControl(
       overlayGroups = c("Population", "Employment", "HH"),
       options = layersControlOptions(collapsed = FALSE)
-    )
+    ) %>%
+    addLegend(
+      "bottomright", pal = pal, values = ~cut_diverror(pop_diff),
+      title = "Percent Change"
+    ) %>%
+    hideGroup("Employment") %>% hideGroup("Households")
 
 }
 
