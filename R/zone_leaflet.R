@@ -137,7 +137,7 @@ diff_leaflet <- function(db1, db2, year,
     ) %>%
     addLegend(
       "bottomright", pal = palq, values = ~cut_abserror(diff),
-      title = paste0("Change in ", variable, "<br>",
+      title = paste0("Change in ", variable, " per sqmi<br>",
                      scen_names[1], " - ", scen_names[2] )
     )
 
@@ -167,7 +167,16 @@ extract_zonedata <- function(db, year1, year2 = NULL){
     transmute(AZONE, pop = POPULATION, emp = EMPLOYMENT,
               hh = TOTALHHS, year = TSTEP + 1990) %>%
     filter(year %in% c(year1, year2)) %>%
+
+    # return density of variable
+    left_join(
+      tbl(db, "ALLZONES") %>%
+        transmute(AZONE = Azone, sqmi = AREASQFT * 3.587048e-8),
+      by = "AZONE") %>%
     collect() %>%
+    mutate_each(funs( ./sqmi), pop:hh) %>%
+    select(-sqmi) %>%
+
     gather(variable, value, -AZONE, -year) %>%
     spread(year, value)
 
@@ -240,10 +249,10 @@ diff_popup <- function(shp, var, scen_names){
   zone_info <- paste0("<strong>Alpha Zone: </strong>", shp@data$AZONE)
 
   var_info <- paste0(
-    "<strong>", scen_names[1], " ", var, ": </strong>",
-    shp@data[, "x"], "<br>",
-    "<strong>", scen_names[2], " ", var, ": </strong>",
-    shp@data[, "y"], "<br>",
+    "<strong>", scen_names[1], " ", var, " per sqmi: </strong>",
+    round(shp@data[, "x"], digits = 3), "<br>",
+    "<strong>", scen_names[2], " ", var, " per sqmi: </strong>",
+    round(shp@data[, "y"], digits = 3), "<br>",
     "<strong>Difference </strong>",
     round(shp@data[, ("diff")], digits = 3), "<br>",
     "<strong>Percent diff </strong>",
