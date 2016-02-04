@@ -23,6 +23,17 @@ exaggerate_diff <- function(x){
 }
 
 
+#' Cut absolute differences into ranges
+#'
+#' @param x a vector of error measurements
+#' @return a factor showing the bin
+#'
+cut_abserror <- function(x){
+  brks <- c(1, 10, 100, 1000) * 100
+  cut(x, breaks = c(-Inf, rev(-1 * brks), 0, brks, Inf))
+}
+
+
 #' Cut growth rates into ranges
 #'
 #' @param x a vector of error measurements
