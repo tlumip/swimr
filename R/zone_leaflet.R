@@ -71,7 +71,16 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
 #'
 #' @export
 diff_leaflet <- function(db1, db2, year,
+                         variable = c("Population", "Employment", "HH"),
                          scen_names = c("Reference", "Current")){
+
+  if(variable == "Population"){
+    crit <- "variable == 'pop'"
+  } else if(variable == "Employment"){
+    crit <- "variable == 'emp'"
+  } else {
+    crit <- "variable == 'hh'"
+  }
 
   # Get nearest years in db to year
   #
@@ -90,12 +99,14 @@ diff_leaflet <- function(db1, db2, year,
     separate(var, c("variable", "year", "sc")) %>%
     select(-year) %>%
     spread(sc, value) %>%
+    filter_(.dots = crit) %>%
 
     # calculate absolute difference between scenarios
-    mutate(diff = y - x) %>%
-    gather(type, value, x:diff) %>%
-    unite(var, c(variable, type)) %>%
-    spread(var, value)
+    mutate(
+      diff = y - x,
+      pct = diff / x * 100
+    )
+
 
   # Get scenario information and put it onto the shapefile for
   # leaflet plotting.
@@ -104,32 +115,31 @@ diff_leaflet <- function(db1, db2, year,
     left_join(se, by = "AZONE")
 
   # Create a palette for
-  pal <- colorNumeric(
+  palq <- colorFactor(
     palette = "PRGn",
-    domain = exaggerate_diff(shp@data$pop_diff)
+    domain = cut_abserror(shp@data$diff)
   )
 
   zone_leaflet(shp) %>%
     addPolygons(
-      group = "Population", stroke = FALSE,
-      color = ~pal(exaggerate_diff(pop_diff)),
-      popup = diff_popup(shp, "pop", scen_names)
+      group = "Absolute", stroke = FALSE,
+      color = ~palq(cut_abserror(diff)),
+      popup = diff_popup(shp, variable, scen_names)
     ) %>%
     addPolygons(
-      group = "Employment", stroke = FALSE,
-      color = ~pal(exaggerate_diff(emp_diff)),
-      popup = diff_popup(shp, "emp", scen_names)
-    ) %>%
-    addPolygons(
-      group = "HH", stroke = FALSE,
-      color = ~pal(exaggerate_diff(hh_diff)),
-      popup = diff_popup(shp, "hh", scen_names)
+      group = "Percent", stroke = FALSE,
+      color = ~palq(cut_abserror(pct)),
+      popup = diff_popup(shp, variable, scen_names)
     ) %>%
     addLayersControl(
-      overlayGroups = c("Population", "Employment", "HH"),
+      baseGroups = c("Absolute", "Percent"),
       options = layersControlOptions(collapsed = FALSE)
     ) %>%
-    hideGroup("Employment") %>% hideGroup("Households")
+    addLegend(
+      "bottomright", pal = palq, values = ~cut_abserror(diff),
+      title = paste0("Change in ", variable, "<br>",
+                     scen_names[1], " - ", scen_names[2] )
+    )
 
 }
 
@@ -231,11 +241,13 @@ diff_popup <- function(shp, var, scen_names){
 
   var_info <- paste0(
     "<strong>", scen_names[1], " ", var, ": </strong>",
-    shp@data[, paste0(var, "_x")], "<br>",
+    shp@data[, "x"], "<br>",
     "<strong>", scen_names[2], " ", var, ": </strong>",
-    shp@data[, paste0(var, "_y")], "<br>",
+    shp@data[, "y"], "<br>",
     "<strong>Difference </strong>",
-    round(shp@data[, paste0(var, "_diff")], digits = 3)
+    round(shp@data[, ("diff")], digits = 3), "<br>",
+    "<strong>Percent diff </strong>",
+    round(shp@data[, "pct"], digits = 3)
   )
 
   paste(zone_info, var_info, sep = "</br>")

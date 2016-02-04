@@ -29,7 +29,7 @@ exaggerate_diff <- function(x){
 #' @return a factor showing the bin
 #'
 cut_abserror <- function(x){
-  brks <- c(1, 10, 100, 1000) * 100
+  brks <- c(1, 10, 100, 1000)
   cut(x, breaks = c(-Inf, rev(-1 * brks), 0, brks, Inf))
 }
 
