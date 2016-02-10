@@ -70,15 +70,16 @@
 #' Reference counts
 #'
 #' A dataset containing the reference highway counts for comparing modeled
-#' traffic volumes in the calibration year.
+#' traffic volumes in multiple historical years.
 #'
-#' @format A data frame with 167 observations.
+#' @format A data frame with 2,170 observations.
 #' \describe{
 #'   \item{site}{The site location of the count.}
-#'   \item{AADT}{Observed traffic flow.}
-#'   \item{year}{The year of the count.}
 #'   \item{FROMNODENO}{The from node of the link in the SWIM highway network.}
 #'   \item{TONODENO}{The from node of the link in the SWIM highway network.}
+#'   \item{aawdt}{Observed traffic flow; calculated AAWDT by ODOT data analysis
+#'   division.}
+#'   \item{year}{The year of the count.}
 #' }
 #' @source Calculated by Rick Donnelly from data supplied by ODOT.
 "ref_counts"
