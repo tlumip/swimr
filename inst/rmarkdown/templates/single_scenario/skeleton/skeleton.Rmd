@@ -109,6 +109,12 @@ plot_history(db, facet_levels)
 plot_validation(db)
 ```
 
+```{r plot_historical_atr, fig.cap="AAWDT count and projection at selected ATR locations"}
+plot_traffic_count(db, atr = c(3011, 10006, 3013, 34009, 24022, 
+                               15020, 3018, 10008, 18018, 21006))
+```
+
+
 > Note that the plots in this section may only have data for years in which the 
 transportation model runs.
 
