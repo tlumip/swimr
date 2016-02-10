@@ -61,7 +61,7 @@ plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
   pc <- ref_counts %>%
     filter(site %in% atr) %>%
     mutate(
-      data = "Count",
+      data = "ODOT Count",
       year = as.numeric(year)
     )
 
@@ -95,6 +95,12 @@ plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
     d,
     aes(x = year, y = aawdt, color = factor(site), lty = data) ) +
     geom_path()
+
+  p +
+    xlab("Year") + ylab("AAWDT") +
+    scale_color_discrete("ATR Location") +
+    scale_linetype("Source") +
+    theme_bw()
 
 }
 
