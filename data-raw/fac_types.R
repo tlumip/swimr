@@ -19,9 +19,13 @@ fac_types <- data_frame(
     "Collector",
     "Collector"
   )
-)
+) %>%
+  mutate(
+    FacType = factor(FacType,
+                     levels = c("Expressway", "Arterial", "Collector", "Local"))
+  )
 
-#devtools::use_data(fac_types)
+devtools::use_data(fac_types, overwrite = TRUE)
 
 mode_types <- data_frame(
   mode = c(
