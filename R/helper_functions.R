@@ -102,3 +102,15 @@ interpolate_exponential <- function(p1, p2, t1, t2, t0){
   # calculate new value at t0
   p1 * exp(r * (t0 - t1))
 }
+
+
+#' Percent difference between two conditions
+#'
+#' @param x base value
+#' @param y alternate value
+#'
+#' @export
+#'
+pct_diff <- function(x, y) {
+  (y - x) / x * 100
+}
