@@ -5,7 +5,7 @@
 \title{Plot a trip length frequency distribution}
 \usage{
 plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  bin_width = 1, max_bin = 50)
+  cumulative = FALSE)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -14,10 +14,7 @@ plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
 
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
-\item{bin_width}{The width of bins to use in the trip length frequency
-distribution. Defaults to 1.}
-
-\item{max_bin}{The maximum bin value. Defaults to 50.}
+\item{cumulative}{Plot cumulative instead of probability density distribution.}
 }
 \value{
 A ggplot2 object.

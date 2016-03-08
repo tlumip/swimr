@@ -4,8 +4,7 @@
 \alias{extract_tlfd}
 \title{Extract trip length frequency distribution data}
 \usage{
-extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  bin_width = 1, max_bin = 100)
+extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}

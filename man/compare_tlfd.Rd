@@ -5,7 +5,7 @@
 \title{Compare Trip Length Frequency Distributions}
 \usage{
 compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
-  regions = NULL, bin_width = 1, max_bin = 50)
+  regions = NULL, cumulative = FALSE)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -16,10 +16,7 @@ compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
 
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
-\item{bin_width}{The width of bins to use in the trip length frequency
-distribution. Defaults to 1.}
-
-\item{max_bin}{The maximum bin value. Defaults to 50.}
+\item{cumulative}{Plot cumulative instead of probability density distribution.}
 }
 \value{
 A ggplot2 object.
