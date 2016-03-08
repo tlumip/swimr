@@ -77,7 +77,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
         filter(county %in% df$county) %>%
         filter(year > 2005) %>%
         select(county, year, var, y) %>%
-        mutate(data = "Control")
+        mutate(data = "OEA Forecast")
 
       df <- rbind(df, ct)
     }
