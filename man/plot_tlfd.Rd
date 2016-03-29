@@ -5,7 +5,7 @@
 \title{Plot a trip length frequency distribution}
 \usage{
 plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  cumulative = FALSE)
+  cumulative = FALSE, years = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -15,6 +15,9 @@ plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
 \item{cumulative}{Plot cumulative instead of probability density distribution.}
+
+\item{years}{The years to show in the plot. If null, will show the first
+and last years.}
 }
 \value{
 A ggplot2 object.

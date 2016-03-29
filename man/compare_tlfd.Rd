@@ -5,7 +5,7 @@
 \title{Compare Trip Length Frequency Distributions}
 \usage{
 compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
-  regions = NULL, cumulative = FALSE)
+  regions = NULL, cumulative = FALSE, years = NULL)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -17,6 +17,9 @@ compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
 \item{cumulative}{Plot cumulative instead of probability density distribution.}
+
+\item{years}{The years to show in the plot. If null, will show the first
+and last years.}
 }
 \value{
 A ggplot2 object.
