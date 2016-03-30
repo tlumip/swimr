@@ -3,45 +3,17 @@
 #' Create a plot of the base scenario link volumes compared with observed AADT.
 #'
 #' @param db The scenario database.
+#' @param facet_var Variable to display in facets
 #' @return A ggplot2 object.
+#' @import outviz
 #'
 #' @export
-plot_validation <- function(db){
+plot_countcomparison <- function(db, year = c(2010, 2013)){
 
+  link_vols <- suppressMessages(get_validation_table(db, year))
 
-  # get base year link traffic volumes
-  link_vols <- tbl(db, "LINK_DATA") %>%
-    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL) %>%
-    filter(TSTEP == "23") %>%
-
-    collect() %>%
-    mutate(
-      ANODE = as.character(ANODE),
-      BNODE = as.character(BNODE)
-    )  %>%
-
-    # Join count locations
-    left_join(ref_counts %>% filter(year == 2010),
-              by = c("ANODE" = "FROMNODENO", "BNODE" = "TONODENO")) %>%
-
-    # compute percent error
-    filter(!is.na(aawdt)) %>%
-    mutate(
-      error = DAILY_VOL_TOTAL - aawdt,
-      pct_error = abs(error) / aawdt
-    )
-
-  p <- ggplot(link_vols,
-              aes(x = aawdt, y = DAILY_VOL_TOTAL)) +
-    geom_point() +
-    geom_smooth(method = "lm") +
-    geom_abline(aes(intercept = 0, slope = 1), alpha = 0.5) +
-
-    ylab("Assigned Volume") +
-    xlab("Observed AAWDT") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
-
-  p
+  outviz::plot_validation(link_vols, "volume", "count", show_lm = TRUE) +
+    theme_bw()
 }
 
 
@@ -58,45 +30,34 @@ plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
   # protect type
   atr <- as.numeric(atr)
 
-  pc <- ref_counts %>%
+  pc <- counts %>%
     filter(site %in% atr) %>%
-    mutate(
-      data = "ODOT Count",
-      year = as.numeric(year)
-    )
+    select(-`2035`) %>%
+    gather(year, volume, `2000`:`2015`) %>%
+    mutate(data = "ODOT ATR Counts", year = as.numeric(year))
 
   # get base year link traffic volumes
-  link_vols <- tbl(db, "LINK_DATA") %>%
-    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL) %>%
-
+  swim <- tbl(db, "LINK_DATA") %>%
+    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
     collect() %>%
-    mutate(
-      ANODE = as.character(ANODE),
-      BNODE = as.character(BNODE)
-    )  %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
 
-    # Join count locations
-    inner_join(
-      pc %>% filter(year == 2010) %>% select(site, FROMNODENO, TONODENO),
-      by = c("ANODE" = "FROMNODENO", "BNODE" = "TONODENO")
-    ) %>%
-
-    transmute(
-      site,
-      year = as.numeric(TSTEP) + 1990,
-      aawdt = DAILY_VOL_TOTAL,
-      data = "SWIM"
+    # Join ATR ID and calculate two-way volume
+    inner_join(countid) %>%
+    group_by(site, year) %>%
+    filter(site %in% atr) %>%
+    summarise(
+      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
+      data = "SWIM Volume"
     )
 
-  d <- bind_rows(pc, link_vols)
+  d <- bind_rows(pc, swim)
 
-
-  p <- ggplot(
+  ggplot(
     d,
-    aes(x = year, y = aawdt, color = factor(site), lty = data) ) +
-    geom_path()
+    aes(x = year, y = volume, color = factor(site), lty = data) ) +
+    geom_path() +
 
-  p +
     xlab("Year") + ylab("AAWDT") +
     scale_color_discrete("ATR Location") +
     scale_linetype("Source") +
@@ -104,4 +65,38 @@ plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
 
 }
 
+#' Get comparison of link volumes to ATR count
+#'
+#' Create a plot of the base scenario link volumes compared with observed AADT.
+#'
+#' @param db The scenario database.
+#' @param facet_var Variable to display in facets
+#' @return A ggplot2 object.
+#' @import outviz
+#'
+#' @export
+get_validation_table <- function(db, year = c(2010, 2013)){
+
+  # get link traffic volumes
+  tbl(db, "LINK_DATA") %>%
+    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
+    collect() %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year)) %>%
+
+    # Join ATR ID and calculate two-way volume
+    inner_join(countid) %>%
+    group_by(site) %>%
+    summarise(
+      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
+      PLANNO = PLANNO[1]
+    ) %>%
+
+    # Join ATR data
+    inner_join(counts %>% select_("site", count = as.name(year))) %>%
+
+    # join facility types
+    left_join(fac_types, by = "PLANNO")
+
+}
 
