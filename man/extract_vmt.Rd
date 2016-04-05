@@ -4,7 +4,7 @@
 \alias{extract_vmt}
 \title{Extract VMT}
 \usage{
-extract_vmt(db, facet_var = "MPO", facet_levels = NULL)
+extract_vmt(db, facet_var = "MPO", facet_levels = NULL, index)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -14,6 +14,8 @@ extract_vmt(db, facet_var = "MPO", facet_levels = NULL)
 \item{facet_levels}{A character vector giving the levels of the facet
 variable to use. Levels not called are dropped from the plot; default is
 \code{NULL}, meaning print all levels.}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 A data frame with VMT summarized by facility type and facet variable.

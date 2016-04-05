@@ -5,62 +5,43 @@
 #' @param facet_levels A character vector giving the levels of the facet
 #'   variable to use. Levels not called are dropped from the plot; default is
 #'   \code{NULL}, meaning print all levels.
+#' @param index Whether to show the variables as indexed against the base year.
+#'
+#'
 #'
 #' @return A data frame with VMT summarized by facility type and facet variable.
 #'
 #' @export
-extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
+extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
-    select_("Azone", facet_var) %>%
-    rename(AZONE = Azone) %>%
-    rename_("facet_var" = facet_var)
+    select_("AZONE" = "Azone", facet_var)
 
-  # Link distances
-  data("links", package = "swimr")
-  link_dist <- links %>%
-    # reverse link distance
-    mutate(
-      ANODE = ifelse(order == 2, TONODENO, FROMNODENO),
-      BNODE = ifelse(order == 2, FROMNODENO, TONODENO),
-      LENGTH = R_LENGTH
-    ) %>%
-    select(ANODE, BNODE, LENGTH)
-
-
-  # TODO: group by facility type
-
-  # If no levels are specified, show all but external stations.
-  if(is.null(facet_levels)){
-    a <- grouping %>%
-      collect() %>%
-      filter(facet_var != "EXTSTA")
-
-    facet_levels = names(table(a$facet_var))
-  }
-
-  link_vmt <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, ANODE, BNODE, TSTEP, PLANNO, DAILY_VOL_TOTAL) %>%
-    left_join(grouping, by = "AZONE") %>%
-
-    # filter out regions you don't want
-    filter(facet_var %in% facet_levels) %>%
-    collect()  %>%
-    mutate(year = as.numeric(TSTEP) + 1990) %>%
-
-    # get link distance from table
-    left_join(link_dist) %>%
-
-
+  l <- tbl(db, "LINK_DATA") %>%
+    left_join(grouping) %>%
+    collect() %>%
     # consolidate facility types
     left_join(fac_types) %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
 
-    # calculate total by year and group
-    group_by(year, facet_var, FacType) %>%
-    summarise(vmt = sum(DAILY_VOL_TOTAL * LENGTH, na.rm = TRUE))
+    group_by_(facet_var, "FacType", "year") %>%
+    summarise(vmt = sum(LENGTH * DAILY_VOL_TOTAL))
 
-  return(link_vmt)
+
+  if(index){
+    l <- l %>%
+      group_by_(facet_var, "FacType") %>%
+      mutate(vmt = calc_index(vmt))
+  }
+
+  if(!is.null(facet_levels)){
+    crit <- lazyeval::interp(~x %in% facet_levels, x = as.name(facet_var))
+    l %>% filter_(.dots = crit)
+  } else {
+    l
+  }
+
 }
 
 #' Plot VMT over time.
@@ -73,23 +54,24 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 #' @param facet_levels A character vector giving the levels of the facet
 #'   variable to use. Levels not called are dropped from the plot; default is
 #'   \code{NULL}, meaning print all levels.
+#' @param index Whether to show the variables as indexed against the base year.
 #'
 #' @return A ggplot2 object showing VMT by facility type in each facet level
 #'   over time.
 #'
 #' @export
-plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
+plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = TRUE){
 
-  link_vmt <- extract_vmt(db, facet_var, facet_levels)
+  link_vmt <- extract_vmt(db, facet_var, facet_levels, index)
 
   ggplot(link_vmt,
-         aes(x = year, y = vmt, color = factor(FacType))
-         ) +
+    aes(x = year, y = vmt, color = factor(FacType))
+  ) +
     geom_path() +
-    scale_y_log10() +
-    facet_wrap(~ facet_var) +
+    facet_wrap(as.formula(paste("~", facet_var))) +
     scale_color_discrete("Facility Type") +
-    xlab("Year") + ylab("Vehicle Miles Traveled") +
+    xlab("Year") + ylab(ifelse(index, "VMT Indexed to Base Year",
+                               "Vehicle Miles Traveled")) +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
@@ -101,18 +83,19 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL){
 #' @param facet_var Field to facet by: either "MPO" or "COUNTY".
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
+#' @param index Whether to show the variables as indexed against the base year.
 #'
 #' @return A ggplot2 object showing VMT by facility type in each facet level
 #'   over time.
 #'
 #' @export
 compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
-                          facet_levels = NULL){
+                          facet_levels = NULL, index = TRUE){
 
 
-  vmtref <- extract_vmt(db1, facet_var, facet_levels)  %>%
+  vmtref <- extract_vmt(db1, facet_var, facet_levels, index)  %>%
     rename(ref = vmt)
-  vmtcom <- extract_vmt(db2, facet_var, facet_levels)  %>%
+  vmtcom <- extract_vmt(db2, facet_var, facet_levels, index)  %>%
     rename(com = vmt)
 
   df <- left_join(vmtref, vmtcom) %>%
@@ -121,7 +104,7 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
   ggplot(df,
          aes(x = year, y = diff, color = factor(FacType))) +
     geom_path() +
-    facet_wrap(~facet_var) +
+    facet_wrap(as.formula(paste("~", facet_var))) +
     scale_color_discrete("Facility Type") +
     xlab("Year") + ylab("Percent difference in VMT.") +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))

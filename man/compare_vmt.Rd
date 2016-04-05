@@ -4,7 +4,8 @@
 \alias{compare_vmt}
 \title{Compare VMT between scenarios}
 \usage{
-compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
+compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL,
+  index = TRUE)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -15,6 +16,8 @@ compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
 
 \item{facet_levels}{A character vector of the facet variable specifiying
 which levels to include.}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 A ggplot2 object showing VMT by facility type in each facet level
