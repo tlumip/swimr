@@ -75,8 +75,9 @@ get_levels <- function(df){
 #' calc_exprate(10, 12, 2010, 2040)
 calc_exprate <- function(p1, p2, t1, t2){
   # p2 = p1e^{r(t2 - t1)}
+  r <- (log(p2) - log(p1)) / (t2 - t1)
+  ifelse(is.nan(r), NA, r)
 
-  (log(p2) - log(p1)) / (t2 - t1)
 }
 
 
@@ -101,6 +102,14 @@ interpolate_exponential <- function(p1, p2, t1, t2, t0){
 
   # calculate new value at t0
   p1 * exp(r * (t0 - t1))
+}
+
+#' Calculate the indexed value of a vector
+#'
+#' @param x A numeric vector, in the proper order
+#' @return A numeric vector of length(x)
+calc_index <- function(x){
+  x / x[1]
 }
 
 

@@ -4,7 +4,8 @@
 \alias{compare_sevar}
 \title{Compare population and employment}
 \usage{
-compare_sevar(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
+compare_sevar(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL,
+  index = FALSE)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -15,6 +16,8 @@ compare_sevar(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
 
 \item{facet_levels}{A character vector of the facet variable specifiying
 which levels to include.}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 A \code{ggplot2} plot object showing the modeled change in employment
