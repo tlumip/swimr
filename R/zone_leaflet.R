@@ -226,9 +226,9 @@ change_popup <- function(shp, var, year1, year2){
 
   var_info <- paste0(
     "<strong>", year1, " ", var, ": </strong>",
-    shp@data[, paste0("", var, "_", year1)], "<br>",
+    round(shp@data[, paste0("", var, "_", year1)], digits = 2), "<br>",
     "<strong>", year2, " ", var, ": </strong>",
-    shp@data[, paste0("", var, "_", year2)], "<br>",
+    round(shp@data[, paste0("", var, "_", year2)], digits = 2), "<br>",
     "<strong>Growth rate </strong>",
     round(shp@data[, paste0(var, "_rate")], digits = 3), "%"
   )
