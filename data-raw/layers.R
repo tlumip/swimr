@@ -3,6 +3,7 @@ library(maptools)
 library(ggmap)
 library(readr)
 library(rgdal)
+library(dplyr)
 
 options(stringsAsFactors = FALSE)
 
@@ -11,7 +12,7 @@ wgs84 <- CRS("+proj=longlat +datum=WGS84 +no_defs")
 
 # links
 links_shp <- readShapeLines(
-  "data-raw/links_link_link.SHP",
+  "data-raw/links_link.shp",
   proj4string = ogic
 ) %>%
   spTransform(., wgs84)
@@ -25,12 +26,10 @@ links_data <- links_shp@data %>%
     # there's a really annoying feature of R that reads in data as factors. But
     # even more annoying is the fact that the length fields in visum are written
     # as 0.159mi, which means that the numeric field gets read in as a factor.
-    LENGTH = as.character(levels(LENGTH)[LENGTH]),
-    R_LENGTH = as.character(levels(R_LENGTH)[R_LENGTH])
+    LENGTH = as.character(levels(LENGTH)[LENGTH])
   ) %>%
   mutate(
-    LENGTH = as.numeric(gsub("[^0-9$.]", "", LENGTH)),
-    R_LENGTH = as.numeric(gsub("[^0-9$.]", "", R_LENGTH))
+    LENGTH = as.numeric(gsub("[^0-9$.]", "", LENGTH))
   )
 
 links <- fortify(links_shp) %>%

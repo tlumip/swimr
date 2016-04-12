@@ -125,62 +125,41 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 #'
 #' @export
 extract_cong <- function(db, facet_var = "MPO", facet_levels = NULL,
-                         congested_voc = 0.9){
+                         congested_voc = 1.2){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
-    select_("Azone", facet_var) %>%
-    rename(AZONE = Azone) %>%
-    rename_("facet_var" = facet_var)
+    select_("AZONE" = "Azone", facet_var)
 
-  # If no levels are specified, show all but external stations.
-  if(is.null(facet_levels)){
-    a <- grouping %>%
-      collect() %>%
-      filter(facet_var != "EXTSTA")
-
-    facet_levels = names(table(a$facet_var))
-  }
-
-  # Link distances
-  data("links", package = "swimr")
-  link_dist <- links %>%
-    # reverse link distance
-    mutate(
-      ANODE = ifelse(order == 2, TONODENO, FROMNODENO),
-      BNODE = ifelse(order == 2, FROMNODENO, TONODENO),
-      LENGTH = R_LENGTH
-    ) %>%
-    select(ANODE, BNODE, LENGTH)
-
-  link_con <- tbl(db, "LINK_DATA") %>%
-    select(AZONE, ANODE, BNODE, PLANNO, TSTEP, PM_VOL_TOTAL, TEMP_CAPACITY) %>%
-    left_join(grouping, by = "AZONE") %>%
-
-    # filter out regions you don't want
-    filter(facet_var %in% facet_levels) %>%
-
-    filter(TEMP_CAPACITY > 0) %>%
-    collect() %>%  #need to collect sooner because of ifelse below.
-
-    # get link distance from table
-    left_join(link_dist) %>%
-
-    # Calculate the percent of congested links
-    mutate(
-      # is the link congested?
-      congested = ifelse(PM_VOL_TOTAL/TEMP_CAPACITY > congested_voc, 1, 0),
-      # get period vmt
-      vmt = PM_VOL_TOTAL * LENGTH,
-      congested_vmt = congested * vmt,
-      year = as.numeric(TSTEP) + 1990
-    ) %>%
-
+  l <-
+    tbl(db, "LINK_DATA") %>%
+    left_join(grouping) %>%
+    select(PM_VOL_FACTOR, TEMP_CAPACITY, PM_VOL_TOTAL)
+    #
+    mutate()
     # consolidate facility types
     left_join(fac_types) %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
 
-    group_by(year, facet_var, FacType) %>%
-    summarise(percent_congested = (sum(congested_vmt) / sum(vmt)) * 100)
+    group_by_(facet_var, "FacType", "year") %>%
+    summarise(vmt = sum(LENGTH * DAILY_VOL_TOTAL))
+
+
+  if(index){
+    l <- l %>%
+      group_by_(facet_var, "FacType") %>%
+      mutate(vmt = calc_index(vmt))
+  }
+
+  if(!is.null(facet_levels)){
+    crit <- lazyeval::interp(~x %in% facet_levels, x = as.name(facet_var))
+    l %>% filter_(.dots = crit)
+  } else {
+    l
+  }
+
+
+
 }
 
 #' Plot percent congested links over time.

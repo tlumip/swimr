@@ -35,11 +35,15 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   shp@data <- shp@data %>%
     left_join(extract_zonedata(db, year1, year2))
 
+  palq <- colorFactor(
+    palette = "PRGn",
+    domain = cut_diverror()
+  )
 
   zone_leaflet(shp) %>%
     addPolygons(
       group = "Population", fill = TRUE, color = FALSE,
-      fillColor = ~colorNumeric("Reds", domain = NULL)(pop_rate),
+      fillColor = ~colorNumeric("Reds", domain = cut_diverror())(pop_rate),
       popup = change_popup(shp, "pop", year1, year2)
     ) %>%
     addPolygons(
@@ -49,7 +53,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
     ) %>%
     addPolygons(
       group = "HH", fill = TRUE, color = FALSE,
-      fillColor = ~colorNumeric("Greens", domain = NULL)(emp_rate),
+      fillColor = ~colorNumeric("Greens", domain = NULL)(hh_rate),
       popup = change_popup(shp, "hh", year1, year2)
     ) %>%
     addLayersControl(
@@ -225,9 +229,9 @@ change_popup <- function(shp, var, year1, year2){
   zone_info <- paste0("<strong>Alpha Zone: </strong>", shp@data$AZONE)
 
   var_info <- paste0(
-    "<strong>", year1, " ", var, ": </strong>",
+    "<strong>", year1, " ", var, " density: </strong>",
     round(shp@data[, paste0("", var, "_", year1)], digits = 2), "<br>",
-    "<strong>", year2, " ", var, ": </strong>",
+    "<strong>", year2, " ", var, " density: </strong>",
     round(shp@data[, paste0("", var, "_", year2)], digits = 2), "<br>",
     "<strong>Growth rate </strong>",
     round(shp@data[, paste0(var, "_rate")], digits = 3), "%"

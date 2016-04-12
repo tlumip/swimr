@@ -5,6 +5,8 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
     toc: true
+    toc_float: true
+    code_folding: hide
     fig_caption: true
     theme: spacelab
 ---
@@ -14,7 +16,7 @@ library(knitr)
 opts_chunk$set(
   echo = FALSE, message = FALSE, warning = FALSE,
   fig.keep = TRUE, fig.path = "./figures/",
-  fig.width=8, fig.height=6
+  fig.width=8, fig.height=6, error = TRUE
 )
 
 library(swimr)
@@ -35,7 +37,7 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-ref_db <- "~/Documents/projects/swim/AA_Decay_TravelCost.db"
+ref_db <- "/Users/Greg/Documents/projects/swim/bridgeFail_1yr.db"
 db <- src_sqlite(ref_db) # reference
 # update to reflect scope of analysis
 facet <- "COUNTY" 
@@ -45,7 +47,7 @@ years <- c(2010, 2025, 2040)
 
 
 
-# Scenario Description
+# Scenario Description 
 
 `r rtab("scenario")` shows the scenario information. 
 In this report we will focus on `r facet`-level aggregations for 
@@ -55,23 +57,25 @@ In this report we will focus on `r facet`-level aggregations for
 # update to reflect current scenario
 scen_info <- data_frame(
   Name = basename(ref_db),
-  Scenario = "Reference scenario",
+  Scenario = "Bridge Fail 1 year",
   `File date` = file.info(ref_db)$mtime
 )
 
 kable(scen_info, caption = "Scenario Information")
 ```
 
+# Socioeconomics {.tabset}
 
-# Population and Employment
+## Population 
+
+```{r leaflet, fig.cap="Change in socioeconomic data over model run."}
+change_leaflet(db, year1 = 2010, year2 = 2040)
+```
 
 ```{r se}
 se <- extract_se(db, "MPO") %>%
   filter(year %in% years)
 ```
-
-`r rtab("tab_pop")` and `r rtab("tab_emp")` show the MPO-level population and 
-employment in each scenario by year.
 
 ```{r tab_pop, results='asis'}
 pop <- se %>% filter(var == "population") %>%
@@ -80,6 +84,8 @@ pop <- se %>% filter(var == "population") %>%
 kable(pop, caption = "Population by MPO", digits = 2)
 ```
 
+
+## Employment
 ```{r tab_emp, results='asis'}
 emp <- se %>% filter(var == "employment") %>%
   yearly_summary(group = "MPO", var = "y")
@@ -92,21 +98,33 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 plot_sevar(db, facet, facet_levels)
 ```
 
+```{r plot_se_index, fig.cap="Indexed Population and employment in selected areas."}
+plot_sevar(db, facet, facet_levels, index = TRUE)
+```
+
 ```{r plot_se_mpo, fig.cap="Population and employment - all MPOs."}
 plot_sevar(db, "MPO")
 ```
 
+```{r plot_se_mpo_index, fig.cap="Indexed population and employment - all MPOs."}
+plot_sevar(db, "MPO", index = TRUE)
+```
+
+## Historical Trends
 ```{r plot_history, fig.cap="Historical population trends in selected areas."}
 plot_history(db, facet_levels)
 ```
 
 
-# Transportation 
+# Transportation {.tabset}
 
-## Validation
+## Link Validation
+```{r plot_validation, fig.cap="Link Validation"}
+plot_countcomparison(db)
+```
 
-```{r plot_validation}
-plot_validation(db)
+```{r plot_facility_validation, fig.cap = "Link Validation by Facility Type"}
+plot_countcomparison(db) + facet_wrap(~ FacType, scales = "free")
 ```
 
 ```{r plot_historical_atr, fig.cap="AAWDT count and projection at selected ATR locations"}
@@ -115,25 +133,24 @@ plot_traffic_count(db, atr = c(3011, 10006, 3013, 34009, 24022,
 ```
 
 
-> Note that the plots in this section may only have data for years in which the 
-transportation model runs.
+## VMT
 
-
-## Volume of Travel
-
-### VMT
 ```{r tab_vmt}
-vmt <- extract_vmt(db, "MPO") %>%
+vmt <- extract_vmt(db, "MPO", index = FALSE) %>%
   filter(year %in% years) %>%
-  group_by(year, facet_var) %>%
+  group_by(year, MPO) %>%
   summarise(vmt = sum(vmt)) %>%
-  yearly_summary("facet_var", "vmt")
+  yearly_summary("MPO", "vmt")
 
 kable(vmt, caption = "VMT by MPO", digits = 2)
 ```
 
 
 ```{r plot_vmt, fig.cap="VMT by facility type."}
+plot_vmt(db, facet, facet_levels, index = FALSE)
+```
+
+```{r plot_vmt_index, fig.cap="Indexed VMT by facility type."}
 plot_vmt(db, facet, facet_levels)
 ```
 
@@ -141,25 +158,6 @@ plot_vmt(db, facet, facet_levels)
 plot_vmt(db, "MPO")
 ```
 
-
-### VHT
-```{r tab_vht}
-vht <- extract_vht(db, "MPO") %>%
-  filter(year %in% years) %>%
-  group_by(year, facet_var) %>%
-  summarise(vht = sum(vht)) %>%
-  yearly_summary("facet_var", "vht")
-
-kable(vht, caption = "VHT by MPO", digits = 2)
-```
-
-```{r plot_vht, fig.cap="VHT by facility type."}
-plot_vht(db, facet, facet_levels)
-```
-
-```{r plot_vht_mpo, fig.cap="VHT by facility type - all MPO's."}
-plot_vht(db)
-```
 
 
 ## Mode Split
@@ -201,7 +199,7 @@ plot_trips(db, share = FALSE)
 ```
 
 
-## Congested Links
+## Congestion
 
 ```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
 plot_pct_cong(db, facet, facet_levels, congested_voc = 1.2)
@@ -215,14 +213,16 @@ plot_pct_cong(db, congested_voc = 1.2)
 ## TLFD
 
 ```{r plot_tlfd, fig.cap = "Trip length frequency distribution."}
-plot_tlfd(db, facet, facet_levels, bin_width = 1, max_bin = 30)
+plot_tlfd(db, facet, facet_levels)
 ```
 
+```{r plot_tlfd_cum, fig.cap = "Cumulative trip length frequency distribution."}
+plot_tlfd(db, facet, facet_levels, cumulative = TRUE)
+```
 
 ```{r plot_tlfd_mpo, fig.cap = "Trip length frequency distribution - all MPO's."}
 plot_tlfd(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
-                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"),
-          bin_width = 1, max_bin = 30)
+                       "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
 
 ## Log Sums
@@ -236,7 +236,7 @@ plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
 ```
 
 
-# Economics
+# Economics{.tabset}
 
 ## Built Floorspace
 ```{r plot_floorspace, fig.cap="Floorspace by type."}
@@ -275,7 +275,7 @@ plot_employment(db, facet, facet_levels)
 plot_employment(db)
 ```
 
-## GDP
+## Labor Output
 
 ```{r plot_gdp, fig.cap="Comparison of labor output by sector."}
 plot_gdp(db, facet, facet_levels)
@@ -285,9 +285,9 @@ plot_gdp(db, facet, facet_levels)
 plot_gdp(db)
 ```
 
+## Labor Force Participation
 
-
-## Labor Force Participation^[Specifically, the ratio of workers to individuals 15 or older.]
+Specifically, the ratio of workers to individuals 15 or older.
 
 ```{r plot_wapr, fig.cap = "Workforce participation."}
 plot_wapr(db, facet, facet_levels)

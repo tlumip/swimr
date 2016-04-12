@@ -4,7 +4,7 @@
 \name{links}
 \alias{links}
 \title{Link table}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 507 rows and 8 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 218656 rows and 28 columns.}
 \usage{
 links
 }
