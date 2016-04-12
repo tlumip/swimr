@@ -4,7 +4,7 @@
 \alias{plot_vmt}
 \title{Plot VMT over time.}
 \usage{
-plot_vmt(db, facet_var = "MPO", facet_levels = NULL)
+plot_vmt(db, facet_var = "MPO", facet_levels = NULL, index = TRUE)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -14,6 +14,8 @@ plot_vmt(db, facet_var = "MPO", facet_levels = NULL)
 \item{facet_levels}{A character vector giving the levels of the facet
 variable to use. Levels not called are dropped from the plot; default is
 \code{NULL}, meaning print all levels.}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 A ggplot2 object showing VMT by facility type in each facet level

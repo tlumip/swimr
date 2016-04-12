@@ -5,7 +5,7 @@
 \title{Make a plot of population and employment}
 \usage{
 plot_sevar(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
-  controls = TRUE)
+  controls = TRUE, index = FALSE)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -16,6 +16,8 @@ plot_sevar(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
 which levels to include.}
 
 \item{controls}{Plot against the control totals. Defaults to TRUE}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 A \code{ggplot2} plot object showing the modeled change in employment

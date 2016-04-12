@@ -29,16 +29,13 @@ yearly_summary <- function(df, group, var){
 #'   which levels to include.
 #' @param controls Plot against the control totals. Defaults to TRUE, cannot
 #'   currently run with FALSE.
+#' @param index Whether to show the variables as indexed against the base year.
 #'
 #' @export
 #' @return a data frame
 extract_se <- function(db, color_var = c("MPO", "COUNTY"),
-                       color_levels = NULL, controls = TRUE){
+                       color_levels = NULL, controls = TRUE, index = FALSE){
 
-  # set color variable; if null then default to County
-  if(is.null(color_var)){
-    color_var = "COUNTY"
-  }
 
   # county plot with controls
   if(color_var == "COUNTY"){
@@ -48,11 +45,11 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
       # join information for county and state
       left_join(
         tbl(db, "ALLZONES") %>%
-          select(AZONE = Azone, county = COUNTY, state = STATE)
+          select(AZONE = Azone, COUNTY = COUNTY, state = STATE)
       ) %>%
 
       # summarize to the county level
-      group_by(county, state, TSTEP) %>%
+      group_by(COUNTY, state, TSTEP) %>%
       summarise(
         population = sum(POPULATION),
         employment = sum(EMPLOYMENT),
@@ -63,21 +60,22 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 
     # if no levels specified, then keep all
     if(!is.null(color_levels)){
-      df <- filter(df, county %in% color_levels)
+      df <- filter(df, COUNTY %in% color_levels)
     }
 
     df <- df %>%
-      select(county, year, population, employment) %>%
+      select(COUNTY, year, population, employment) %>%
       gather(var, y, population:employment) %>%
       mutate(data = "SWIM")
 
-    # add county controls
+    # add COUNTY controls
     if(controls){
       ct <- county_controls %>%
-        filter(county %in% df$county) %>%
+        rename(COUNTY = county) %>%
+        filter(COUNTY %in% df$COUNTY) %>%
         filter(year > 2005) %>%
-        select(county, year, var, y) %>%
-        mutate(data = "Control")
+        select(COUNTY, year, var, y) %>%
+        mutate(data = "OEA Forecast")
 
       df <- rbind(df, ct)
     }
@@ -121,6 +119,12 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
       mutate(data = "SWIM")
   }
 
+  if(index){
+    df <- df %>%
+      group_by_(color_var, "var", "data") %>%
+      mutate(y = calc_index(y))
+  }
+
   return(df)
 
 }
@@ -132,23 +136,24 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 #' @param color_levels A character vector of the color variable specifiying
 #'   which levels to include.
 #' @param controls Plot against the control totals. Defaults to TRUE
+#' @param index Whether to show the variables as indexed against the base year.
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.
 #'
 #' @export
 plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
-                       color_levels = NULL, controls = TRUE
-                       ){
+                       color_levels = NULL, controls = TRUE,
+                       index = FALSE ){
 
 
   # county plot with controls
   if(color_var == "COUNTY"){
 
-    df <- extract_se(db, color_var, color_levels, controls)
+    df <- extract_se(db, color_var, color_levels, controls, index)
 
     p <- ggplot(df) +
-      geom_line(aes(x = year, y = y, color = county, lty = data))
+      geom_line(aes_string(x = "year", y = "y", color = color_var, lty = "data"))
 
     if(controls){
       p <- p + scale_linetype_manual("Data", values = c("dashed", "solid"))
@@ -156,7 +161,7 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 
   } else { # MPO plot without controls
 
-    df <- extract_se(db, color_var, color_levels, controls)
+    df <- extract_se(db, color_var, color_levels, controls, index)
 
     p <- ggplot(df) +
       geom_line(aes(x = year, y = y, color = MPO))
@@ -165,9 +170,8 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 
   # theme, etc
   p +
-    scale_y_log10() +
     facet_grid(. ~ var, scales = "free_y") +
-    xlab("Year") + ylab("Count") +
+    xlab("Year") + ylab(ifelse(index, "Index Relative to Base", "Count")) +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 }
 
@@ -179,18 +183,19 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 #' @param facet_var Field to facet by: either "MPO" or "COUNTY".
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
+#' @param index Whether to show the variables as indexed against the base year.
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.
 #'
 #' @export
 compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
-                          facet_levels = NULL){
+                          facet_levels = NULL, index = FALSE){
 
 
-  seref <- extract_se(db1, facet_var, facet_levels, controls = FALSE) %>%
+  seref <- extract_se(db1, facet_var, facet_levels, controls = FALSE, index) %>%
     rename(ref = y)
-  secom <- extract_se(db2, facet_var, facet_levels, controls = FALSE) %>%
+  secom <- extract_se(db2, facet_var, facet_levels, controls = FALSE, index) %>%
     rename(com = y)
 
   df <- left_join(seref, secom) %>%

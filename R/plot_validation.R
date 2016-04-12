@@ -3,46 +3,100 @@
 #' Create a plot of the base scenario link volumes compared with observed AADT.
 #'
 #' @param db The scenario database.
+#' @param facet_var Variable to display in facets
 #' @return A ggplot2 object.
+#' @import outviz
 #'
 #' @export
-plot_validation <- function(db){
+plot_countcomparison <- function(db, year = c(2010, 2013)){
 
+  link_vols <- suppressMessages(get_validation_table(db, year))
 
-  # get base year link traffic volumes
-  link_vols <- tbl(db, "LINK_DATA") %>%
-    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL) %>%
-    filter(TSTEP == "23") %>%
-
-    collect() %>%
-    mutate(
-      ANODE = as.character(ANODE),
-      BNODE = as.character(BNODE)
-    )  %>%
-
-    # Join count locations
-    left_join(ref_counts,
-              by = c("ANODE" = "FROMNODENO", "BNODE" = "TONODENO")) %>%
-
-    # compute percent error
-    filter(!is.na(AADT)) %>%
-    mutate(
-      error = DAILY_VOL_TOTAL - AADT,
-      pct_error = abs(error) / AADT
-    )
-
-  p <- ggplot(link_vols,
-              aes(x = AADT, y = DAILY_VOL_TOTAL)) +
-    geom_point() +
-    geom_smooth(method = "lm") +
-    geom_abline(aes(intercept = 0, slope = 1), alpha = 0.5) +
-
-    ylab("Assigned Volume") +
-    xlab("Observed AADT") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
-
-  p
+  outviz::plot_validation(link_vols, "volume", "count", show_lm = TRUE) +
+    theme_bw()
 }
 
 
+#' Plot historical and projected traffic counts
+#'
+#' @param db The scenario database.
+#' @param atr A numeric vector indicating the traffic recorders to plot track.
+#' @return A ggplot2 object
+#'
+#' @export
+#'
+plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
+
+  # protect type
+  atr <- as.numeric(atr)
+
+  pc <- counts %>%
+    filter(site %in% atr) %>%
+    select(-`2035`) %>%
+    gather(year, volume, `2000`:`2015`) %>%
+    mutate(data = "ODOT ATR Counts", year = as.numeric(year))
+
+  # get base year link traffic volumes
+  swim <- tbl(db, "LINK_DATA") %>%
+    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
+    collect() %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+
+    # Join ATR ID and calculate two-way volume
+    inner_join(countid) %>%
+    group_by(site, year) %>%
+    filter(site %in% atr) %>%
+    summarise(
+      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
+      data = "SWIM Volume"
+    )
+
+  d <- bind_rows(pc, swim)
+
+  ggplot(
+    d,
+    aes(x = year, y = volume, color = factor(site), lty = data) ) +
+    geom_path() +
+
+    xlab("Year") + ylab("AAWDT") +
+    scale_color_discrete("ATR Location") +
+    scale_linetype("Source") +
+    theme_bw()
+
+}
+
+#' Get comparison of link volumes to ATR count
+#'
+#' Create a plot of the base scenario link volumes compared with observed AADT.
+#'
+#' @param db The scenario database.
+#' @param facet_var Variable to display in facets
+#' @return A ggplot2 object.
+#' @import outviz
+#'
+#' @export
+get_validation_table <- function(db, year = c(2010, 2013)){
+
+  # get link traffic volumes
+  tbl(db, "LINK_DATA") %>%
+    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
+    collect() %>%
+    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year)) %>%
+
+    # Join ATR ID and calculate two-way volume
+    inner_join(countid) %>%
+    group_by(site) %>%
+    summarise(
+      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
+      PLANNO = PLANNO[1]
+    ) %>%
+
+    # Join ATR data
+    inner_join(counts %>% select_("site", count = as.name(year))) %>%
+
+    # join facility types
+    left_join(fac_types, by = "PLANNO")
+
+}
 

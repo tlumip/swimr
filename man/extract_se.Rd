@@ -5,7 +5,7 @@
 \title{Extract SE data from DB}
 \usage{
 extract_se(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
-  controls = TRUE)
+  controls = TRUE, index = FALSE)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -17,6 +17,8 @@ which levels to include.}
 
 \item{controls}{Plot against the control totals. Defaults to TRUE, cannot
 currently run with FALSE.}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
 a data frame

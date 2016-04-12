@@ -5,7 +5,7 @@
 \title{Extract trip length frequency distribution data}
 \usage{
 extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  bin_width = 1, max_bin = 100)
+  cumulative = FALSE, years = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -14,8 +14,7 @@ extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
 
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
-\item{bin_width}{The width of bins to use in the trip length frequency
-distribution. Defaults to 1.}
+\item{years}{The years to show in the plot. If null, will show the first}
 
 \item{max_bin}{The maximum bin size to return.}
 }

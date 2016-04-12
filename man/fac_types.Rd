@@ -7,7 +7,7 @@
 \format{A data frame with 17 observations.
 \describe{
   \item{PLANNO}{The facility classifications in the db.}
-  \item{FacType}{The consolidated classifications.}
+  \item{FacType}{The consolidated classifications, as an ordered factor.}
 }}
 \usage{
 fac_types
