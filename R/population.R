@@ -201,17 +201,12 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
   df <- left_join(seref, secom) %>%
     mutate(diff = (com - ref) / ref * 100)
 
-  if(facet_var == "COUNTY"){
-    df <- rename(df, facet_var = county)
-  } else {
-    df <- rename(df, facet_var = MPO)
-  }
-
   ggplot(df,
-         aes(x = year, y = diff, color = var)) +
+         aes_string(x = "year", y = "diff", color = "var")) +
     geom_path() +
-    facet_wrap(~ facet_var) +
+    facet_wrap(as.formula(paste("~", facet_var))) +
     xlab("Year") + ylab("Percent difference (current - reference).") +
+    scale_color_discrete("Variable") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 30))
 }
