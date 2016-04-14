@@ -5,6 +5,8 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
     toc: true
+    toc_float: true
+    code_folding: hide
     fig_caption: true
     theme: spacelab
 ---
@@ -35,14 +37,15 @@ rfig <- function(tag){
 
 ```{r setdb}
 # update to reflect scenario location
-ref_db <- "~/Documents/projects/swim/AA_Decay_TravelCost.db" # reference
-cur_db <- "~/Documents/projects/swim/AA_Decay_TravelCost_2xPDX.db" # current
+cur_db <- "~/Documents/projects/swim/bridgeFail_1yr.db" # reference
+ref_db <- "~/Documents/projects/swim/Mar_Recalib.db" # current
 db1 <- src_sqlite(ref_db) 
 db2 <- src_sqlite(cur_db) 
 # update to reflect scope of analysis
 facet <- "COUNTY" 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
-years <- c(2010, 2025, 2040)
+years <- c(2010, 2016, 2022)
+diff_year <- 2012 # year to show in differenced leaflet
 ```
 
 
@@ -64,8 +67,9 @@ kable(scen_info, caption = "Scenario Information")
 ```
 
 
-# Population and Employment
+# Socioeconomics {.tabset}
 
+## Overview
 ```{r se}
 se <- left_join(
   extract_se(db1, "MPO") %>% rename(reference = y),
@@ -74,11 +78,6 @@ se <- left_join(
   filter(year %in% years) %>%
   mutate(diff = (current - reference) / reference * 100)
 ```
-
-`r rtab("tab_pop")` and `r rtab("tab_emp")` show the MPO-level population and 
-employment in each scenario by year, as well as the percent difference between
-the scenarios. `r rfig("fig_population")` shows the difference between the two
-scenarios across time aggregated to selected regions.
 
 ```{r tab_pop, results='asis'}
 pop <- se %>% filter(var == "population")
@@ -114,6 +113,7 @@ names(emp) <- c("MPO",
 kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
+## Comparison
 
 ```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
 compare_sevar(db1, db2, facet, facet_levels)
@@ -123,15 +123,16 @@ compare_sevar(db1, db2, facet, facet_levels)
 compare_sevar(db1, db2, "MPO")
 ```
 
+## Map
+```{r compare_leaflet, fig.cap = "Spatial location of difference in SE values."}
+diff_leaflet(db1, db2, year = diff_year, variable = "pop", 
+             scen_names = c("Reference", "Bridge Fail"))
+```
 
-# Transportation 
 
-> Note that the plots in this section may only have data for years in which the 
-transportation model runs.
+# Transportation {.tabset}
 
-## Volume of Travel
-
-### VMT
+## VMT
 ```{r tab_vmt}
 vmt <- left_join(
   extract_vmt(db1, "MPO") %>% rename(reference = vmt),
@@ -140,12 +141,12 @@ vmt <- left_join(
   filter(year %in% years) %>%
   mutate(diff = (current - reference) / reference * 100) 
  
-ref <- yearly_summary(vmt, "facet_var", "reference")
-cur <- yearly_summary(vmt, "facet_var", "current")
-diff <- yearly_summary(vmt, "facet_var", "diff")
+ref <- yearly_summary(vmt, "MPO", "reference") 
+cur <- yearly_summary(vmt, "MPO", "current")
+diff <- yearly_summary(vmt, "MPO", "diff")
 
-vmt <- left_join(ref, cur, by = "facet_var") %>%
-  left_join(diff, by = "facet_var")
+vmt <- left_join(ref, cur, by = "MPO") %>%
+  left_join(diff, by = "MPO")
 
 names(vmt) <- c("MPO", 
                 paste(rep(c("Reference", "Current", "Pct diff"), 
@@ -190,11 +191,10 @@ kable(trips, caption = "Total Trips by MPO", digits = 2)
 ```
 
 
-
-
 ```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
 compare_trips(db1, db2, facet, facet_levels)
 ```
+
 
 ```{r compare_mode_mpo, fig.cap="Comparison of trip productions by mode - all MPOs."}
 compare_trips(db1, db2)
@@ -206,16 +206,15 @@ compare_trips(db1, db2)
 
 
 ```{r compare_tlfd, fig.cap = "Comparison of trip length frequency distribution."}
-compare_tlfd(db1, db2, facet, facet_levels, bin_width = 1, max_bin = 30)
+compare_tlfd(db1, db2, facet, facet_levels)
 ```
-
 
 ```{r compare_tlfd_mpo, fig.cap = "Comparison of trip length frequency distribution - all MPO's."}
 compare_tlfd(db1, db2, "MPO", 
              c("Bend", "Corvallis", "EugeneSpringfield", 
-               "Metro", "NonMPO", "RogueValley", "SalemKeizer"), 
-             bin_width = 1, max_bin = 30)
+               "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
+
 
 ## Log Sums
 ```{r compare_logsum, fig.cap = "Mode choice model logsums."}
