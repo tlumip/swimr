@@ -8,6 +8,7 @@
 #' @param facet_levels Regions to include in summary.
 #' @param color_levels Modes to include in summary. Defaults to all modes other
 #'   than \code{school}. See consolidated modes in \link{mode_types}.
+#' @param index whether to index mode split off the base year.
 #'
 #' @return A data frame with total trips originating in the region by mode and
 #'   year.
@@ -19,14 +20,17 @@ extract_trips <- function(db,
                           facet_var = c("MPO", "COUNTY", "STATE"),
                           facet_levels = NULL,
                           color_levels = c("auto", "transit",
-                                           "non-motorized", "truck")){
+                                           "non-motorized", "truck"),
+                          index = FALSE){
 
+  # Get lookup table of zones to grouping variable.
   df <- tbl(db, "TRIPMATRIX") %>%
     # determine the origin MPO of the trip
     mutate(BZONE = FROMBZONE) %>%
     select(-FROMBZONE, -TOBZONE) %>%
-    left_join(tbl(db, "BZONE") %>% select_("BZONE", "facet_var" = facet_var),
-              by = "BZONE") %>%
+    left_join(
+      tbl(db, "BZONE") %>%
+        select_("BZONE", "facet_var" = facet_var), by = "BZONE") %>%
     select(-BZONE)
 
 
@@ -60,6 +64,14 @@ extract_trips <- function(db,
     summarise(trips = sum(trips)) %>%
     ungroup()
 
+  if(index){
+    df <- df %>%
+      group_by(facet_var, mode) %>%
+      mutate(trips = calc_index(trips))
+  }
+
+  return(df)
+
 }
 
 #' Plot Trip productions
@@ -70,6 +82,7 @@ extract_trips <- function(db,
 #' @param color_levels Modes to include in summary. Defaults to all modes other
 #'   than \code{school}. See consolidated modes in \link{mode_types}.
 #' @param share Plot mode share instead of total trips? Defaults to \code{TRUE}.
+#' @param index whether to index mode split off the base year.
 #'
 #' @return A ggplot2 object.
 #'
@@ -81,9 +94,9 @@ plot_trips <- function(db,
                        facet_levels = NULL,
                        color_levels = c("auto", "transit",
                                         "non-motorized", "truck"),
-                       share = TRUE){
+                       share = TRUE, index = FALSE){
 
-  df <- extract_trips(db, facet_var, facet_levels, color_levels)
+  df <- extract_trips(db, facet_var, facet_levels, color_levels, index)
 
   if(share) {
     df <- df %>%
@@ -99,7 +112,8 @@ plot_trips <- function(db,
     p <- ggplot(df,
            aes(x = as.numeric(year), y = trips,
                group = mode, color = mode)) +
-      scale_y_log10() + ylab("Trips Produced")
+      ylab(ifelse(index, "Trips Indexed to Base Year",
+                  "Total Trips"))
   }
 
   p +
@@ -129,10 +143,10 @@ compare_trips <- function(db1, db2,
                                            "non-motorized", "truck")){
 
   # reference scenario
-  fref <- extract_trips(db1, facet_var, facet_levels, color_levels) %>%
+  fref <- extract_trips(db1, facet_var, facet_levels, color_levels, index = TRUE) %>%
     rename(ref = trips)
   # current scenario
-  fcom <- extract_trips(db2, facet_var, facet_levels, color_levels) %>%
+  fcom <- extract_trips(db2, facet_var, facet_levels, color_levels, index = TRUE) %>%
     rename(com = trips)
 
   df <- left_join(fref, fcom) %>%
