@@ -94,7 +94,7 @@ plot_trips <- function(db,
                        facet_levels = NULL,
                        color_levels = c("auto", "transit",
                                         "non-motorized", "truck"),
-                       share = TRUE, index = FALSE){
+                       share = TRUE, index = TRUE){
 
   df <- extract_trips(db, facet_var, facet_levels, color_levels, index)
 

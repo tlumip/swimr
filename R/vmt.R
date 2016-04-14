@@ -12,7 +12,7 @@
 #' @return A data frame with VMT summarized by facility type and facet variable.
 #'
 #' @export
-extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index){
+extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = FALSE){
 
   # Get lookup table of zones to grouping variable.
   grouping <- tbl(db, "ALLZONES") %>%
