@@ -35,25 +35,26 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   shp@data <- shp@data %>%
     left_join(extract_zonedata(db, year1, year2))
 
+  # Create a palette for
   palq <- colorFactor(
-    palette = "PRGn",
-    domain = cut_diverror()
+    palette = "RdBu",
+    domain = cut_diverror(shp@data$pop_rate)
   )
 
   zone_leaflet(shp) %>%
     addPolygons(
       group = "Population", fill = TRUE, color = FALSE,
-      fillColor = ~colorNumeric("Reds", domain = cut_diverror())(pop_rate),
+      fillColor = ~palq(cut_diverror(pop_rate)),
       popup = change_popup(shp, "pop", year1, year2)
     ) %>%
     addPolygons(
       group = "Employment", fill = TRUE, color = FALSE,
-      fillColor = ~colorNumeric("Blues", domain = NULL)(emp_rate),
+      fillColor = ~palq(cut_diverror(emp_rate)),
       popup = change_popup(shp, "emp", year1, year2)
     ) %>%
     addPolygons(
       group = "HH", fill = TRUE, color = FALSE,
-      fillColor = ~colorNumeric("Greens", domain = NULL)(hh_rate),
+      fillColor = ~palq(cut_diverror(hh_rate)),
       popup = change_popup(shp, "hh", year1, year2)
     ) %>%
     addLayersControl(
