@@ -163,39 +163,6 @@ compare_vmt(db1, db2, facet, facet_levels)
 compare_vmt(db1, db2, "MPO")
 ```
 
-
-### VHT
-
-```{r tab_vht}
-vht <- left_join(
-  extract_vht(db1, "MPO") %>% rename(reference = vht),
-  extract_vht(db2, "MPO") %>% rename(current   = vht)
-) %>%
-  filter(year %in% years) %>%
-  mutate(diff = (current - reference) / reference * 100)
- 
-ref <- yearly_summary(vht, "facet_var", "reference")
-cur <- yearly_summary(vht, "facet_var", "current")
-diff <- yearly_summary(vht, "facet_var", "diff")
-
-vht <- left_join(ref, cur, by = "facet_var") %>%
-  left_join(diff, by = "facet_var")
-
-names(vht) <- c("MPO", 
-                paste(rep(c("Reference", "Current", "Pct diff"), 
-                          each = length(years)),
-                      rep(years, 3)))
-kable(vht, caption = "VHT by MPO", digits = 2)
-```
-
-```{r compare_vht, fig.cap="Comparison of VHT by facility type."}
-compare_vht(db1, db2, facet, facet_levels)
-```
-
-```{r compare_vht_mpo, fig.cap="Comparison of VHT by facility type - all MPO's."}
-compare_vht(db1, db2, "MPO")
-```
-
 ## Mode Split
 
 ```{r tab_trips, results='asis'}
@@ -233,20 +200,6 @@ compare_trips(db1, db2, facet, facet_levels)
 compare_trips(db1, db2)
 ```
 
-## Congested Links
-
-Congestion is defined as having a peak period volume 1.2 times greater than the
-link capacity. These plots show show the percent of PM period VMT travelling on
-such links in the region.
-
-```{r compare_cong, fig.cap="Comparison of congested PM VMT."}
-compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
-```
-
-
-```{r compare_cong_mpo, fig.cap="Comparison of congested PM VMT - all MPO's."}
-compare_pct_cong(db1, db2, facet, facet_levels, congested_voc = 1.2)
-```
 
 
 ## TLFD

@@ -199,16 +199,6 @@ plot_trips(db, share = FALSE)
 ```
 
 
-## Congestion
-
-```{r plot_cong, fig.cap="Percent of PM VMT on congested links."}
-plot_pct_cong(db, facet, facet_levels, congested_voc = 1.2)
-```
-
-```{r plot_cong_mpo, fig.cap="Percent of PM VMT on congested links - all MPO's."}
-plot_pct_cong(db, congested_voc = 1.2)
-```
-
 
 ## TLFD
 
