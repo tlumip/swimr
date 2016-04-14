@@ -12,7 +12,7 @@
 extract_floorspace <- function(db,
                                facet_var = c("MPO", "COUNTY", "STATE"),
                                facet_levels = NULL,
-                               type_levels = NULL){
+                               type_levels = NULL, index = TRUE){
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -58,6 +58,12 @@ extract_floorspace <- function(db,
     filter(floor_type %in% type_levels) %>%
     group_by(facet_var, year, floor_type) %>%
     summarise_each(funs(sum), floor:built)
+
+  if(index){
+    floorspace <- floorspace %>%
+      group_by(facet_var, floor_type) %>%
+      mutate(floor = calc_index(floor))
+  }
 
   return(floorspace)
 }
@@ -140,7 +146,7 @@ extract_volume <- function(db,
 extract_rents <- function(db,
                           facet_var = c("MPO", "COUNTY", "STATE"),
                           facet_levels = NULL,
-                          type_levels = NULL){
+                          type_levels = NULL, index = TRUE){
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -190,6 +196,15 @@ extract_rents <- function(db,
     summarise(supply = sum(supply), price = mean(price), bought = sum(bought)) %>%
     mutate(occrate = bought / supply)
 
+  if(index){
+    df <- df  %>%
+      group_by(facet_var, floor_type) %>%
+      mutate(
+        price = calc_index(price),
+        occrate = calc_index(occrate)
+      )
+  }
+
   return(df)
 }
 
@@ -216,12 +231,12 @@ plot_floorspace <- function(db,
                             type_levels = NULL, price = FALSE){
 
   if(price){
-    floorspace <- extract_rents(db, facet_var, facet_levels, type_levels) %>%
+    floorspace <- extract_rents(db, facet_var, facet_levels, type_levels, index = TRUE) %>%
       mutate(floor = price)
-    ylabel = "Rent [$/sqft]"
+    ylabel = "Indexed Rent [$/sqft]"
   } else {
-    floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels)
-    ylabel <- "Floorspace [sqft]"
+    floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels, index = TRUE)
+    ylabel <- "Indexed Floorspace [sqft]"
   }
 
   # make plot
@@ -230,8 +245,6 @@ plot_floorspace <- function(db,
              group = floor_type, color = floor_type)) +
     geom_path()  +
     facet_wrap( ~ facet_var) +
-
-    scale_y_log10() +
     xlab("Year") + ylab(ylabel) +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
@@ -281,8 +294,7 @@ compare_floorspace <- function(db1, db2,
     mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
-  ggplot(f,
-         aes(x = year, y = diff, color = floor_type)) +
+  ggplot(f, aes(x = year, y = diff, color = floor_type)) +
     geom_path() +
     facet_wrap( ~ facet_var) +
     xlab("Year") + ylab(ylabel) +
@@ -358,7 +370,7 @@ plot_occupancy <- function(db,
                            facet_levels = NULL,
                            type_levels = NULL){
 
-  rents <- extract_rents(db, facet_var, facet_levels, type_levels)
+  rents <- extract_rents(db, facet_var, facet_levels, type_levels, index = FALSE)
 
   ggplot(rents,  aes(x = year, y = occrate, color = floor_type) ) +
     geom_path() +
@@ -378,10 +390,10 @@ compare_occupancy <- function(db1, db2,
                               facet_levels = NULL,
                               type_levels = NULL){
 
-  fref <- extract_rents(db1, facet_var, facet_levels, type_levels) %>%
+  fref <- extract_rents(db1, facet_var, facet_levels, type_levels, index = FALSE) %>%
     select(facet_var, year, floor_type, rate_ref = occrate)
 
-  fcom <- extract_rents(db2, facet_var, facet_levels, type_levels) %>%
+  fcom <- extract_rents(db2, facet_var, facet_levels, type_levels, index = FALSE) %>%
     select(facet_var, year, floor_type, rate_com = occrate)
 
   df <- left_join(fref, fcom) %>%
