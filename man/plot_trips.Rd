@@ -6,7 +6,7 @@
 \usage{
 plot_trips(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
   color_levels = c("auto", "transit", "non-motorized", "truck"),
-  share = TRUE)
+  share = TRUE, index = TRUE)
 }
 \arguments{
 \item{db}{the scenario database.}
@@ -19,6 +19,8 @@ plot_trips(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
 than \code{school}. See consolidated modes in \link{mode_types}.}
 
 \item{share}{Plot mode share instead of total trips? Defaults to \code{TRUE}.}
+
+\item{index}{whether to index mode split off the base year.}
 }
 \value{
 A ggplot2 object.

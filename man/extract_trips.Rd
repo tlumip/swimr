@@ -6,7 +6,7 @@
 \usage{
 extract_trips(db, facet_var = c("MPO", "COUNTY", "STATE"),
   facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
-  "truck"))
+  "truck"), index = FALSE)
 }
 \arguments{
 \item{db}{the scenario database.}
@@ -17,6 +17,8 @@ extract_trips(db, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{color_levels}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
+
+\item{index}{whether to index mode split off the base year.}
 }
 \value{
 A data frame with total trips originating in the region by mode and

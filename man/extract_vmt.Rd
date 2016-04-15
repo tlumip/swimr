@@ -4,7 +4,7 @@
 \alias{extract_vmt}
 \title{Extract VMT}
 \usage{
-extract_vmt(db, facet_var = "MPO", facet_levels = NULL, index)
+extract_vmt(db, facet_var = "MPO", facet_levels = NULL, index = FALSE)
 }
 \arguments{
 \item{db}{The scenario database.}

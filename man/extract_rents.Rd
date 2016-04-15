@@ -5,7 +5,7 @@
 \title{Extract rent price}
 \usage{
 extract_rents(db, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL)
+  facet_levels = NULL, type_levels = NULL, index = TRUE)
 }
 \arguments{
 \item{db}{The scenario database.}
