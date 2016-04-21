@@ -221,6 +221,7 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 plot_history <- function(db, counties = NULL) {
 
   df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
+    rename(county = COUNTY) %>%
     filter(var == "population") %>%
     select(-var) %>%
     rbind_list(., historical_pop %>% mutate(data = "Census")) %>%
