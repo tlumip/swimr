@@ -100,13 +100,19 @@ plot_tlfd <- function(db,
 compare_tlfd <- function(db1, db2,
                          region_var = c("MPO", "COUNTY", "STATE"),
                          regions = NULL, cumulative = FALSE, years = NULL){
+  if(cumulative){
+    freq <- "freq"
+  } else {
+    freq <- "cum_freq"
+  }
 
   tlfd1 <- extract_tlfd(db1, region_var, regions, cumulative, years) %>%
-    rename(ref = freq)
+    select_("region_var", "distance", "year", "ref" = freq)
   tlfd2 <- extract_tlfd(db2, region_var, regions, cumulative, years) %>%
-    rename(com = freq)
+    select_("region_var", "distance", "year", "com" = freq)
 
-  df <- left_join(tlfd1, tlfd2) %>%
+
+  df <- left_join(tlfd1, tlfd2, by = c("region_var", "year", "distance")) %>%
     mutate(diff = com - ref)
 
 
@@ -114,10 +120,11 @@ compare_tlfd <- function(db1, db2,
     df,
     aes(x = distance, y = diff, group = factor(year), color = factor(year))
   ) +
-    geom_line(alpha = 0.5) +
+    geom_line() +
     scale_color_discrete("Year") +
     facet_wrap(~ region_var) +
-    ylab("Difference in Frequency (reference - current)") + xlab("Miles") +
+    ylab(ifelse(cumulative, "Difference in Cumulative Frequency (ref - cur)",
+                "Difference in Frequency") + xlab("Miles") +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   return(p)
