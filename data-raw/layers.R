@@ -66,6 +66,8 @@ zones_shp@data <- zones_shp@data %>%
 zones <- fortify(zones_shp) %>% tbl_df() %>%
   left_join(zones_shp@data, by = "id")
 
+zones_data <- zones_shp@data
+
 devtools::use_data(zones, overwrite = TRUE)
 devtools::use_data(zones_data, overwrite = TRUE)
 devtools::use_data(zones_shp, overwrite = TRUE)
