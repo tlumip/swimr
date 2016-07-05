@@ -100,3 +100,45 @@ get_validation_table <- function(db, year = c(2010, 2013)){
 
 }
 
+
+
+#' Get counts table
+#'
+#' @param db The scenario database.
+#' @param trucks Get truck counts or AAWDT counts?
+#'
+#' @return A counts dataframe w
+#'
+#' @importFrom tidyr gather
+get_counts <- function(db, trucks = FALSE){
+
+  # get counts data table from database
+  if (trucks) {
+    tbl(db, "COUNTLOCATIONS") %>%
+      select(
+        ANODE = FROMNODENO, BNODE = TONODENO, XCOORD, YCOORD,
+        ATR_NUM, MUT, SUT
+      ) %>%
+      filter(MUT != "None") %>%
+      collect() %>%
+      mutate(
+        MUT = ifelse(MUT == "None", NA, as.numeric(MUT)),
+        SUT = ifelse(SUT == "None", NA, as.numeric(SUT))
+      )
+
+  } else {
+    tbl(db, "COUNTLOCATIONS") %>%
+      select(
+        ANODE = FROMNODENO, BNODE = TONODENO, XCOORD, YCOORD, ATR_NUM,
+        `2000` = AAWDT_2000, `2005` = AAWDT_2005, `2010` = AAWDT_2010,
+        `2015` = AAWDT_2015
+      ) %>%
+      filter(ATR_NUM != "") %>%
+      collect() %>%
+      tidyr::gather(year, aawdt, `2000`:`2015`) %>%
+      mutate(aawdt = as.numeric(aawdt))
+
+  }
+
+
+}
