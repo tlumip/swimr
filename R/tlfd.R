@@ -124,7 +124,7 @@ compare_tlfd <- function(db1, db2,
     scale_color_discrete("Year") +
     facet_wrap(~ region_var) +
     ylab(ifelse(cumulative, "Difference in Cumulative Frequency (ref - cur)",
-                "Difference in Frequency") + xlab("Miles") +
+                "Difference in Frequency")) + xlab("Miles") +
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   return(p)
