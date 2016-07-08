@@ -12,7 +12,7 @@ plot_countcomparison <- function(db, year = c(2010, 2013)){
 
   link_vols <- suppressMessages(get_validation_table(db, year))
 
-  outviz::plot_validation(link_vols, "volume", "count", show_lm = TRUE) +
+  outviz::plot_validation(link_vols, "volume", "aawdt", show_lm = TRUE) +
     theme_bw()
 }
 
@@ -25,37 +25,42 @@ plot_countcomparison <- function(db, year = c(2010, 2013)){
 #'
 #' @export
 #'
-plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
+plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
 
-  # protect type
-  atr <- as.numeric(atr)
 
-  pc <- counts %>%
-    filter(site %in% atr) %>%
-    select(-`2035`) %>%
-    gather(year, volume, `2000`:`2015`) %>%
-    mutate(data = "ODOT ATR Counts", year = as.numeric(year))
 
-  # get base year link traffic volumes
-  swim <- tbl(db, "LINK_DATA") %>%
-    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
+  counts <- tbl(db, "COUNTLOCATIONS") %>%
+    select(
+      ANODE = FROMNODENO, BNODE = TONODENO, ATR_NUM,
+      `2000` = AAWDT_2000, `2005` = AAWDT_2005, `2010` = AAWDT_2010,
+      `2015` = AAWDT_2015
+    ) %>%
+    filter(ATR_NUM %in% atr) %>%
     collect() %>%
-    mutate(year = as.numeric(TSTEP) + 1990) %>%
+    tidyr::gather(year, volume, `2000`:`2015`) %>%
+    filter(volume > 1) %>%
+    mutate(data = "ODOT", volume = as.numeric(volume), year = as.numeric(year))
 
-    # Join ATR ID and calculate two-way volume
-    inner_join(countid) %>%
-    group_by(site, year) %>%
-    filter(site %in% atr) %>%
-    summarise(
-      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
-      data = "SWIM Volume"
-    )
+  # get link traffic volumes
+  swim <- tbl(db, "LINK_DATA") %>%
+    select(ANODE, BNODE, TSTEP, volume = DAILY_VOL_TOTAL) %>%
+    collect() %>%
+    mutate(year = as.numeric(TSTEP) + 1990, data = "SWIM") %>%
+    inner_join(
+      counts %>%
+        group_by(ANODE, BNODE, ATR_NUM) %>%
+        tally() %>%
+        select(-n),
+      by = c("ANODE", "BNODE"))
 
-  d <- bind_rows(pc, swim)
+
+  d <- bind_rows(counts, swim) %>%
+    group_by(data, year, ATR_NUM) %>%
+    summarise(volume = sum(volume))
 
   ggplot(
     d,
-    aes(x = year, y = volume, color = factor(site), lty = data) ) +
+    aes(x = year, y = volume, color = factor(ATR_NUM), lty = data) ) +
     geom_path() +
 
     xlab("Year") + ylab("AAWDT") +
@@ -67,33 +72,28 @@ plot_traffic_count <- function(db, atr = c(01001, 01011, 01012)){
 
 #' Get comparison of link volumes to ATR count
 #'
-#' Create a plot of the base scenario link volumes compared with observed AADT.
 #'
 #' @param db The scenario database.
-#' @param facet_var Variable to display in facets
+#' @param
+#'
 #' @return A ggplot2 object.
-#' @import outviz
 #'
 #' @export
-get_validation_table <- function(db, year = c(2010, 2013)){
+get_validation_table <- function(db, year = c(2010)){
 
   # get link traffic volumes
   tbl(db, "LINK_DATA") %>%
     select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
     collect() %>%
+    dplyr::rename(volume = DAILY_VOL_TOTAL) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
     filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year)) %>%
 
     # Join ATR ID and calculate two-way volume
-    inner_join(countid) %>%
-    group_by(site) %>%
-    summarise(
-      volume = sum(DAILY_VOL_TOTAL, na.rm = TRUE),
-      PLANNO = PLANNO[1]
+    inner_join(
+      get_counts(db, year = year),
+      by = c("ANODE", "BNODE", "year")
     ) %>%
-
-    # Join ATR data
-    inner_join(counts %>% select_("site", count = as.name(year))) %>%
 
     # join facility types
     left_join(fac_types, by = "PLANNO")
@@ -110,7 +110,7 @@ get_validation_table <- function(db, year = c(2010, 2013)){
 #' @return A counts dataframe w
 #'
 #' @importFrom tidyr gather
-get_counts <- function(db, trucks = FALSE){
+get_counts <- function(db, trucks = FALSE, year = 2010){
 
   # get counts data table from database
   if (trucks) {
@@ -136,7 +136,8 @@ get_counts <- function(db, trucks = FALSE){
       filter(ATR_NUM != "") %>%
       collect() %>%
       tidyr::gather(year, aawdt, `2000`:`2015`) %>%
-      mutate(aawdt = as.numeric(aawdt))
+      mutate_each(funs(as.numeric(.)), aawdt, year) %>%
+      filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year))
 
   }
 
