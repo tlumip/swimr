@@ -4,12 +4,14 @@
 \alias{plot_countcomparison}
 \title{Plot base-year traffic validation.}
 \usage{
-plot_countcomparison(db, year = c(2010, 2013))
+plot_countcomparison(db, year = c(2010, 2013, 2015), trucks = FALSE)
 }
 \arguments{
 \item{db}{The scenario database.}
 
-\item{facet_var}{Variable to display in facets}
+\item{year}{the year to use in the validation plot.}
+
+\item{trucks}{Build a truck count validation table? Defaults to FALSE}
 }
 \value{
 A ggplot2 object.

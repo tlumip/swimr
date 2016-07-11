@@ -3,16 +3,18 @@
 #' Create a plot of the base scenario link volumes compared with observed AADT.
 #'
 #' @param db The scenario database.
-#' @param facet_var Variable to display in facets
+#' @param year the year to use in the validation plot.
+#' @param trucks Build a truck count validation table? Defaults to FALSE
 #' @return A ggplot2 object.
 #' @import outviz
 #'
 #' @export
-plot_countcomparison <- function(db, year = c(2010, 2013)){
+plot_countcomparison <- function(db, year = c(2010, 2013, 2015), trucks = FALSE){
 
-  link_vols <- suppressMessages(get_validation_table(db, year))
+  link_vols <- suppressMessages(get_validation_table(db, year, trucks))
 
-  outviz::plot_validation(link_vols, "volume", "aawdt", show_lm = TRUE) +
+  outviz::plot_validation(link_vols, ifelse(trucks, "trucks", "volume"),
+                          "aawdt", show_lm = TRUE) +
     theme_bw()
 }
 
@@ -74,24 +76,25 @@ plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
 #'
 #'
 #' @param db The scenario database.
-#' @param
+#' @param year the year to build the comparison table for.
 #'
 #' @return A ggplot2 object.
 #'
 #' @export
-get_validation_table <- function(db, year = c(2010)){
+get_validation_table <- function(db, year = c(2010, 2013), trucks = FALSE){
+
 
   # get link traffic volumes
   tbl(db, "LINK_DATA") %>%
-    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, PLANNO) %>%
+    select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, DAILY_VOL_TRUCK, PLANNO) %>%
     collect() %>%
-    dplyr::rename(volume = DAILY_VOL_TOTAL) %>%
+    dplyr::rename(volume = DAILY_VOL_TOTAL, trucks = DAILY_VOL_TRUCK) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
     filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year)) %>%
 
     # Join ATR ID and calculate two-way volume
     inner_join(
-      get_counts(db, year = year),
+      get_counts(db, year = year, trucks),
       by = c("ANODE", "BNODE", "year")
     ) %>%
 
@@ -110,7 +113,18 @@ get_validation_table <- function(db, year = c(2010)){
 #' @return A counts dataframe w
 #'
 #' @importFrom tidyr gather
-get_counts <- function(db, trucks = FALSE, year = 2010){
+get_counts <- function(db, trucks = FALSE, year = c(2010, 2013, 2015)){
+
+  if (trucks) {
+    if (year != 2013){
+      stop("Truck counts only available in 2013.")
+    }
+  } else {
+    if (!(year %in% c(2010, 2015))){
+      stop("Total AAWDT counts only available in 2010 and 2015")
+    }
+  }
+
 
   # get counts data table from database
   if (trucks) {
@@ -123,7 +137,10 @@ get_counts <- function(db, trucks = FALSE, year = 2010){
       collect() %>%
       mutate(
         MUT = ifelse(MUT == "None", NA, as.numeric(MUT)),
-        SUT = ifelse(SUT == "None", NA, as.numeric(SUT))
+        SUT = ifelse(SUT == "None", NA, as.numeric(SUT)),
+        aawdt = MUT + SUT,
+        year = 2013
+
       )
 
   } else {
