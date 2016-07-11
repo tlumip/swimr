@@ -14,7 +14,7 @@ output:
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
-  echo = FALSE, message = FALSE, warning = FALSE,
+  echo = TRUE, message = TRUE, warning = TRUE,
   fig.keep = TRUE, fig.path = "./figures/",
   fig.width=8, fig.height=6, error = TRUE
 )
@@ -25,8 +25,8 @@ library(swimr)
 ```{r setdb}
 # This is the path to the scenario SWIM databases; direct these to your
 # local paths.
-db_path <- "~/Documents/projects/swim/Mar_Recalib.db"
-db <- src_sqlite(db_path)
+ref_db <- "/home/gregmacfarlane/data/scenario.db"
+db <- src_sqlite(ref_db)
 scenario_name <- "Reference"
 
 # Update to reflect scope of analysis.
@@ -130,8 +130,9 @@ plot_countcomparison(db) + facet_wrap(~ FacType, scales = "free")
 ```
 
 ```{r plot_historical_atr, fig.cap="AAWDT count and projection at selected ATR locations"}
-plot_traffic_count(db, atr = c(3011, 10006, 3013, 34009, 24022, 
-                               15020, 3018, 10008, 18018, 21006))
+plot_traffic_count(db, atr = 
+                     c("03-011", "10-006", "03-013", "34-009", "24-022", 
+                       "15-020", "03-018", "10-008", "18-018", "21-006"))
 ```
 
 
