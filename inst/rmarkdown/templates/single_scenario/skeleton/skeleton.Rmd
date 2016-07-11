@@ -14,7 +14,7 @@ output:
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
-  echo = TRUE, message = TRUE, warning = TRUE,
+  echo = TRUE, message = FALSE, warning = TRUE,
   fig.keep = TRUE, fig.path = "./figures/",
   fig.width=8, fig.height=6, error = TRUE
 )
@@ -122,17 +122,21 @@ plot_history(db, facet_levels)
 
 ## Link Validation
 ```{r plot_validation, fig.cap="Link Validation"}
-plot_countcomparison(db)
+plot_countcomparison(db, 2010)
+```
+
+```{r plot_validation, fig.cap="Truck Validation"}
+plot_countcomparison(db, 2013, TRUE)
 ```
 
 ```{r plot_facility_validation, fig.cap = "Link Validation by Facility Type"}
-plot_countcomparison(db) + facet_wrap(~ FacType, scales = "free")
+plot_countcomparison(db, 2010) + facet_wrap(~ FacType, scales = "free")
 ```
 
 ```{r plot_historical_atr, fig.cap="AAWDT count and projection at selected ATR locations"}
 plot_traffic_count(db, atr = 
                      c("03-011", "10-006", "03-013", "34-009", "24-022", 
-                       "15-020", "03-018", "10-008", "18-018", "21-006"))
+                       "15-020", "03-018", "10-008"))
 ```
 
 
