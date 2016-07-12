@@ -4,7 +4,7 @@
 \alias{plot_traffic_count}
 \title{Plot historical and projected traffic counts}
 \usage{
-plot_traffic_count(db, atr = c(1001, 1011, 1012))
+plot_traffic_count(db, atr = c("01-001", "01-011", "01-012"))
 }
 \arguments{
 \item{db}{The scenario database.}

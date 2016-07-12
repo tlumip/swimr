@@ -4,17 +4,17 @@
 \alias{get_validation_table}
 \title{Get comparison of link volumes to ATR count}
 \usage{
-get_validation_table(db, year = c(2010, 2013))
+get_validation_table(db, year = c(2010, 2013), trucks = FALSE)
 }
 \arguments{
 \item{db}{The scenario database.}
 
-\item{facet_var}{Variable to display in facets}
+\item{year}{the year to build the comparison table for.}
 }
 \value{
 A ggplot2 object.
 }
 \description{
-Create a plot of the base scenario link volumes compared with observed AADT.
+Get comparison of link volumes to ATR count
 }
 

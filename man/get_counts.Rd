@@ -4,7 +4,7 @@
 \alias{get_counts}
 \title{Get counts table}
 \usage{
-get_counts(db, trucks = FALSE)
+get_counts(db, trucks = FALSE, year = c(2010, 2013, 2015))
 }
 \arguments{
 \item{db}{The scenario database.}
