@@ -8,7 +8,7 @@
 extract_modelwide <- function(db, filters){
 
 
-  df <- tbl(db, "MODELWIDE") %>% collect()
+  df <- tbl(db, "MODELWIDE") %>% collect(n=Inf)()
 
   for(i in filters){
     df <- df %>% filter(grepl(i, DATA))

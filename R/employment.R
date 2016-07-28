@@ -25,7 +25,7 @@ extract_employment <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -46,7 +46,7 @@ extract_employment <- function(db,
     group_by(facet_var, ACTIVITY, TSTEP) %>%
     summarise(emp = sum(Employment)) %>%
     ungroup() %>%
-    collect() %>%
+    collect(n=Inf)() %>%
 
     # consolidate employment categories
     mutate(

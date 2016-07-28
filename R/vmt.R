@@ -20,7 +20,7 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = FALS
 
   l <- tbl(db, "LINK_DATA") %>%
     left_join(grouping) %>%
-    collect() %>%
+  collect(n = Inf) %>%
     # consolidate facility types
     left_join(fac_types) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
@@ -134,7 +134,7 @@ extract_vht <- function(db, facet_var, facet_levels = NULL){
   # If no levels are specified, show all but external stations.
   if(is.null(facet_levels)){
     a <- grouping %>%
-      collect() %>%
+      collect(n=Inf) %>%
       filter(facet_var != "EXTSTA")
 
     facet_levels = names(table(a$facet_var))
@@ -147,7 +147,7 @@ extract_vht <- function(db, facet_var, facet_levels = NULL){
     # filter out regions you don't want
     filter(facet_var %in% facet_levels) %>%
     # bring it locally
-    collect() %>%
+    collect(n=Inf) %>%
 
     # consolidate facility types
     left_join(fac_types) %>%

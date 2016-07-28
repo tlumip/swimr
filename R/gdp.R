@@ -1,7 +1,7 @@
 #' Extract GDP of Labor
 #'
 #' This function returns the total dollar value of all the labor sold by a
-#' collection of zones over time.
+#' collect(n=Inf)ion of zones over time.
 #'
 #' @param db The scenario sqlite database.
 #' @param facet_var Field to facet by: "MPO", "COUNTY", or "STATE".
@@ -28,7 +28,7 @@ extract_gdp <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -50,7 +50,7 @@ extract_gdp <- function(db,
     filter(sold  > 0) %>%
     group_by(facet_var, year, commodity) %>%
     summarise( sold = sum(sold) ) %>%
-    collect() %>%
+    collect(n=Inf)() %>%
 
     # only keep employment types
     # some genius is using different labels in different tables. Fix this.

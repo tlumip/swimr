@@ -62,7 +62,7 @@ extract_wapr <- function(db,
     ) %>%
 
     # calculate wapr
-    collect() %>%
+    collect(n=Inf)() %>%
     mutate(
       wapr = workers / laborforce * 100,
       year = as.numeric(TSTEP) + 1990

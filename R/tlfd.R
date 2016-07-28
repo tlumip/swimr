@@ -28,7 +28,7 @@ extract_tlfd <- function(db,
     inner_join(region) %>%
     group_by(region_var, TSTEP, distance) %>%
     summarise(trips = sum(trips)) %>%
-    collect() %>%
+    collect(n=Inf)() %>%
 
     mutate(
       freq = trips / sum(trips),

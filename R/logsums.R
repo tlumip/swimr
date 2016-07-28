@@ -45,7 +45,7 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
     group_by(BZONE, TSTEP) %>%
     summarise(logsum = sum(logsum)) %>%
 
-    collect() %>%
+    collect(n=Inf) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
 
     # trim to scope

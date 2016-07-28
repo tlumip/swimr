@@ -16,7 +16,7 @@ yearly_summary <- function(df, group, var){
     group_by_(group, "year") %>%
     mutate_("var" = var) %>%
     summarise(var = sum(var)) %>%
-    collect() %>%
+    collect(n=Inf)() %>%
     spread(year, var, fill = NA)
 }
 
@@ -56,7 +56,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
         totalhh = sum(TOTALHHS)
       ) %>%
       mutate(year = as.numeric(TSTEP) + 1990) %>%
-      ungroup() %>% collect()
+      ungroup() %>% collect(n=Inf)()
 
     # if no levels specified, then keep all
     if(!is.null(color_levels)){
@@ -88,7 +88,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 
     # get levels of facet_var if none given
     if(is.null(color_levels)){
-      color_levels <- grouping %>% group_by(color_var) %>% collect() %>%
+      color_levels <- grouping %>% group_by(color_var) %>% collect(n=Inf)() %>%
         slice(1) %>% .$color_var
 
       color_levels <- color_levels[which(color_levels != "EXTSTA")]
@@ -112,7 +112,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
         totalhh = sum(TOTALHHS)
       ) %>%
       mutate(year = as.numeric(TSTEP) + 1990) %>%
-      ungroup() %>% collect() %>%
+      ungroup() %>% collect(n=Inf)() %>%
 
       select(MPO, year, population, employment) %>%
       gather(var, y, population:employment) %>%

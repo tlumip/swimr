@@ -38,7 +38,7 @@ plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
       `2015` = AAWDT_2015
     ) %>%
     filter(ATR_NUM %in% atr) %>%
-    collect() %>%
+    collect(n=Inf) %>%
     tidyr::gather(year, volume, `2000`:`2015`) %>%
     filter(volume > 1) %>%
     mutate(data = "ODOT", volume = as.numeric(volume), year = as.numeric(year))
@@ -46,7 +46,7 @@ plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
   # get link traffic volumes
   swim <- tbl(db, "LINK_DATA") %>%
     select(ANODE, BNODE, TSTEP, volume = DAILY_VOL_TOTAL) %>%
-    collect() %>%
+    collect(n=Inf) %>%
     mutate(year = as.numeric(TSTEP) + 1990, data = "SWIM") %>%
     inner_join(
       counts %>%
@@ -87,7 +87,7 @@ get_validation_table <- function(db, year = c(2010, 2013), trucks = FALSE){
   # get link traffic volumes
   tbl(db, "LINK_DATA") %>%
     select(ANODE, BNODE, TSTEP, DAILY_VOL_TOTAL, DAILY_VOL_TRUCK, PLANNO) %>%
-    collect() %>%
+    collect(n=Inf) %>%
     dplyr::rename(volume = DAILY_VOL_TOTAL, trucks = DAILY_VOL_TRUCK) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
     filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year)) %>%
@@ -134,7 +134,7 @@ get_counts <- function(db, trucks = FALSE, year = c(2010, 2013, 2015)){
         ATR_NUM, MUT, SUT
       ) %>%
       filter(MUT != "None") %>%
-      collect() %>%
+      collect(n=Inf) %>%
       mutate(
         MUT = ifelse(MUT == "None", NA, as.numeric(MUT)),
         SUT = ifelse(SUT == "None", NA, as.numeric(SUT)),
@@ -151,7 +151,7 @@ get_counts <- function(db, trucks = FALSE, year = c(2010, 2013, 2015)){
         `2015` = AAWDT_2015
       ) %>%
       filter(ATR_NUM != "") %>%
-      collect() %>%
+      collect(n=Inf) %>%
       tidyr::gather(year, aawdt, `2000`:`2015`) %>%
       mutate_each(funs(as.numeric(.)), aawdt, year) %>%
       filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year))
