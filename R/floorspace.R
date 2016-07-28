@@ -24,7 +24,7 @@ extract_floorspace <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -51,7 +51,7 @@ extract_floorspace <- function(db,
     # sum within facet, year, and type
     group_by(facet_var, year, commodity) %>%
     summarise_each(funs(sum), floor:built) %>%
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
 
     # consolidate floortypes and filter to desired levels
     left_join(floor_types, by = "commodity") %>%
@@ -99,7 +99,7 @@ extract_volume <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -121,7 +121,7 @@ extract_volume <- function(db,
     group_by(facet_var, year) %>%
     summarise_each(funs(sum)) %>%
 
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
     gather(commodity, used, -BZONE, -year, -facet_var) %>%
     mutate(commodity = gsub("BuySell_", "", commodity)) %>%
     left_join(floor_types) %>%
@@ -158,7 +158,7 @@ extract_rents <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -187,7 +187,7 @@ extract_rents <- function(db,
 
 
     # filter to floortypes that the user requests and regroup
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
     left_join(floor_types, by = "commodity") %>%
     filter(floor_type %in% type_levels) %>%
 

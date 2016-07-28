@@ -25,7 +25,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   # This simply corrects the value of year1 and year 2 if the user asks for
   # a year that doesn't exist.
   years <- 1990 + as.numeric(names(table(
-    tbl(db, "AZONE") %>% select(TSTEP) %>% collect(n=Inf)() %>% .$TSTEP)))
+    tbl(db, "AZONE") %>% select(TSTEP) %>% collect(n=Inf) %>% .$TSTEP)))
   year1 <- years[which(abs(years - year1) == min(abs(years - year1)))]
   year2 <- years[which(abs(years - year2) == min(abs(years - year2)))]
 
@@ -94,7 +94,7 @@ diff_leaflet <- function(db1, db2, year,
   # This simply corrects the value of year if the user asks for
   # a year that doesn't exist.
   years <- 1990 + as.numeric(names(table(
-    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect(n=Inf)() %>% .$TSTEP)))
+    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect(n=Inf) %>% .$TSTEP)))
   year <- years[which(abs(years - year) == min(abs(years - year)))]
 
   # get se data from both scenarios and join together ----
@@ -178,7 +178,7 @@ extract_zonedata <- function(db, year1, year2 = NULL){
       tbl(db, "ALLZONES") %>%
         transmute(AZONE = Azone, sqmi = AREASQFT * 3.587048e-8),
       by = "AZONE") %>%
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
     mutate_each(funs( ./sqmi), pop:hh) %>%
     select(-sqmi) %>%
 
@@ -295,7 +295,7 @@ change_ggmap <- function(db1, db2, scope = NULL, year = 2010,
   # This simply corrects the value of year if the user asks for
   # a year that doesn't exist.
   years <- 1990 + as.numeric(names(table(
-    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect(n=Inf)() %>% .$TSTEP)))
+    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect(n=Inf) %>% .$TSTEP)))
   year <- years[which(abs(years - year) == min(abs(years - year)))]
 
   # get se data from both scenarios and join together ----

@@ -43,7 +43,7 @@ extract_trips <- function(db,
   df <- df %>%
     group_by(facet_var, TSTEP) %>%
     summarise_each(funs(sum), -TSTEP, -facet_var) %>%
-    ungroup() %>% collect(n=Inf)() %>%
+    ungroup() %>% collect(n=Inf) %>%
 
     # combine periods
     gather(mode, trips, am_BIKE:pm_WK_TRAN) %>%

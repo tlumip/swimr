@@ -51,7 +51,7 @@ cut_grt <- function(x){
 #' @return names of all levels of the factor
 get_levels <- function(df){
   a <- df %>%
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
     filter(facet_var != "EXTSTA")
 
   names(table(a$facet_var))

@@ -28,7 +28,7 @@ extract_gdp <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf)() %>%
+    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
       slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -50,7 +50,7 @@ extract_gdp <- function(db,
     filter(sold  > 0) %>%
     group_by(facet_var, year, commodity) %>%
     summarise( sold = sum(sold) ) %>%
-    collect(n=Inf)() %>%
+    collect(n=Inf) %>%
 
     # only keep employment types
     # some genius is using different labels in different tables. Fix this.
