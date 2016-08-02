@@ -233,7 +233,7 @@ compare_logsums(db1, db2, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
                        "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
 
-# Economics
+# Economics{.tabset}
 
 ## Built Floorspace
 
