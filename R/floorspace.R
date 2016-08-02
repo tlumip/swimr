@@ -329,6 +329,7 @@ multiple_floorspace <- function(dbset, db_names,
           mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
+      ungroup() %>%
       mutate_(facet_var = "facet_var") %>%
       mutate(floor = price)
 
@@ -341,6 +342,7 @@ multiple_floorspace <- function(dbset, db_names,
           mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
+      ungroup() %>%
       mutate_(facet_var = "facet_var") %>%
       mutate(floor = built)
 
