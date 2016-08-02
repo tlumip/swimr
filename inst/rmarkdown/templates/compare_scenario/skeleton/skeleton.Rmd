@@ -132,7 +132,7 @@ if(use_leaflet){
   diff_leaflet(db1, db2, year = diff_year, variable = "pop", 
                scen_names = scenario_names)
 } else {
-  messsage("Leaflet plots skipped with `use_leaflet` option")
+  message("Leaflet plots skipped with `use_leaflet` option")
 }
 ```
 
