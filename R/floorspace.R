@@ -169,18 +169,27 @@ extract_rents <- function(db,
     type_levels <- floor_types$floor_type
   }
 
-  df <- tbl(db, "ExchangeResults") %>%
+  supply <- tbl(db, "FLR_INVENTORY") %>%
     transmute(
       BZONE,
       year = TSTEP + 1990,
       commodity = COMMODITY,
-      supply = Supply,
+      supply = FLR
+    )
+
+  demand <- tbl(db, "ExchangeResults") %>%
+    transmute(
+      BZONE,
+      year = TSTEP + 1990,
+      commodity = COMMODITY,
       price = Price,
-      bought = BoughtQuantity
+      bought = InternalBought  # quantity consumed from AA
     ) %>%
     # join facet and filter desired levels
-    filter(commodity %in% floor_types$commodity) %>%
-    filter(supply > 0) %>% # only count if it's available.
+    filter(commodity %in% floor_types$commodity)
+
+
+  df <- left_join(supply, demand, by = c("BZONE", "year", "commodity")) %>%
 
     left_join(grouping, by = "BZONE") %>%
     filter(facet_var %in% facet_levels) %>%
