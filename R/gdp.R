@@ -139,7 +139,7 @@ multiple_gdp <- function(dbset, db_names,
 
   # get the wapr table for every scenario.
   names(dbset) <- db_names
-  df <- rbind_all(
+  df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_gdp(dbset[[i]], facet_var, facet_levels) %>%
         mutate(scenario = names(dbset)[[i]])

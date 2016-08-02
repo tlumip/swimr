@@ -243,7 +243,7 @@ multiple_vmt <- function(dbset, db_names,
 
   # get the trips table for every scenario.
   names(dbset) <- db_names
-  df <- rbind_all(
+  df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_vmt(dbset[[i]], facet_var, facet_levels) %>%
         mutate(scenario = names(dbset)[[i]])

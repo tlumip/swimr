@@ -159,7 +159,7 @@ multiple_employment <- function(dbset, db_names,
 
   # get the employment table for every scenario.
   names(dbset) <- db_names
-  df <- rbind_all(
+  df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
         mutate(scenario = names(dbset)[[i]])

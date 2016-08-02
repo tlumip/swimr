@@ -424,7 +424,7 @@ multiple_sevar <- function(dbset, db_names,
 
   # get the population table for every scenario.
   names(dbset) <- db_names
-  df <- rbind_all(
+  df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_se(dbset[[i]], facet_var, facet_levels, controls) %>%
         mutate(scenario = names(dbset)[[i]]) %>%

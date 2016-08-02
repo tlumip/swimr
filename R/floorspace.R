@@ -323,7 +323,7 @@ multiple_floorspace <- function(dbset, db_names,
   names(dbset) <- db_names
 
   if(price){
-    df <- rbind_all(
+    df <- bind_rows(
       lapply(seq_along(dbset), function(i)
         extract_rents(dbset[[i]], facet_var, facet_levels, type_levels) %>%
           mutate(scenario = names(dbset)[[i]])
@@ -335,7 +335,7 @@ multiple_floorspace <- function(dbset, db_names,
     ylabel <- "Rent price"
 
   } else {
-    df <- rbind_all(
+    df <- bind_rows(
       lapply(seq_along(dbset), function(i)
         extract_floorspace(dbset[[i]], facet_var, facet_levels, type_levels) %>%
           mutate(scenario = names(dbset)[[i]])
