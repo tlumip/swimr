@@ -125,7 +125,7 @@ plot_history(db, facet_levels)
 plot_countcomparison(db, 2010)
 ```
 
-```{r plot_validation, fig.cap="Truck Validation"}
+```{r plot_truckvalidation, fig.cap="Truck Validation"}
 plot_countcomparison(db, 2013, TRUE)
 ```
 
