@@ -24,6 +24,7 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = FALS
     # consolidate facility types
     left_join(fac_types) %>%
     mutate(year = as.numeric(TSTEP) + 1990) %>%
+    filter(FacType != "Local") %>%
 
     group_by_(facet_var, "FacType", "year") %>%
     summarise(vmt = sum(LENGTH * DAILY_VOL_TOTAL))
