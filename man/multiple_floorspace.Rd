@@ -5,7 +5,8 @@
 \title{Compare floorspace by type across multiple scenarios.}
 \usage{
 multiple_floorspace(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL, price = FALSE)
+  facet_levels = NULL, type_levels = NULL, variable = c("floorspace",
+  "rent", "occupancy"))
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -18,6 +19,9 @@ multiple_floorspace(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
 levels other than external stations.}
 
 \item{type_levels}{The types of floorspace to show in the plot.}
+
+\item{variable}{The variable to plot, one of rents, occupancy rate, or new
+floorspace}
 
 \item{price}{Print price instead of floorspace.}
 }

@@ -4,7 +4,7 @@
 \name{zones}
 \alias{zones}
 \title{Zone table}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 701344 rows and 15 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 183290 rows and 15 columns.}
 \usage{
 zones
 }

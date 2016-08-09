@@ -319,6 +319,8 @@ compare_floorspace <- function(db1, db2,
 #'   levels other than external stations.
 #' @param type_levels The types of floorspace to show in the plot.
 #' @param price Print price instead of floorspace.
+#' @param variable The variable to plot, one of rents, occupancy rate, or new
+#'   floorspace
 #'
 #' @return a ggplot2 object.
 #'
@@ -326,12 +328,13 @@ compare_floorspace <- function(db1, db2,
 multiple_floorspace <- function(dbset, db_names,
                                 facet_var = c("MPO", "COUNTY", "STATE"),
                                 facet_levels = NULL,
-                                type_levels = NULL, price = FALSE) {
+                                type_levels = NULL,
+                                variable = c("floorspace", "rent", "occupancy")) {
 
   # get the wapr table for every scenario.
   names(dbset) <- db_names
 
-  if(price){
+  if(variable %in% c("rent", "occupancy")){
     df <- bind_rows(
       lapply(seq_along(dbset), function(i)
         extract_rents(dbset[[i]], facet_var, facet_levels, type_levels) %>%
@@ -339,10 +342,16 @@ multiple_floorspace <- function(dbset, db_names,
       )
     ) %>%
       ungroup() %>%
-      mutate_(facet_var = "facet_var") %>%
-      mutate(floor = price)
+      mutate_(facet_var = "facet_var")
 
-    ylabel <- "Rent price"
+    if(variable == "rent"){
+      df <- df %>% mutate(floor = price)
+      ylabel <- "Rent price"
+    } else if(variable == "occupancy"){
+      df <- df %>% mutate(floor = occrate)
+      ylabel <- "Occupancy Rate"
+    }
+
 
   } else {
     df <- bind_rows(
@@ -417,3 +426,5 @@ compare_occupancy <- function(db1, db2,
     theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
 }
+
+

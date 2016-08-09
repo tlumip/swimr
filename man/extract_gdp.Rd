@@ -24,6 +24,6 @@ A \code{data_frame} with the participation rate in each facet region
 }
 \description{
 This function returns the total dollar value of all the labor sold by a
-collection of zones over time.
+collect(n=Inf)ion of zones over time.
 }
 
