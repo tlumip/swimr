@@ -14,6 +14,7 @@ if("RSQLite" %in% rownames(installed.packages()) == FALSE) {install.packages("RS
 if("devtools" %in% rownames(installed.packages()) == FALSE) {install.packages("devtools")}
 if("ggplot2" %in% rownames(installed.packages()) == FALSE) {install.packages("ggplot2")}
 if("leaflet" %in% rownames(installed.packages()) == FALSE) {install.packages("leaflet")}
+if("kfigr" %in% rownames(installed.packages()) == FALSE) {install.packages("digest")}
 if("rhdf5" %in% rownames(installed.packages()) == FALSE) {
   source("http://bioconductor.org/biocLite.R")
   biocLite("rhdf5")
