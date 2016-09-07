@@ -10,7 +10,7 @@
 #' @param agg_var The region variable on which to aggregate logsums.
 #'
 #' @export
-#' @return a ggmap object
+#' @return a data_frame
 extract_logsums <- function(db, scope = NULL, purposes = NULL,
                             agg_var = "AZONE"){
 

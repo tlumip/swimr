@@ -150,7 +150,6 @@ plot_wapr <- function(db,
 #' @param level Level at which to calculate volatility over time. Smaller
 #'   levels, such as BZONE will show higher volatility.
 #' @param scope a filtering criteria to limit the scope of the dataframe
-#' @param ggmap if TRUE, return a ggmap background
 #'
 #'
 #' @return a ggplot2 object.
@@ -196,19 +195,9 @@ plot_wapr_volatility <- function(db,
   dt <- zones %>%
     inner_join(df)
 
-  if(ggmap){
-    map <- get_map(
-      bbox(as.matrix(dt[, c("long", "lat")])),
-      source = "stamen", color = "bw", maptype = "toner"
-    )
-
-    p <- ggmap(map, extent = "dev") +
-      theme_bw() + theme(axis.text.x = element_text(angle = 30))
-  } else {
-    p <- ggplot() +
-      coord_map("conic", lat0 = 43) +
-      theme_bw() + theme(axis.text.x = element_text(angle = 30))
-  }
+  p <- ggplot() +
+    coord_map("conic", lat0 = 43) +
+    theme_bw() + theme(axis.text.x = element_text(angle = 30))
 
   p + geom_polygon(
     data = dt,

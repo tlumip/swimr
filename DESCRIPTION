@@ -25,7 +25,6 @@ Imports:
     dplyrExtras (>= 0.1.1),
     kfigr (>= 1.2),
     zoo (>= 1.7.12),
-    ggmap(>= 2.5.2),
     sp (>= 1.2.0)
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

@@ -1,6 +1,5 @@
 # link and zone shapefiles converted to R objects
 library(maptools)
-library(ggmap)
 library(readr)
 library(rgdal)
 library(dplyr)

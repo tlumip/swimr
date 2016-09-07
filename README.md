@@ -9,7 +9,6 @@ if("dplyr" %in% rownames(installed.packages()) == FALSE) {install.packages("dply
 if("tidyr" %in% rownames(installed.packages()) == FALSE) {install.packages("tidyr")}
 if("kfigr" %in% rownames(installed.packages()) == FALSE) {install.packages("kfigr")}
 if("zoo" %in% rownames(installed.packages()) == FALSE) {install.packages("zoo")}
-if("ggmap" %in% rownames(installed.packages()) == FALSE) {install.packages("ggmap")}
 if("RSQLite" %in% rownames(installed.packages()) == FALSE) {install.packages("RSQLite")}
 if("devtools" %in% rownames(installed.packages()) == FALSE) {install.packages("devtools")}
 if("ggplot2" %in% rownames(installed.packages()) == FALSE) {install.packages("ggplot2")}
