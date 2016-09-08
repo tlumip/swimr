@@ -115,7 +115,7 @@ compare_gdp <- function(db1, db2,
   ggplot2::ggplot(df, ggplot2::aes(x = year, y = diff, color = naics_label)) +
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var) +
-    ggplot2::xlab("Year") + ggplot2::ylab("GDP of Labor [$B]") +
+    ggplot2::xlab("Year") + ggplot2::ylab("GDP of Labor [% difference]") +
     ggplot2::scale_color_discrete("Sector") +
     ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
