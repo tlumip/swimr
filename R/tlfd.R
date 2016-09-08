@@ -5,49 +5,49 @@
 #' @param regions The regions to return.  If \code{NULL}, returns all.
 #' @param years The years to show in the plot. If null, will show the first
 #' @param max_bin The maximum bin size to return.
+#' @param cumulative Return a cumulative PDF?
 #'
 #' @return A data frame with the trip length frequency distribution by year
 #'   and region.
 #'
-#' @importFrom plyr round_any
 #' @export
 extract_tlfd <- function(db,
                          region_var = c("MPO", "COUNTY", "STATE"),
                          regions = NULL, cumulative = FALSE, years = NULL){
 
-  region <- tbl(db, "ALLZONES") %>%
-    select_("azone" = "Azone", "region_var" = region_var)
+  region <- dplyr::tbl(db, "ALLZONES") %>%
+    dplyr::select_("azone" = "Azone", "region_var" = region_var)
 
   # if no regions specified, then keep all.
   if(!is.null(regions)){
-    region <- region %>% filter(region_var %in% regions)
+    region <- region %>% dplyr::filter(region_var %in% regions)
   }
 
   # get TLFD
-  tlfd <- tbl(db, "TLFD_SDT") %>%
+  tlfd <- dplyr::tbl(db, "TLFD_SDT") %>%
     inner_join(region) %>%
-    group_by(region_var, TSTEP, distance) %>%
-    summarise(trips = sum(trips)) %>%
-    collect(n=Inf) %>%
+    dplyr::group_by(region_var, TSTEP, distance) %>%
+    dplyr::summarize(trips = sum(trips)) %>%
+    dplyr::collect(n=Inf) %>%
 
-    mutate(
+    dplyr::mutate(
       freq = trips / sum(trips),
       cum_freq = cumsum(freq),
       year = as.numeric(TSTEP) + 1990
     ) %>%
-    ungroup() %>%
-    select(-TSTEP)
+    dplyr::ungroup() %>%
+    dplyr::select(-TSTEP)
 
-  # filter to the years you want.
+  # dplyr::filter to the years you want.
   if(is.null(years)){
-    tlfd <- tlfd %>% filter(year == min(year) | year == max(year))
+    tlfd <- tlfd %>% dplyr::filter(year == min(year) | year == max(year))
   } else {
-    tlfd <- tlfd %>% filter(year %in% years)
+    tlfd <- tlfd %>% dplyr::filter(year %in% years)
   }
 
   # return cumulative if wanted
   if(cumulative){
-    tlfd <- tlfd %>% mutate(freq = cum_freq)
+    tlfd <- tlfd %>% dplyr::mutate(freq = cum_freq)
   }
 
 
@@ -75,13 +75,13 @@ plot_tlfd <- function(db,
   tlfd <- extract_tlfd(db, region_var, regions, cumulative, years)
 
   p <-
-    ggplot(tlfd,
-         aes(x = distance, y = freq, group = factor(year), color = factor(year))) +
+    ggplot2::ggplot(tlfd,
+         ggplot2::aes(x = distance, y = freq, group = factor(year), color = factor(year))) +
     geom_line() +
-    scale_color_discrete("Year") +
-    facet_wrap(~ region_var) +
-    ylab("Frequency") + xlab("Miles") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::scale_color_discrete("Year") +
+    ggplot2::facet_wrap(~ region_var) +
+    ggplot2::ylab("Frequency") + ggplot2::xlab("Miles") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
   return(p)
 
@@ -107,25 +107,25 @@ compare_tlfd <- function(db1, db2,
   }
 
   tlfd1 <- extract_tlfd(db1, region_var, regions, cumulative, years) %>%
-    select_("region_var", "distance", "year", "ref" = freq)
+    dplyr::select_("region_var", "distance", "year", "ref" = freq)
   tlfd2 <- extract_tlfd(db2, region_var, regions, cumulative, years) %>%
-    select_("region_var", "distance", "year", "com" = freq)
+    dplyr::select_("region_var", "distance", "year", "com" = freq)
 
 
-  df <- left_join(tlfd1, tlfd2, by = c("region_var", "year", "distance")) %>%
-    mutate(diff = com - ref)
+  df <- dplyr::left_join(tlfd1, tlfd2, by = c("region_var", "year", "distance")) %>%
+    dplyr::mutate(diff = com - ref)
 
 
-  p <- ggplot(
+  p <- ggplot2::ggplot(
     df,
-    aes(x = distance, y = diff, group = factor(year), color = factor(year))
+    ggplot2::aes(x = distance, y = diff, group = factor(year), color = factor(year))
   ) +
     geom_line() +
-    scale_color_discrete("Year") +
-    facet_wrap(~ region_var) +
-    ylab(ifelse(cumulative, "Difference in Cumulative Frequency (ref - cur)",
-                "Difference in Frequency")) + xlab("Miles") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::scale_color_discrete("Year") +
+    ggplot2::facet_wrap(~ region_var) +
+    ggplot2::ylab(ifelse(cumulative, "Difference in Cumulative Frequency (ref - cur)",
+                "Difference in Frequency")) + ggplot2::xlab("Miles") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
   return(p)
 

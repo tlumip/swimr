@@ -13,11 +13,11 @@
 #' @export
 yearly_summary <- function(df, group, var){
   df %>%
-    group_by_(group, "year") %>%
-    mutate_("var" = var) %>%
-    summarise(var = sum(var)) %>%
-    collect(n=Inf) %>%
-    spread(year, var, fill = NA)
+    dplyr::group_by_(group, "year") %>%
+    dplyr::mutate_("var" = var) %>%
+    dplyr::summarize(var = sum(var)) %>%
+    dplyr::collect(n=Inf) %>%
+    tidyr::spread(year, var, fill = NA)
 }
 
 #' Extract SE data from DB
@@ -40,42 +40,42 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
   # county plot with controls
   if(color_var == "COUNTY"){
     # Pull se data
-    df <- tbl(db, "AZONE") %>%
-      select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+    df <- dplyr::tbl(db, "AZONE") %>%
+      dplyr::select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
       # join information for county and state
-      left_join(
-        tbl(db, "ALLZONES") %>%
-          select(AZONE = Azone, COUNTY = COUNTY, state = STATE)
+      dplyr::left_join(
+        dplyr::tbl(db, "ALLZONES") %>%
+          dplyr::select(AZONE = Azone, COUNTY = COUNTY, state = STATE)
       ) %>%
 
-      # summarize to the county level
-      group_by(COUNTY, state, TSTEP) %>%
-      summarise(
+      # dplyr::summarize to the county level
+      dplyr::group_by(COUNTY, state, TSTEP) %>%
+      dplyr::summarize(
         population = sum(POPULATION),
         employment = sum(EMPLOYMENT),
         totalhh = sum(TOTALHHS)
       ) %>%
-      mutate(year = as.numeric(TSTEP) + 1990) %>%
-      ungroup() %>% collect(n=Inf)
+      dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
+      dplyr::ungroup() %>% dplyr::collect(n=Inf)
 
     # if no levels specified, then keep all
     if(!is.null(color_levels)){
-      df <- filter(df, COUNTY %in% color_levels)
+      df <- dplyr::filter(df, COUNTY %in% color_levels)
     }
 
     df <- df %>%
-      select(COUNTY, year, population, employment) %>%
-      gather(var, y, population:employment) %>%
-      mutate(data = "SWIM")
+      dplyr::select(COUNTY, year, population, employment) %>%
+      tidyr::gather(var, y, population:employment) %>%
+      dplyr::mutate(data = "SWIM")
 
     # add COUNTY controls
     if(controls){
       ct <- county_controls %>%
-        rename(COUNTY = county) %>%
-        filter(COUNTY %in% df$COUNTY) %>%
-        filter(year > 2005) %>%
-        select(COUNTY, year, var, y) %>%
-        mutate(data = "OEA Forecast")
+        dplyr::rename(COUNTY = county) %>%
+        dplyr::filter(COUNTY %in% df$COUNTY) %>%
+        dplyr::filter(year > 2005) %>%
+        dplyr::select(COUNTY, year, var, y) %>%
+        dplyr::mutate(data = "OEA Forecast")
 
       df <- rbind(df, ct)
     }
@@ -83,46 +83,46 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 
   } else {
 
-    grouping <- tbl(db, "BZONE") %>%
-      select_("BZONE", "color_var" = color_var)
+    grouping <- dplyr::tbl(db, "BZONE") %>%
+      dplyr::select_("BZONE", "color_var" = color_var)
 
     # get levels of facet_var if none given
     if(is.null(color_levels)){
-      color_levels <- grouping %>% group_by(color_var) %>% collect(n=Inf) %>%
-        slice(1) %>% .$color_var
+      color_levels <- grouping %>% dplyr::group_by(color_var) %>% dplyr::collect(n=Inf) %>%
+        dplyr::slice(1) %>% .$color_var
 
       color_levels <- color_levels[which(color_levels != "EXTSTA")]
     }
 
     # Pull se data
-    df <- tbl(db, "AZONE") %>%
-      select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+    df <- dplyr::tbl(db, "AZONE") %>%
+      dplyr::select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
       # join information for county and state
-      left_join(
-        tbl(db, "ALLZONES") %>%
-          select(AZONE = Azone, MPO = MPO, state = STATE)
+      dplyr::left_join(
+        dplyr::tbl(db, "ALLZONES") %>%
+          dplyr::select(AZONE = Azone, MPO = MPO, state = STATE)
       ) %>%
-      filter(MPO %in% color_levels) %>%
+      dplyr::filter(MPO %in% color_levels) %>%
 
-      # summarize to the MPO level
-      group_by(MPO, TSTEP) %>%
-      summarise(
+      # dplyr::summarize to the MPO level
+      dplyr::group_by(MPO, TSTEP) %>%
+      dplyr::summarize(
         population = sum(POPULATION),
         employment = sum(EMPLOYMENT),
         totalhh = sum(TOTALHHS)
       ) %>%
-      mutate(year = as.numeric(TSTEP) + 1990) %>%
-      ungroup() %>% collect(n=Inf) %>%
+      dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
+      dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%
 
-      select(MPO, year, population, employment) %>%
-      gather(var, y, population:employment) %>%
-      mutate(data = "SWIM")
+      dplyr::select(MPO, year, population, employment) %>%
+      tidyr::gather(var, y, population:employment) %>%
+      dplyr::mutate(data = "SWIM")
   }
 
   if(index){
     df <- df %>%
-      group_by_(color_var, "var", "data") %>%
-      mutate(y = calc_index(y))
+      dplyr::group_by_(color_var, "var", "data") %>%
+      dplyr::mutate(y = calc_index(y))
   }
 
   return(df)
@@ -152,27 +152,27 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
 
     df <- extract_se(db, color_var, color_levels, controls, index)
 
-    p <- ggplot(df) +
-      geom_line(aes_string(x = "year", y = "y", color = color_var, lty = "data"))
+    p <- ggplot2::ggplot(df) +
+      geom_line(ggplot2::aes_string(x = "year", y = "y", color = color_var, lty = "data"))
 
     if(controls){
-      p <- p + scale_linetype_manual("Data", values = c("dashed", "solid"))
+      p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
     }
 
   } else { # MPO plot without controls
 
     df <- extract_se(db, color_var, color_levels, controls, index)
 
-    p <- ggplot(df) +
-      geom_line(aes(x = year, y = y, color = MPO))
+    p <- ggplot2::ggplot(df) +
+      geom_line(ggplot2::aes(x = year, y = y, color = MPO))
   }
 
 
-  # theme, etc
+  # ggplot2::theme, etc
   p +
-    facet_grid(. ~ var, scales = "free_y") +
-    xlab("Year") + ylab(ifelse(index, "Index Relative to Base", "Count")) +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::facet_grid(. ~ var, scale = "free_y") +
+    ggplot2::xlab("Year") + ggplot2::ylab(ifelse(index, "Index Relative to Base", "Count")) +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 
@@ -194,21 +194,21 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 
 
   seref <- extract_se(db1, facet_var, facet_levels, controls = FALSE, index) %>%
-    rename(ref = y)
+    dplyr::rename(ref = y)
   secom <- extract_se(db2, facet_var, facet_levels, controls = FALSE, index) %>%
-    rename(com = y)
+    dplyr::rename(com = y)
 
-  df <- left_join(seref, secom) %>%
-    mutate(diff = (com - ref) / ref * 100)
+  df <- dplyr::left_join(seref, secom) %>%
+    dplyr::mutate(diff = (com - ref) / ref * 100)
 
-  ggplot(df,
-         aes_string(x = "year", y = "diff", color = "var")) +
-    geom_path() +
-    facet_wrap(as.formula(paste("~", facet_var))) +
-    xlab("Year") + ylab("Percent difference (current - reference).") +
-    scale_color_discrete("Variable") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(df,
+         ggplot2::aes_string(x = "year", y = "diff", color = "var")) +
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var))) +
+    ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
+    ggplot2::scale_color_discrete("Variable") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Plot population with controls and historical data.
@@ -221,19 +221,19 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 plot_history <- function(db, counties = NULL) {
 
   df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
-    rename(county = COUNTY) %>%
-    filter(var == "population") %>%
-    select(-var) %>%
-    rbind_list(., historical_pop %>% mutate(data = "Census")) %>%
-    filter(county %in% counties)
+    dplyr::rename(county = COUNTY) %>%
+    dplyr::filter(var == "population") %>%
+    dplyr::select(-var) %>%
+    rbind_list(., historical_pop %>% dplyr::mutate(data = "Census")) %>%
+    dplyr::filter(county %in% counties)
 
-  ggplot(df, aes(x = year, y = y, color = county, lty = data)) +
-    geom_path() +
-    xlab("Year") + ylab("Population") +
-    scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
-    scale_color_discrete("County") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(df, ggplot2::aes(x = year, y = y, color = county, lty = data)) +
+    ggplot2::geom_path() +
+    ggplot2::xlab("Year") + ggplot2::ylab("Population") +
+    ggplot2::scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
+    ggplot2::scale_color_discrete("County") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Determine annualized population growth rates.
@@ -245,26 +245,25 @@ plot_history <- function(db, counties = NULL) {
 #' @param counties If not null (default), a character vector of counties to plot.
 #'
 #' @export
-#' @import zoo
 pop_rate <- function(db, counties = NULL) {
 
 
   # get the population in every year
   df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
-    filter(var == "population") %>%
-    filter(data == "SWIM") %>%
-    select(-var) %>%
-    rbind_list(., historical_pop %>% mutate(data = "Census")) %>%
-    arrange(year)
+    dplyr::filter(var == "population") %>%
+    dplyr::filter(data == "SWIM") %>%
+    dplyr::select(-var) %>%
+    rbind_list(., historical_pop %>% dplyr::mutate(data = "Census")) %>%
+    dplyr::arrange(year)
 
   if(!is.null(counties)){
-    # if a list of counties is given, filter to that
-    df <- df %>% filter(county %in% counties)
+    # if a list of counties is given, dplyr::filter to that
+    df <- df %>% dplyr::filter(county %in% counties)
   } else {
     # only show counties in oregon
     df <- df %>%
-      filter(
-        county %in% unique(zones_data %>% filter(STATE == "OR") %>% .$COUNTY)
+      dplyr::filter(
+        county %in% unique(zones_data %>% dplyr::filter(STATE == "OR") %>% .$COUNTY)
       )
   }
 
@@ -274,18 +273,18 @@ pop_rate <- function(db, counties = NULL) {
   }
 
   #expand to include all years
-  df <- tbl_df(expand.grid(
+  df <- dplyr::tbl_df(expand.grid(
     year = min(df$year):max(df$year),
     county = unique(df$county)
   )) %>%
-    mutate(
+    dplyr::mutate(
       data = ifelse(year < 2010, "Census", "SWIM")
     ) %>%
-    left_join(df) %>%
+    dplyr::left_join(df) %>%
 
     # Interpolate population and calculate annual growth rate
-    group_by(county) %>%
-    mutate(
+    dplyr::group_by(county) %>%
+    dplyr::mutate(
       pop = interpolate(y, year),
       rate = (lead(pop) - pop) / pop * 100
     )
@@ -308,11 +307,11 @@ plot_rates <- function(db, counties) {
 
   rates <- pop_rate(db, counties)
 
-  ggplot(rates, aes(x = county, y = rate, color = data)) +
+  ggplot2::ggplot(rates, ggplot2::aes(x = county, y = rate, color = data)) +
     geom_boxplot() +
     geom_point(position = "jitter") +
-    xlab("County") + ylab("Annualized Growth Rates") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::xlab("County") + ggplot2::ylab("Annualized Growth Rates") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -345,8 +344,8 @@ discover_outlying_rates <- function(db, counties = NULL,
 
   # get annualized population growth rate in each year, and stash in column
   rates <- pop_rate(db, counties) %>%
-    group_by(county) %>%
-    mutate(
+    dplyr::group_by(county) %>%
+    dplyr::mutate(
       census = ifelse(data == "Census", rate, NA),
       swim   = ifelse(data == "SWIM", rate, NA)
     )
@@ -355,16 +354,16 @@ discover_outlying_rates <- function(db, counties = NULL,
 
     get_pval <- function(x, y){
       # get pvalue for each model year given historical rate distribution
-      pnorm(y, mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+      stats::pnorm(y, mean(x, na.rm = TRUE), stats::sd(x, na.rm = TRUE))
     }
 
     r <- rates %>%
-      mutate(
+      dplyr::mutate(
         pval = get_pval(census, swim)
       ) %>%
-      filter(!is.na(y)) %>%
-      filter(data == "SWIM") %>%
-      select(county, year, data, pop, pval)
+      dplyr::filter(!is.na(y)) %>%
+      dplyr::filter(data == "SWIM") %>%
+      dplyr::select(county, year, data, pop, pval)
 
   } else if(method == "count"){
 
@@ -372,8 +371,8 @@ discover_outlying_rates <- function(db, counties = NULL,
       y <- y[!is.na(y)]
 
       # what percent of y falls inside confidence interval of f?
-      low <- mean(x, na.rm = TRUE) - 1.96 * sd(x, na.rm = TRUE)
-      hi  <- mean(x, na.rm = TRUE) + 1.96 * sd(x, na.rm = TRUE)
+      low <- mean(x, na.rm = TRUE) - 1.96 * stats::sd(x, na.rm = TRUE)
+      hi  <- mean(x, na.rm = TRUE) + 1.96 * stats::sd(x, na.rm = TRUE)
 
       inside <- ifelse(y >= low & y <= hi, TRUE, FALSE)
 
@@ -382,8 +381,8 @@ discover_outlying_rates <- function(db, counties = NULL,
     }
 
     r <- rates %>%
-      group_by(county) %>%
-      summarise(
+      dplyr::group_by(county) %>%
+      dplyr::summarize(
         inside_ci = count_insideci(census, swim)
       )
   }
@@ -427,41 +426,40 @@ multiple_sevar <- function(dbset, db_names,
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_se(dbset[[i]], facet_var, facet_levels, controls) %>%
-        mutate(scenario = names(dbset)[[i]]) %>%
-        filter(var == variable)
+        dplyr::mutate(scenario = names(dbset)[[i]]) %>%
+        dplyr::filter(var == variable)
     )
   ) %>%
-    mutate_("facet_var" = names(.)[1])
+    dplyr::mutate_("facet_var" = names(.)[1])
 
 
   # add control data if desired
   if(controls){
-    p <- ggplot(
+    p <- ggplot2::ggplot(
       data = df %>%
         # only need control once
-        filter(data != "Control" | scenario == names(dbset)[1]) %>%
-        mutate(scenario = ifelse(data == "Control", "Control", scenario)),
-      aes(x = year, y = y, color = scenario, lty = data)
+        dplyr::filter(data != "Control" | scenario == names(dbset)[1]) %>%
+        dplyr::mutate(scenario = ifelse(data == "Control", "Control", scenario)),
+      ggplot2::aes(x = year, y = y, color = scenario, lty = data)
     ) +
-      scale_linetype_manual("source",
+      ggplot2::scale_linetype_manual("source",
                             values = c("dotted", rep("solid", length(dbset))))
   } else {
-    p <- ggplot(
+    p <- ggplot2::ggplot(
       data = df %>%
-        filter(data != "Control"),
-      aes(x = year, y = y, color = scenario)
+        dplyr::filter(data != "Control"),
+      ggplot2::aes(x = year, y = y, color = scenario)
     )
 
   }
 
-  p <- p + geom_path() +
-    facet_wrap(~ facet_var, scales = "free_y") +
-    ylab(variable) + xlab("Year") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 30))
+  p <- p + ggplot2::geom_path() +
+    ggplot2::facet_wrap(~ facet_var, scale = "free_y") +
+    ggplot2::ylab(variable) + ggplot2::xlab("Year") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 
   return(p)
 
 }
-

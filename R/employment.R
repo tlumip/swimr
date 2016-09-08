@@ -20,13 +20,13 @@ extract_employment <- function(db,
     facet_var = "MPO"
   }
 
-  grouping <- tbl(db, "BZONE") %>%
-    select_("BZONE", "facet_var" = facet_var)
+  grouping <- dplyr::tbl(db, "BZONE") %>%
+    dplyr::select_("BZONE", "facet_var" = facet_var)
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
-      slice(1) %>% .$facet_var
+    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+      dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
   }
@@ -36,26 +36,26 @@ extract_employment <- function(db,
     type_levels <- employment_types$naics1
   }
 
-  employment <- tbl(db, "ActivityLocations") %>%
-    select(BZONE, ACTIVITY, TSTEP, Employment) %>%
-    filter(Employment > 0) %>%
+  employment <- dplyr::tbl(db, "ActivityLocations") %>%
+    dplyr::select(BZONE, ACTIVITY, TSTEP, Employment) %>%
+    dplyr::filter(Employment > 0) %>%
 
     # join grouping variable
-    left_join(grouping, by = "BZONE") %>%
-    filter(facet_var %in% facet_levels) %>%
-    group_by(facet_var, ACTIVITY, TSTEP) %>%
-    summarise(emp = sum(Employment)) %>%
-    ungroup() %>%
-    collect(n=Inf) %>%
+    dplyr::left_join(grouping, by = "BZONE") %>%
+    dplyr::filter(facet_var %in% facet_levels) %>%
+    dplyr::group_by(facet_var, ACTIVITY, TSTEP) %>%
+    dplyr::summarize(emp = sum(Employment)) %>%
+    dplyr::ungroup() %>%
+    dplyr::collect(n=Inf) %>%
 
     # consolidate employment categories
-    mutate(
+    dplyr::mutate(
       ACTIVITY =  gsub("_.*", "", ACTIVITY),
       year = as.numeric(TSTEP) + 1990
     ) %>%
-    left_join(emp_types, by = "ACTIVITY") %>%
-    group_by(facet_var, emp_type, year) %>%
-    summarise(emp = sum(emp))
+    dplyr::left_join(emp_types, by = "ACTIVITY") %>%
+    dplyr::group_by(facet_var, emp_type, year) %>%
+    dplyr::summarize(emp = sum(emp))
 
 
 
@@ -84,16 +84,16 @@ plot_employment <- function(db,
   employment <- extract_employment(db, facet_var, facet_levels, type_levels)
 
   # make plot
-  ggplot(employment,
-         aes(x = year, y = emp,
+  ggplot2::ggplot(employment,
+         ggplot2::aes(x = year, y = emp,
              group = emp_type, color = emp_type)) +
-    geom_path()  +
-    facet_wrap( ~ facet_var) +
+    ggplot2::geom_path()  +
+    ggplot2::facet_wrap( ~ facet_var) +
 
-    scale_y_log10() +
-    xlab("Year") + ylab("Employees") +
-    scale_color_discrete("Sector") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::scale_y_log10() +
+    ggplot2::xlab("Year") + ggplot2::ylab("Employees") +
+    ggplot2::scale_color_discrete("Sector") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -120,24 +120,24 @@ compare_employment <- function(db1, db2,
 
   # get the reference scenario data
   fref <- extract_employment(db1, facet_var, facet_levels, type_levels) %>%
-    rename(ref = emp)
+    dplyr::rename(ref = emp)
 
   # get the comparison scenario
   fcom <- extract_employment(db2, facet_var, facet_levels, type_levels) %>%
-    rename(com = emp)
+    dplyr::rename(com = emp)
 
-  f <- left_join(fref, fcom) %>%
-    mutate(diff = (com - ref) / ref * 100)  # percent difference
+  f <- dplyr::left_join(fref, fcom) %>%
+    dplyr::mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
-  ggplot(f,
-         aes(x = year, y = diff, color = emp_type)) +
-    geom_path() +
-    facet_wrap( ~ facet_var) +
-    xlab("Year") +
-    ylab("Percent difference (current - reference) in Number of Employees") +
-    scale_color_discrete("Sector") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(f,
+         ggplot2::aes(x = year, y = diff, color = emp_type)) +
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap( ~ facet_var) +
+    ggplot2::xlab("Year") +
+    ggplot2::ylab("Percent difference (current - reference) in Number of Employees") +
+    ggplot2::scale_color_discrete("Sector") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare Employment by sector across multiple scenarios.
@@ -162,17 +162,17 @@ multiple_employment <- function(dbset, db_names,
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
-        mutate(scenario = names(dbset)[[i]])
+        dplyr::mutate(scenario = names(dbset)[[i]])
     )
   )
 
-  ggplot(
+  ggplot2::ggplot(
     df,
-    aes_string(x = "year", y = "emp", color = "scenario")
+    ggplot2::aes_string(x = "year", y = "emp", color = "scenario")
   ) +
-    geom_path() +
-    facet_grid(facet_var ~ emp_type, scales = "free_y") +
-    xlab("Year") + ylab("Employment") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::geom_path() +
+    ggplot2::facet_grid(facet_var ~ emp_type, scale = "free_y") +
+    ggplot2::xlab("Year") + ggplot2::ylab("Employment") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }

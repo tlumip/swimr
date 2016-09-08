@@ -12,7 +12,9 @@ get_commute_times(dir, year, region_var = c("MPO", "COUNTY", "STATE"),
 
 \item{year}{Analysis year, e.g. \code{t20}.}
 
-\item{region_var}{}
+\item{region_var}{One of \code{c("MPO", "COUNTY", "STATE")}}
+
+\item{regions}{A list of regions to include; defaults to \code{NULL} (all).}
 }
 \description{
 Calculate trip times by residence region

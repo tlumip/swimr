@@ -13,7 +13,7 @@ multiple_trips(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{db_names}{A character vector naming the scenarios.}
 
-\item{facet_var}{The region to summarize by.}
+\item{facet_var}{The region to dplyr::summarize by.}
 
 \item{facet_levels}{Regions to include in summary.}
 

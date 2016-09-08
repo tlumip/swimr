@@ -7,6 +7,7 @@
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
 #' @param type_levels The types of employment to show in the plot.
+#' @param index Should the function extract indexed or absolute values?
 #'
 #' @export
 extract_floorspace <- function(db,
@@ -19,13 +20,13 @@ extract_floorspace <- function(db,
     facet_var = "MPO"
   }
 
-  grouping <- tbl(db, "BZONE") %>%
-    select_("BZONE", "facet_var" = facet_var)
+  grouping <- dplyr::tbl(db, "BZONE") %>%
+    dplyr::select_("BZONE", "facet_var" = facet_var)
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
-      slice(1) %>% .$facet_var
+    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+      dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
   }
@@ -36,33 +37,33 @@ extract_floorspace <- function(db,
   }
 
   # get floorspace table and compute summary
-  floorspace <- tbl(db, "FLR_INVENTORY") %>%
-    transmute(
+  floorspace <- dplyr::tbl(db, "FLR_INVENTORY") %>%
+    dplyr::transmute(
       BZONE,
       year = TSTEP + 1990,
       commodity = COMMODITY,
       floor = FLR, built = INCREMENT
     ) %>%
 
-    # join facet and filter desired levels
-    left_join(grouping, by = "BZONE") %>%
-    filter(facet_var %in% facet_levels) %>%
+    # join facet and dplyr::filter desired levels
+    dplyr::left_join(grouping, by = "BZONE") %>%
+    dplyr::filter(facet_var %in% facet_levels) %>%
 
     # sum within facet, year, and type
-    group_by(facet_var, year, commodity) %>%
-    summarise_each(funs(sum), floor:built) %>%
-    collect(n=Inf) %>%
+    dplyr::group_by(facet_var, year, commodity) %>%
+    dplyr::summarize_each(funs(sum), floor:built) %>%
+    dplyr::collect(n=Inf) %>%
 
-    # consolidate floortypes and filter to desired levels
-    left_join(floor_types, by = "commodity") %>%
-    filter(floor_type %in% type_levels) %>%
-    group_by(facet_var, year, floor_type) %>%
-    summarise_each(funs(sum), floor:built)
+    # consolidate floortypes and dplyr::filter to desired levels
+    dplyr::left_join(floor_types, by = "commodity") %>%
+    dplyr::filter(floor_type %in% type_levels) %>%
+    dplyr::group_by(facet_var, year, floor_type) %>%
+    dplyr::summarize_each(funs(sum), floor:built)
 
   if(index){
     floorspace <- floorspace %>%
-      group_by(facet_var, floor_type) %>%
-      mutate(floor = calc_index(floor))
+      dplyr::group_by(facet_var, floor_type) %>%
+      dplyr::mutate(floor = calc_index(floor))
   }
 
   return(floorspace)
@@ -94,13 +95,13 @@ extract_volume <- function(db,
     facet_var = "MPO"
   }
 
-  grouping <- tbl(db, "BZONE") %>%
-    select_("BZONE", "facet_var" = facet_var)
+  grouping <- dplyr::tbl(db, "BZONE") %>%
+    dplyr::select_("BZONE", "facet_var" = facet_var)
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
-      slice(1) %>% .$facet_var
+    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+      dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
   }
@@ -111,23 +112,23 @@ extract_volume <- function(db,
   }
 
   # get floorspace purchased from buy/sell matrix
-  df <- tbl(db, "BuySellMatrix") %>%
-    # filter to floortypes
-    filter(FROMBZONE == TOBZONE) %>%
-    mutate(year = as.numeric(TSTEP) + 1990) %>%
-    select(BZONE = FROMBZONE, year, matches("FLR")) %>%
-    left_join(grouping) %>%
-    ungroup() %>%
-    group_by(facet_var, year) %>%
-    summarise_each(funs(sum)) %>%
+  df <- dplyr::tbl(db, "BuySellMatrix") %>%
+    # dplyr::filter to floortypes
+    dplyr::filter(FROMBZONE == TOBZONE) %>%
+    dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
+    dplyr::select(BZONE = FROMBZONE, year, matches("FLR")) %>%
+    dplyr::left_join(grouping) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(facet_var, year) %>%
+    dplyr::summarize_each(funs(sum)) %>%
 
-    collect(n=Inf) %>%
-    gather(commodity, used, -BZONE, -year, -facet_var) %>%
-    mutate(commodity = gsub("BuySell_", "", commodity)) %>%
-    left_join(floor_types) %>%
-    filter(floor_type %in% type_levels) %>%
-    group_by(facet_var, year, floor_type) %>%
-    summarize(volume = sum(used))
+    dplyr::collect(n=Inf) %>%
+    tidyr::gather(commodity, used, -BZONE, -year, -facet_var) %>%
+    dplyr::mutate(commodity = gsub("BuySell_", "", commodity)) %>%
+    dplyr::left_join(floor_types) %>%
+    dplyr::filter(floor_type %in% type_levels) %>%
+    dplyr::group_by(facet_var, year, floor_type) %>%
+    dplyr::summarize(volume = sum(used))
 
 
 }
@@ -141,6 +142,7 @@ extract_volume <- function(db,
 #' @param facet_levels The levels of the facet variable to keep. Defaults to all
 #'   levels other than external stations.
 #' @param type_levels The types of employment to show in the plot.
+#' @param index Should the function extract indexed or absolute values?
 #'
 #' @export
 extract_rents <- function(db,
@@ -153,13 +155,13 @@ extract_rents <- function(db,
     facet_var = "MPO"
   }
 
-  grouping <- tbl(db, "BZONE") %>%
-    select_("BZONE", "facet_var" = facet_var)
+  grouping <- dplyr::tbl(db, "BZONE") %>%
+    dplyr::select_("BZONE", "facet_var" = facet_var)
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% group_by(facet_var) %>% collect(n=Inf) %>%
-      slice(1) %>% .$facet_var
+    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+      dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
   }
@@ -169,46 +171,46 @@ extract_rents <- function(db,
     type_levels <- floor_types$floor_type
   }
 
-  supply <- tbl(db, "FLR_INVENTORY") %>%
-    transmute(
+  supply <- dplyr::tbl(db, "FLR_INVENTORY") %>%
+    dplyr::transmute(
       BZONE,
       year = TSTEP + 1990,
       commodity = COMMODITY,
       supply = FLR
     )
 
-  demand <- tbl(db, "ExchangeResults") %>%
-    transmute(
+  demand <- dplyr::tbl(db, "ExchangeResults") %>%
+    dplyr::transmute(
       BZONE,
       year = TSTEP + 1990,
       commodity = COMMODITY,
       price = Price,
       bought = InternalBought  # quantity consumed from AA
     ) %>%
-    # join facet and filter desired levels
-    filter(commodity %in% floor_types$commodity)
+    # join facet and dplyr::filter desired levels
+    dplyr::filter(commodity %in% floor_types$commodity)
 
 
-  df <- left_join(supply, demand, by = c("BZONE", "year", "commodity")) %>%
+  df <- dplyr::left_join(supply, demand, by = c("BZONE", "year", "commodity")) %>%
 
-    left_join(grouping, by = "BZONE") %>%
-    filter(facet_var %in% facet_levels) %>%
+    dplyr::left_join(grouping, by = "BZONE") %>%
+    dplyr::filter(facet_var %in% facet_levels) %>%
 
 
-    # filter to floortypes that the user requests and regroup
-    collect(n=Inf) %>%
-    left_join(floor_types, by = "commodity") %>%
-    filter(floor_type %in% type_levels) %>%
+    # dplyr::filter to floortypes that the user requests and regroup
+    dplyr::collect(n=Inf) %>%
+    dplyr::left_join(floor_types, by = "commodity") %>%
+    dplyr::filter(floor_type %in% type_levels) %>%
 
-    # summarise within facet and year
-    group_by(facet_var, year, floor_type) %>%
-    summarise(supply = sum(supply), price = mean(price), bought = sum(bought)) %>%
-    mutate(occrate = bought / supply)
+    # dplyr::summarize within facet and year
+    dplyr::group_by(facet_var, year, floor_type) %>%
+    dplyr::summarize(supply = sum(supply), price = mean(price), bought = sum(bought)) %>%
+    dplyr::mutate(occrate = bought / supply)
 
   if(index){
     df <- df  %>%
-      group_by(facet_var, floor_type) %>%
-      mutate(
+      dplyr::group_by(facet_var, floor_type) %>%
+      dplyr::mutate(
         price = calc_index(price),
         occrate = calc_index(occrate)
       )
@@ -241,7 +243,7 @@ plot_floorspace <- function(db,
 
   if(price){
     floorspace <- extract_rents(db, facet_var, facet_levels, type_levels, index = TRUE) %>%
-      mutate(floor = price)
+      dplyr::mutate(floor = price)
     ylabel = "Indexed Rent [$/sqft]"
   } else {
     floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels, index = TRUE)
@@ -249,13 +251,13 @@ plot_floorspace <- function(db,
   }
 
   # make plot
-  ggplot(floorspace,
-         aes(x = as.numeric(year), y = floor,
+  ggplot2::ggplot(floorspace,
+         ggplot2::aes(x = as.numeric(year), y = floor,
              group = floor_type, color = floor_type)) +
-    geom_path()  +
-    facet_wrap( ~ facet_var) +
-    xlab("Year") + ylab(ylabel) +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::geom_path()  +
+    ggplot2::facet_wrap( ~ facet_var) +
+    ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -278,36 +280,36 @@ compare_floorspace <- function(db1, db2,
   # get the reference scenario data
   if(price){
     fref <- extract_rents(db1, facet_var, facet_levels, type_levels) %>%
-      select(facet_var, year, floor_type, floor_ref = price)
+      dplyr::select(facet_var, year, floor_type, floor_ref = price)
 
     # get the comparison scenario
     fcom <- extract_rents(db2, facet_var, facet_levels, type_levels) %>%
-      select(facet_var, year, floor_type, floor_com = price)
+      dplyr::select(facet_var, year, floor_type, floor_com = price)
 
     ylabel <- "Percent difference (current - reference) in rent price"
   } else {
     fref <- extract_floorspace(db1, facet_var, facet_levels, type_levels) %>%
-      select(facet_var, year, floor_type, floor_ref = built)
+      dplyr::select(facet_var, year, floor_type, floor_ref = built)
 
     # get the comparison scenario
     fcom <- extract_floorspace(db2, facet_var, facet_levels, type_levels) %>%
-      select(facet_var, year, floor_type, floor_com = built)
+      dplyr::select(facet_var, year, floor_type, floor_com = built)
 
     ylabel <- "Percent difference (current - reference) in floor area"
   }
 
-  f <- left_join(fref, fcom) %>%
-    gather(var, value, floor_ref:floor_com) %>%
+  f <- dplyr::left_join(fref, fcom) %>%
+    tidyr::gather(var, value, floor_ref:floor_com) %>%
     separate(var, c("var", "scenario")) %>%
-    spread(scenario, value, fill = NA) %>%
-    mutate(diff = (com - ref) / ref * 100)  # percent difference
+    tidyr::spread(scenario, value, fill = NA) %>%
+    dplyr::mutate(diff = (com - ref) / ref * 100)  # percent difference
 
 
-  ggplot(f, aes(x = year, y = diff, color = floor_type)) +
-    geom_path() +
-    facet_wrap( ~ facet_var) +
-    xlab("Year") + ylab(ylabel) +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(f, ggplot2::aes(x = year, y = diff, color = floor_type)) +
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap( ~ facet_var) +
+    ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare floorspace by type across multiple scenarios.
@@ -338,17 +340,17 @@ multiple_floorspace <- function(dbset, db_names,
     df <- bind_rows(
       lapply(seq_along(dbset), function(i)
         extract_rents(dbset[[i]], facet_var, facet_levels, type_levels) %>%
-          mutate(scenario = names(dbset)[[i]])
+          dplyr::mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
-      ungroup() %>%
-      mutate_(facet_var = "facet_var")
+      dplyr::ungroup() %>%
+      dplyr::mutate_(facet_var = "facet_var")
 
     if(variable == "rent"){
-      df <- df %>% mutate(floor = price)
+      df <- df %>% dplyr::mutate(floor = price)
       ylabel <- "Rent price"
     } else if(variable == "occupancy"){
-      df <- df %>% mutate(floor = occrate)
+      df <- df %>% dplyr::mutate(floor = occrate)
       ylabel <- "Occupancy Rate"
     }
 
@@ -357,25 +359,25 @@ multiple_floorspace <- function(dbset, db_names,
     df <- bind_rows(
       lapply(seq_along(dbset), function(i)
         extract_floorspace(dbset[[i]], facet_var, facet_levels, type_levels) %>%
-          mutate(scenario = names(dbset)[[i]])
+          dplyr::mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
-      ungroup() %>%
-      mutate_(facet_var = "facet_var") %>%
-      mutate(floor = built)
+      dplyr::ungroup() %>%
+      dplyr::mutate_(facet_var = "facet_var") %>%
+      dplyr::mutate(floor = built)
 
     ylabel <- "New floor space"
   }
 
-  ggplot(
+  ggplot2::ggplot(
     df,
-    aes_string(x = "year", y = "floor", color = "scenario")
+    ggplot2::aes_string(x = "year", y = "floor", color = "scenario")
   ) +
-    geom_path() +
-    facet_grid(facet_var ~ floor_type, scales = "free_y") +
-    xlab("Year") + ylab(ylabel) +
-    scale_x_log10() +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::geom_path() +
+    ggplot2::facet_grid(facet_var ~ floor_type, scale = "free_y") +
+    ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
+    ggplot2::scale_x_log10() +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -392,11 +394,11 @@ plot_occupancy <- function(db,
 
   rents <- extract_rents(db, facet_var, facet_levels, type_levels, index = FALSE)
 
-  ggplot(rents,  aes(x = year, y = occrate, color = floor_type) ) +
-    geom_path() +
-    facet_wrap(~ facet_var) +
-    xlab("Year") + ylab("Occupancy Rate") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(rents,  ggplot2::aes(x = year, y = occrate, color = floor_type) ) +
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap(~ facet_var) +
+    ggplot2::xlab("Year") + ggplot2::ylab("Occupancy Rate") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 #' Compare occupancy in a scenario over time.
@@ -411,20 +413,18 @@ compare_occupancy <- function(db1, db2,
                               type_levels = NULL){
 
   fref <- extract_rents(db1, facet_var, facet_levels, type_levels, index = FALSE) %>%
-    select(facet_var, year, floor_type, rate_ref = occrate)
+    dplyr::select(facet_var, year, floor_type, rate_ref = occrate)
 
   fcom <- extract_rents(db2, facet_var, facet_levels, type_levels, index = FALSE) %>%
-    select(facet_var, year, floor_type, rate_com = occrate)
+    dplyr::select(facet_var, year, floor_type, rate_com = occrate)
 
-  df <- left_join(fref, fcom) %>%
-    mutate(pct_diff = (rate_com - rate_ref) / rate_ref * 100)
+  df <- dplyr::left_join(fref, fcom) %>%
+    dplyr::mutate(pct_diff = (rate_com - rate_ref) / rate_ref * 100)
 
-  ggplot(df,  aes(x = year, y = pct_diff, color = floor_type) ) +
-    geom_path() +
-    facet_wrap(~ facet_var) +
-    xlab("Year") + ylab("Percent difference in occupancy rate") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(df,  ggplot2::aes(x = year, y = pct_diff, color = floor_type) ) +
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap(~ facet_var) +
+    ggplot2::xlab("Year") + ggplot2::ylab("Percent difference in occupancy rate") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
-
-

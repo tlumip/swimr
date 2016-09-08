@@ -39,7 +39,7 @@ directly. For more information, see the `dplyr`
 [vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html).
 
 ```{r point_to_db}
-db_path <- "~/Documents/projects/swim/FinalReference_Test.db"
+db_path <- "~/Documents/projects/swim/MFhousing.db"
 db <- src_sqlite(db_path)
 db
 ```

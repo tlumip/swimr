@@ -10,7 +10,7 @@ map_logsums(db, scope = NULL, purposes = NULL, ggmap = FALSE,
 \arguments{
 \item{db}{The scenario sqlite database.}
 
-\item{scope}{a filtering criteria to limit the scope of the dataframe}
+\item{scope}{a dplyr::filtering criteria to limit the scope of the dataframe}
 
 \item{purposes}{a vector of trip purposes to include in the average logsum.}
 

@@ -14,6 +14,8 @@ extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
 
 \item{regions}{The regions to return.  If \code{NULL}, returns all.}
 
+\item{cumulative}{Return a cumulative PDF?}
+
 \item{years}{The years to show in the plot. If null, will show the first}
 
 \item{max_bin}{The maximum bin size to return.}

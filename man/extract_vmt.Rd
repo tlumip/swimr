@@ -18,7 +18,7 @@ variable to use. Levels not called are dropped from the plot; default is
 \item{index}{Whether to show the variables as indexed against the base year.}
 }
 \value{
-A data frame with VMT summarized by facility type and facet variable.
+A data frame with VMT dplyr::summarized by facility type and facet variable.
 }
 \description{
 Extract VMT

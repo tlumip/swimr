@@ -12,19 +12,18 @@ Description: This package collects several R functions that are used in
 License: file LICENSE
 LazyData: TRUE
 Depends:
-    R (>= 3.1.2),
-    plyr (>= 1.8.3),
-    dplyr (>= 0.4.3),
-    outviz,
-    omxr,
-    ggplot2 (>= 1.0.0),
-    tidyr (>= 0.3.0)
+    R (>= 3.1.2)
 Suggests:
     knitr
 Imports:
-    dplyrExtras (>= 0.1.1),
-    kfigr (>= 1.2),
     zoo (>= 1.7.12),
-    sp (>= 1.2.0)
+    sp (>= 1.2.0),
+    outviz,
+    ggplot2,
+    dplyr,
+    tidyr,
+    omxr,
+    lazyeval,
+    stats
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

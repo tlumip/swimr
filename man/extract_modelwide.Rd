@@ -9,7 +9,7 @@ extract_modelwide(db, filters)
 \arguments{
 \item{db}{Scenario database.}
 
-\item{filters}{list object containing character strings on which to filter
+\item{filters}{list object containing character strings on which to dplyr::filter
 parameters.}
 }
 \description{

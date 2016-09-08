@@ -16,6 +16,8 @@ extract_floorspace(db, facet_var = c("MPO", "COUNTY", "STATE"),
 levels other than external stations.}
 
 \item{type_levels}{The types of employment to show in the plot.}
+
+\item{index}{Should the function extract indexed or absolute values?}
 }
 \description{
 This is an internal function to pull the floorspace data from a scenario and

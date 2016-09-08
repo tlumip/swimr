@@ -16,6 +16,8 @@ extract_rents(db, facet_var = c("MPO", "COUNTY", "STATE"),
 levels other than external stations.}
 
 \item{type_levels}{The types of employment to show in the plot.}
+
+\item{index}{Should the function extract indexed or absolute values?}
 }
 \description{
 This function extracts the occupancy rate by floortype from a scenario over

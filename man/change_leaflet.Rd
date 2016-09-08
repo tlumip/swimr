@@ -9,7 +9,9 @@ change_leaflet(db, year1 = 2010, year2 = 2030)
 \arguments{
 \item{db}{The scenario database}
 
-\item{year1}{T}
+\item{year1}{The first year}
+
+\item{year2}{The second year}
 }
 \description{
 Leaflet plot of change over time in one scenario.

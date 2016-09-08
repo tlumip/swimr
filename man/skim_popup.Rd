@@ -7,9 +7,9 @@
 skim_popup(shp, zone)
 }
 \arguments{
-\item{zone}{The focus zone.}
+\item{shp}{A shapefile containing data table attributes}
 
-\item{var}{Variable to create popup tag for (e.g., \code{"pop"})}
+\item{zone}{The focus zone.}
 }
 \description{
 Build skim popup tag for leaflet

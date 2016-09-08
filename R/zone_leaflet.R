@@ -1,7 +1,8 @@
 #' Leaflet plot of change over time in one scenario.
 #'
 #' @param db The scenario database
-#' @param year1 T
+#' @param year1  The first year
+#' @param year2  The second year
 #'
 #' @details This function creates an interactive Leaflet plot of the alpha zone
 #'   system, showing annualized implied growth rates of key socioeconomic
@@ -13,7 +14,6 @@
 #'   the transport model does not run. If the user asks for year that does not
 #'   exist, then the plot will use the nearest available year.
 #'
-#' @import leaflet
 #'
 #' @export
 change_leaflet <- function(db, year1 = 2010, year2 = 2030){
@@ -25,7 +25,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   # This simply corrects the value of year1 and year 2 if the user asks for
   # a year that doesn't exist.
   years <- 1990 + as.numeric(names(table(
-    tbl(db, "AZONE") %>% select(TSTEP) %>% collect(n=Inf) %>% .$TSTEP)))
+    dplyr::tbl(db, "AZONE") %>% dplyr::select(TSTEP) %>% dplyr::collect(n=Inf) %>% .$TSTEP)))
   year1 <- years[which(abs(years - year1) == min(abs(years - year1)))]
   year2 <- years[which(abs(years - year2) == min(abs(years - year2)))]
 
@@ -33,7 +33,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   # leaflet plotting.
   shp <- zones_shp
   shp@data <- shp@data %>%
-    left_join(extract_zonedata(db, year1, year2))
+    dplyr::left_join(extract_zonedata(db, year1, year2))
 
   # Create a palette for
   palq <- colorFactor(
@@ -69,10 +69,11 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
 #' @param db1 Reference scenario VIZ database connection.
 #' @param db2 Current scenario VIZ database connection.
 #' @param year Year in which to compare the two scenarios.
+#' @param variable Which variable to show in difference plot; currently
+#'  \code{variable = c("Population", "Employment", "HH")}
 #' @param scen_names Names of the scenarios in the comparison. Defaults to
 #'   "Reference", "Current".
 #'
-#' @import leaflet
 #'
 #' @export
 diff_leaflet <- function(db1, db2, year,
@@ -94,20 +95,20 @@ diff_leaflet <- function(db1, db2, year,
   # This simply corrects the value of year if the user asks for
   # a year that doesn't exist.
   years <- 1990 + as.numeric(names(table(
-    tbl(db1, "AZONE") %>% select(TSTEP) %>% collect(n=Inf) %>% .$TSTEP)))
+    dplyr::tbl(db1, "AZONE") %>% dplyr::select(TSTEP) %>% dplyr::collect(n=Inf) %>% .$TSTEP)))
   year <- years[which(abs(years - year) == min(abs(years - year)))]
 
   # get se data from both scenarios and join together ----
   se <- extract_zonedata(db1, year) %>%
-    left_join(extract_zonedata(db2, year), by = "AZONE") %>%
-    gather(var, value, -AZONE) %>%
+    dplyr::left_join(extract_zonedata(db2, year), by = "AZONE") %>%
+    tidyr::gather(var, value, -AZONE) %>%
     separate(var, c("variable", "year", "sc")) %>%
-    select(-year) %>%
-    spread(sc, value) %>%
-    filter_(.dots = crit) %>%
+    dplyr::select(-year) %>%
+    tidyr::spread(sc, value) %>%
+    dplyr::filter_(.dots = crit) %>%
 
     # calculate absolute difference between scenarios
-    mutate(
+    dplyr::mutate(
       diff = y - x,
       pct = diff / x * 100
     )
@@ -117,7 +118,7 @@ diff_leaflet <- function(db1, db2, year,
   # leaflet plotting.
   shp <- zones_shp
   shp@data <- shp@data %>%
-    left_join(se, by = "AZONE")
+    dplyr::left_join(se, by = "AZONE")
 
   # Create a palette for
   palq <- colorFactor(
@@ -168,34 +169,34 @@ extract_zonedata <- function(db, year1, year2 = NULL){
     p1 = as.name(year1), p2 = as.name(year2))
 
   # Get socioeconomic data from database.
-  se <- tbl(db, "AZONE") %>%
-    transmute(AZONE, pop = POPULATION, emp = EMPLOYMENT,
+  se <- dplyr::tbl(db, "AZONE") %>%
+    dplyr::transmute(AZONE, pop = POPULATION, emp = EMPLOYMENT,
               hh = TOTALHHS, year = TSTEP + 1990) %>%
-    filter(year %in% c(year1, year2)) %>%
+    dplyr::filter(year %in% c(year1, year2)) %>%
 
     # return density of variable
-    left_join(
-      tbl(db, "ALLZONES") %>%
-        transmute(AZONE = Azone, sqmi = AREASQFT * 3.587048e-8),
+    dplyr::left_join(
+      dplyr::tbl(db, "ALLZONES") %>%
+        dplyr::transmute(AZONE = Azone, sqmi = AREASQFT * 3.587048e-8),
       by = "AZONE") %>%
-    collect(n=Inf) %>%
-    mutate_each(funs( ./sqmi), pop:hh) %>%
-    select(-sqmi) %>%
+    dplyr::collect(n=Inf) %>%
+    dplyr::mutate_each(funs( ./sqmi), pop:hh) %>%
+    dplyr::select(-sqmi) %>%
 
-    gather(variable, value, -AZONE, -year) %>%
-    spread(year, value)
+    tidyr::gather(variable, value, -AZONE, -year) %>%
+    tidyr::spread(year, value)
 
   if(year2 != year1){
     se <- se %>%
       # calculate implied growth rate
-      mutate_("rate" = grt_exp)
+      dplyr::mutate_("rate" = grt_exp)
   }
 
   # reformat
   se %>%
-    gather(period, value, -AZONE, -variable) %>%
+    tidyr::gather(period, value, -AZONE, -variable) %>%
     unite(var, c(variable, period)) %>%
-    spread(var, value, fill = NA)
+    tidyr::spread(var, value, fill = NA)
 
 }
 
@@ -208,7 +209,6 @@ extract_zonedata <- function(db, year1, year2 = NULL){
 #' @param shp An object of class \code{SpatialPolygonsDataFrame} with the
 #'   plotting fields already appended.
 #'
-#' @import leaflet
 #'
 zone_leaflet <- function(shp){
 
@@ -267,4 +267,3 @@ diff_popup <- function(shp, var, scen_names){
   paste(zone_info, var_info, sep = "</br>")
 
 }
-

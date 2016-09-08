@@ -14,6 +14,9 @@ diff_leaflet(db1, db2, year, variable = c("Population", "Employment", "HH"),
 
 \item{year}{Year in which to compare the two scenarios.}
 
+\item{variable}{Which variable to show in difference plot; currently
+\code{variable = c("Population", "Employment", "HH")}}
+
 \item{scen_names}{Names of the scenarios in the comparison. Defaults to
 "Reference", "Current".}
 }

@@ -24,6 +24,6 @@ A \code{data_frame} with the participation rate in each facet region
 }
 \description{
 This function returns the total dollar value of all the labor sold by a
-collect(n=Inf)ion of zones over time.
+dplyr::collect(n=Inf)ion of zones over time.
 }
 

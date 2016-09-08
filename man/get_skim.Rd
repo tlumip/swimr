@@ -11,7 +11,7 @@ get_skim(skim, zone, from = TRUE)
 
 \item{zone}{Focus zone for the skim calculation.}
 
-\item{from}{If \code{TRUE}, gets values \em{from} \code{zone} to other zones.}
+\item{from}{If \code{TRUE}, gets values from \code{zone} to other zones.}
 }
 \description{
 Process skim values from one zone.

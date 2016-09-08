@@ -1,21 +1,21 @@
 #' Extract model-wide composite utilities
 #'
 #' @param db Scenario database.
-#' @param filters list object containing character strings on which to filter
+#' @param filters list object containing character strings on which to dplyr::filter
 #'   parameters.
 #'
 #' @export
 extract_modelwide <- function(db, filters){
 
 
-  df <- tbl(db, "MODELWIDE") %>% collect(n=Inf)
+  df <- dplyr::tbl(db, "MODELWIDE") %>% collect(n=Inf)
 
   for(i in filters){
-    df <- df %>% filter(grepl(i, DATA))
+    df <- df %>% dplyr::filter(grepl(i, DATA))
   }
 
   df %>%
-    mutate(year = as.numeric(TSTEP) + 1990)
+    dplyr::mutate(year = as.numeric(TSTEP) + 1990)
 
 }
 
@@ -24,7 +24,7 @@ extract_modelwide <- function(db, filters){
 #' Plot model wide parameters.
 #'
 #' @param db Scenario database.
-#' @param filters list object containing character strings on which to filter
+#' @param filters list object containing character strings on which to dplyr::filter
 #'   parameters.
 #'
 #' @export
@@ -32,8 +32,8 @@ plot_modelwide <- function(db, filters){
 
   df <- extract_modelwide(db, filters)
 
-  p <- ggplot(df, aes(x = year, y = VALUE, color = DATA)) +
-    geom_path() +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = year, y = VALUE, color = DATA)) +
+    ggplot2::geom_path() +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }

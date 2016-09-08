@@ -22,7 +22,7 @@ scenario.}
 
 \item{year2}{The comparison or analysis year. Default \code{NULL}.}
 
-\item{from}{If \code{TRUE}, gets values \em{from} \code{zone} to other zones.}
+\item{from}{If \code{TRUE}, gets values from \code{zone} to other zones.}
 }
 \description{
 Plot a skim chloropleth

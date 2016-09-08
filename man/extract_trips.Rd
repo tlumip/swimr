@@ -11,7 +11,7 @@ extract_trips(db, facet_var = c("MPO", "COUNTY", "STATE"),
 \arguments{
 \item{db}{the scenario database.}
 
-\item{facet_var}{The region to summarize by.}
+\item{facet_var}{The region to dplyr::summarize by.}
 
 \item{facet_levels}{Regions to include in summary.}
 
@@ -25,7 +25,7 @@ A data frame with total trips originating in the region by mode and
   year.
 }
 \description{
-This function looks at the trip matrix for a scenario and summarizes trips on
+This function looks at the trip matrix for a scenario and dplyr::summarizes trips on
 the origin end by mode and region of origin.
 }
 

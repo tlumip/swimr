@@ -8,7 +8,7 @@
 #'   scenario.
 #' @param year1 The base or reference year to show, e.g., \code{t20}.
 #' @param year2 The comparison or analysis year. Default \code{NULL}.
-#' @param from If \code{TRUE}, gets values \em{from} \code{zone} to other zones.
+#' @param from If \code{TRUE}, gets values from \code{zone} to other zones.
 #'
 #' @details If \code{dir2} and \code{year2} are both \code{NULL}, will show an
 #'   absolute measure of travel time. If one or the other is given, will show
@@ -33,8 +33,8 @@ skim_leaflet <- function(zone, skim,
 
   if(exists("s2")){
     # Calculate percent diff between between s1 and s2
-    s <- left_join(s1, s2, by = "zone") %>%
-      mutate(
+    s <- dplyr::left_join(s1, s2, by = "zone") %>%
+      dplyr::mutate(
         value = pct_diff(value.x, value.y),
         plot_value = cut_diverror(value)
       )
@@ -50,7 +50,7 @@ skim_leaflet <- function(zone, skim,
   } else {
     # just return value from s1 if no comparison
     s <- s1 %>%
-      mutate(plot_value = value)
+      dplyr::mutate(plot_value = value)
     # error diff pallette
 
     palq <- colorBin(
@@ -64,7 +64,7 @@ skim_leaflet <- function(zone, skim,
   # Join skim information to zones shapefile
   shp <- zones_shp
   shp@data <- shp@data %>%
-    left_join(s, by = c("AZONE" = "zone"))
+    dplyr::left_join(s, by = c("AZONE" = "zone"))
 
   # Make and return leaflet plot
   zone_leaflet(shp) %>%
@@ -86,10 +86,9 @@ skim_leaflet <- function(zone, skim,
 #'
 #' @param skim Path to zmx skim file
 #' @param zone Focus zone for the skim calculation.
-#' @param from If \code{TRUE}, gets values \em{from} \code{zone} to other zones.
+#' @param from If \code{TRUE}, gets values from \code{zone} to other zones.
 #'
 #'
-#' @importFrom omxr read_zmx
 #'
 get_skim <- function(skim, zone, from = TRUE){
 
@@ -103,7 +102,7 @@ get_skim <- function(skim, zone, from = TRUE){
     r <- s[, zone]
   }
 
-  data_frame(
+  dplyr::data_frame(
     zone = as.numeric(names(r)),
     value = r
   )
@@ -113,7 +112,8 @@ get_skim <- function(skim, zone, from = TRUE){
 #' Build skim popup tag for leaflet
 #'
 #' @inheritParams skim_leaflet
-#' @param var Variable to create popup tag for (e.g., \code{"pop"})
+#' @param shp A shapefile containing data table attributes
+#' 
 #'
 skim_popup <- function(shp, zone){
   # build popup
@@ -137,4 +137,3 @@ skim_popup <- function(shp, zone){
   paste(zone_info, var_info, sep = "</br>")
 
 }
-

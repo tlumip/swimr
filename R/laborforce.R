@@ -32,43 +32,43 @@ extract_wapr <- function(db,
                          facet_levels = NULL, color_levels = NULL) {
 
 
-  df <- tbl(db, "AZONE") %>%
-    transmute(
+  df <- dplyr::tbl(db, "AZONE") %>%
+    dplyr::transmute(
       AZONE, TSTEP,
       workers = TOTALWORKERS,
       laborforce = PERSON15TO21 + PERSON21TO40 + PERSON40TO60 + PERSON60PLUS
     ) %>%
 
     # join faceting variables
-    left_join(
-      tbl(db, "ALLZONES") %>%
-        select_("AZONE" = "Azone", facet_var)
+    dplyr::left_join(
+      dplyr::tbl(db, "ALLZONES") %>%
+        dplyr::select_("AZONE" = "Azone", facet_var)
     )
 
     # if no levels specified, then keep all
     if(!is.null(facet_levels)){
 
       df <- df %>%
-        mutate_("facet_var" = facet_var) %>%
-        filter(facet_var %in% facet_levels)
+        dplyr::mutate_("facet_var" = facet_var) %>%
+        dplyr::filter(facet_var %in% facet_levels)
     }
 
   df <- df %>%
-    # summarize on faceting variable
-    group_by_("TSTEP", facet_var) %>%
-    summarise(
+    # dplyr::summarize on faceting variable
+    dplyr::group_by_("TSTEP", facet_var) %>%
+    dplyr::summarize(
       workers = sum(workers),
       laborforce = sum(laborforce)
     ) %>%
 
     # calculate wapr
-    collect(n=Inf) %>%
-    mutate(
+    dplyr::collect(n=Inf) %>%
+    dplyr::mutate(
       wapr = workers / laborforce * 100,
       year = as.numeric(TSTEP) + 1990
     ) %>%
-    ungroup() %>%
-    select(-TSTEP)
+    dplyr::ungroup() %>%
+    dplyr::select(-TSTEP)
 
   return(df)
 
@@ -113,29 +113,29 @@ plot_wapr <- function(db,
   if(is.null(facet_var)){
 
     df <- extract_wapr(db, color_var, color_levels)
-    p <- ggplot(df, aes_string(x = "year", y = "wapr", color = color_var)) +
-      geom_path()
+    p <- ggplot2::ggplot(df, ggplot2::aes_string(x = "year", y = "wapr", color = color_var)) +
+      ggplot2::geom_path()
   } else {
 
     # get lookup table grouping color variables to facet variables
     zt <- zones_data %>%
-      group_by_(color_var, facet_var) %>%
-      slice(1) %>% ungroup() %>%
-      select_(color_var, facet_var)
+      dplyr::group_by_(color_var, facet_var) %>%
+      dplyr::slice(1) %>% dplyr::ungroup() %>%
+      dplyr::select_(color_var, facet_var)
 
     df <- extract_wapr(db, color_var, color_levels) %>%
-      left_join(zt)
+      dplyr::left_join(zt)
 
-    p <- ggplot(
-      df, aes_string(x = "year", y = "wapr", color = color_var)) +
-      geom_path() +
-      facet_wrap(as.formula(paste("~", facet_var)))
+    p <- ggplot2::ggplot(
+      df, ggplot2::aes_string(x = "year", y = "wapr", color = color_var)) +
+      ggplot2::geom_path() +
+      ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var)))
   }
 
   p +
-    xlab("Year") + ylab("Labor Force Participation Rate (%)") +
-    scale_color_discrete(color_var) +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::xlab("Year") + ggplot2::ylab("Labor Force Participation Rate (%)") +
+    ggplot2::scale_color_discrete(color_var) +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }
 
@@ -149,7 +149,7 @@ plot_wapr <- function(db,
 #' @param db Scenario database.
 #' @param level Level at which to calculate volatility over time. Smaller
 #'   levels, such as BZONE will show higher volatility.
-#' @param scope a filtering criteria to limit the scope of the dataframe
+#' @param scope a dplyr::filtering criteria to limit the scope of the dataframe
 #'
 #'
 #' @return a ggplot2 object.
@@ -158,17 +158,16 @@ plot_wapr <- function(db,
 plot_wapr_volatility <- function(db,
                                  level = c("BZONE", "COUNTY", "MPO",
                                            "ALDREGION", "STATE"),
-                                 scope = NULL,
-                                 ggmap = FALSE){
+                                 scope = NULL){
 
   if(!is.null(scope)){
 
     # determine the list of levels in the scope.
     zt <- zones_data %>%
-      filter_(.dots = scope) %>%
-      select_(level) %>%
-      group_by_(level) %>%
-      slice(1)
+      dplyr::filter_(.dots = scope) %>%
+      dplyr::select_(level) %>%
+      dplyr::group_by_(level) %>%
+      dplyr::slice(1)
 
 
     df <- extract_wapr(db, level) %>%
@@ -181,13 +180,13 @@ plot_wapr_volatility <- function(db,
 
   # calculate volatility as the standard deviation of the growth rates.
   df <- df %>%
-    group_by_(level) %>%
-    arrange(year) %>%
-    mutate(
+    dplyr::group_by_(level) %>%
+    dplyr::arrange(year) %>%
+    dplyr::mutate(
       rate = (lead(wapr) - wapr) / wapr * 100
     ) %>%
-    summarise(
-      volatility = sd(rate, na.rm = TRUE)
+    dplyr::summarize(
+      volatility = stats::sd(rate, na.rm = TRUE)
     )
 
 
@@ -195,16 +194,16 @@ plot_wapr_volatility <- function(db,
   dt <- zones %>%
     inner_join(df)
 
-  p <- ggplot() +
+  p <- ggplot2::ggplot() +
     coord_map("conic", lat0 = 43) +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
   p + geom_polygon(
     data = dt,
     alpha = 0.5,
-    aes_string(x = "long", y = "lat", fill = "volatility", group = "group")
+    ggplot2::aes_string(x = "long", y = "lat", fill = "volatility", group = "group")
   ) +
-    scale_fill_gradient("Volatility in WAPR", low = "white", high = "red")
+    ggplot2::scale_fill_gradient("Volatility in WAPR", low = "white", high = "red")
 
 }
 
@@ -224,21 +223,21 @@ compare_wapr <- function(db1, db2,
                          facet_levels = NULL) {
 
   ref <- extract_wapr(db1, facet_var, facet_levels) %>%
-    rename(ref = wapr) %>%
-    select(-workers, -laborforce)
+    dplyr::rename(ref = wapr) %>%
+    dplyr::select(-workers, -laborforce)
   com <- extract_wapr(db2, facet_var, facet_levels) %>%
-    rename(com = wapr) %>%
-    select(-workers, -laborforce)
+    dplyr::rename(com = wapr) %>%
+    dplyr::select(-workers, -laborforce)
 
-  df <- left_join(ref, com) %>%
-    mutate(diff = (com - ref) / ref * 100)
+  df <- dplyr::left_join(ref, com) %>%
+    dplyr::mutate(diff = (com - ref) / ref * 100)
 
 
-  ggplot(df,
-         aes_string(x = "year", y = "diff", color = facet_var)) +
-    geom_path() +
-    xlab("Year") + ylab("Percent difference (current - reference).") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+  ggplot2::ggplot(df,
+         ggplot2::aes_string(x = "year", y = "diff", color = facet_var)) +
+    ggplot2::geom_path() +
+    ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 }
 
 
@@ -263,18 +262,18 @@ multiple_wapr <- function(dbset, db_names,
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
       extract_wapr(dbset[[i]], facet_var, facet_levels) %>%
-        mutate(scenario = names(dbset)[[i]])
+        dplyr::mutate(scenario = names(dbset)[[i]])
     )
   ) %>%
-    mutate_("facet_var" = facet_var)
+    dplyr::mutate_("facet_var" = facet_var)
 
-  ggplot(
+  ggplot2::ggplot(
     df,
-    aes_string(x = "year", y = "wapr", color = "scenario")
+    ggplot2::aes_string(x = "year", y = "wapr", color = "scenario")
   ) +
-    geom_path() +
-    facet_wrap(~ facet_var) +
-    xlab("Year") + ylab("Labor force participation") +
-    theme_bw() + theme(axis.text.x = element_text(angle = 30))
+    ggplot2::geom_path() +
+    ggplot2::facet_wrap(~ facet_var) +
+    ggplot2::xlab("Year") + ggplot2::ylab("Labor force participation") +
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
 
 }

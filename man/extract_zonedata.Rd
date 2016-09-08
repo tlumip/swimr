@@ -9,7 +9,9 @@ extract_zonedata(db, year1, year2 = NULL)
 \arguments{
 \item{db}{The scenario database}
 
-\item{year1}{T}
+\item{year1}{The first year}
+
+\item{year2}{The second year}
 }
 \description{
 Extract se data for leaflet zone plots

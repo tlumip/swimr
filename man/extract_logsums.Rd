@@ -9,14 +9,14 @@ extract_logsums(db, scope = NULL, purposes = NULL, agg_var = "AZONE")
 \arguments{
 \item{db}{The scenario sqlite database.}
 
-\item{scope}{a filtering criteria to limit the scope of the dataframe}
+\item{scope}{a dplyr::filtering criteria to limit the scope of the dataframe}
 
 \item{purposes}{a vector of trip purposes to include in the average logsum.}
 
 \item{agg_var}{The region variable on which to aggregate logsums.}
 }
 \value{
-a ggmap object
+a data_frame
 }
 \description{
 The logsums are provided at production-side beta zones, by purpose and market

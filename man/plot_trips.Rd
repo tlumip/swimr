@@ -11,7 +11,7 @@ plot_trips(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
 \arguments{
 \item{db}{the scenario database.}
 
-\item{facet_var}{The region to summarize by.}
+\item{facet_var}{The region to dplyr::summarize by.}
 
 \item{facet_levels}{Regions to include in summary.}
 

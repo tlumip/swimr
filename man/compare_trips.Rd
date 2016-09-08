@@ -13,7 +13,7 @@ compare_trips(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{facet_var}{The region to summarize by.}
+\item{facet_var}{The region to dplyr::summarize by.}
 
 \item{facet_levels}{Regions to include in summary.}
 

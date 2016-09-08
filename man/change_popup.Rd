@@ -12,7 +12,9 @@ plotting fields already appended.}
 
 \item{var}{Variable to create popup tag for (e.g., \code{"pop"})}
 
-\item{year1}{T}
+\item{year1}{The first year}
+
+\item{year2}{The second year}
 }
 \description{
 Build change popup tag for leaflet

@@ -5,7 +5,7 @@
 \title{Plot WAPR Volatility in a Region}
 \usage{
 plot_wapr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ALDREGION",
-  "STATE"), scope = NULL, ggmap = FALSE)
+  "STATE"), scope = NULL)
 }
 \arguments{
 \item{db}{Scenario database.}
@@ -13,9 +13,7 @@ plot_wapr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ALDREGION",
 \item{level}{Level at which to calculate volatility over time. Smaller
 levels, such as BZONE will show higher volatility.}
 
-\item{scope}{a filtering criteria to limit the scope of the dataframe}
-
-\item{ggmap}{if TRUE, return a ggmap background}
+\item{scope}{a dplyr::filtering criteria to limit the scope of the dataframe}
 }
 \value{
 a ggplot2 object.
