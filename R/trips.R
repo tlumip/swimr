@@ -47,7 +47,7 @@ extract_trips <- function(db,
     tidyr::gather(mode, trips, am_BIKE:pm_WK_TRAN) %>%
     dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
     dplyr::select(-TSTEP) %>%
-    separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
+    tidyr::separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
     dplyr::filter(mode != "SCHOOL_BUS") %>%
 
     # join consolidated mode information
@@ -116,7 +116,7 @@ plot_trips <- function(db,
     ggplot2::geom_path()  +
     ggplot2::facet_wrap( ~ facet_var) +
     ggplot2::xlab("Year") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -160,7 +160,7 @@ compare_trips <- function(db1, db2,
   p +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Percent difference in trip productions (current - reference)") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -196,7 +196,7 @@ multiple_trips <- function(dbset, db_names,
   p + ggplot2::geom_path() +
     ggplot2::facet_grid(mode ~ facet_var, scale = "free_y") +
     ggplot2::ylab("Total Trips") + ggplot2::xlab("Year") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 

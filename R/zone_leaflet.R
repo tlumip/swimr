@@ -102,7 +102,7 @@ diff_leaflet <- function(db1, db2, year,
   se <- extract_zonedata(db1, year) %>%
     dplyr::left_join(extract_zonedata(db2, year), by = "AZONE") %>%
     tidyr::gather(var, value, -AZONE) %>%
-    separate(var, c("variable", "year", "sc")) %>%
+    tidyr::separate(var, c("variable", "year", "sc")) %>%
     dplyr::select(-year) %>%
     tidyr::spread(sc, value) %>%
     dplyr::filter_(.dots = crit) %>%

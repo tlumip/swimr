@@ -81,7 +81,7 @@ plot_tlfd <- function(db,
     ggplot2::scale_color_discrete("Year") +
     ggplot2::facet_wrap(~ region_var) +
     ggplot2::ylab("Frequency") + ggplot2::xlab("Miles") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
   return(p)
 
@@ -125,7 +125,7 @@ compare_tlfd <- function(db1, db2,
     ggplot2::facet_wrap(~ region_var) +
     ggplot2::ylab(ifelse(cumulative, "Difference in Cumulative Frequency (ref - cur)",
                 "Difference in Frequency")) + ggplot2::xlab("Miles") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
   return(p)
 

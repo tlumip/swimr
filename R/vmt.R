@@ -73,7 +73,7 @@ plot_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = TRUE){
     ggplot2::scale_color_discrete("Facility Type") +
     ggplot2::xlab("Year") + ggplot2::ylab(ifelse(index, "VMT Indexed to Base Year",
                                "Vehicle Miles Traveled")) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -108,7 +108,7 @@ compare_vmt <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var))) +
     ggplot2::scale_color_discrete("Facility Type") +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference in VMT.") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 
@@ -190,7 +190,7 @@ plot_vht <- function(db, facet_var = "MPO", facet_levels = NULL){
 
   p +
     ggplot2::xlab("Year") + ggplot2::ylab("Vehicle Hours Traveled") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -224,7 +224,7 @@ compare_vht <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     ggplot2::facet_wrap(~facet_var) +
     ggplot2::scale_color_discrete("Facility Type") +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference in VHT.") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Compare VMT between multiple scenarios
@@ -259,6 +259,6 @@ multiple_vmt <- function(dbset, db_names,
   p + ggplot2::geom_path() +
     ggplot2::facet_grid(facet_var ~ FacType, scale = "free_y") +
     ggplot2::ylab("VMT") + ggplot2::xlab("Year") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

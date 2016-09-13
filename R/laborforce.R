@@ -135,7 +135,7 @@ plot_wapr <- function(db,
   p +
     ggplot2::xlab("Year") + ggplot2::ylab("Labor Force Participation Rate (%)") +
     ggplot2::scale_color_discrete(color_var) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -196,7 +196,7 @@ plot_wapr_volatility <- function(db,
 
   p <- ggplot2::ggplot() +
     coord_map("conic", lat0 = 43) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
   p + geom_polygon(
     data = dt,
@@ -237,7 +237,7 @@ compare_wapr <- function(db1, db2,
          ggplot2::aes_string(x = "year", y = "diff", color = facet_var)) +
     ggplot2::geom_path() +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 
@@ -274,6 +274,6 @@ multiple_wapr <- function(dbset, db_names,
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Labor force participation") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

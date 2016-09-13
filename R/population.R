@@ -172,7 +172,7 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
   p +
     ggplot2::facet_grid(. ~ var, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab(ifelse(index, "Index Relative to Base", "Count")) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 
@@ -208,7 +208,7 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
     ggplot2::scale_color_discrete("Variable") +
     ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Plot population with controls and historical data.
@@ -233,7 +233,7 @@ plot_history <- function(db, counties = NULL) {
     ggplot2::scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
     ggplot2::scale_color_discrete("County") +
     ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Determine annualized population growth rates.
@@ -311,7 +311,7 @@ plot_rates <- function(db, counties) {
     geom_boxplot() +
     geom_point(position = "jitter") +
     ggplot2::xlab("County") + ggplot2::ylab("Annualized Growth Rates") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -457,7 +457,7 @@ multiple_sevar <- function(dbset, db_names,
     ggplot2::facet_wrap(~ facet_var, scale = "free_y") +
     ggplot2::ylab(variable) + ggplot2::xlab("Year") +
     ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 
   return(p)

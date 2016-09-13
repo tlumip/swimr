@@ -257,7 +257,7 @@ plot_floorspace <- function(db,
     ggplot2::geom_path()  +
     ggplot2::facet_wrap( ~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -300,7 +300,7 @@ compare_floorspace <- function(db1, db2,
 
   f <- dplyr::left_join(fref, fcom) %>%
     tidyr::gather(var, value, floor_ref:floor_com) %>%
-    separate(var, c("var", "scenario")) %>%
+    tidyr::separate(var, c("var", "scenario")) %>%
     tidyr::spread(scenario, value, fill = NA) %>%
     dplyr::mutate(diff = (com - ref) / ref * 100)  # percent difference
 
@@ -309,7 +309,7 @@ compare_floorspace <- function(db1, db2,
     ggplot2::geom_path() +
     ggplot2::facet_wrap( ~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Compare floorspace by type across multiple scenarios.
@@ -377,7 +377,7 @@ multiple_floorspace <- function(dbset, db_names,
     ggplot2::facet_grid(facet_var ~ floor_type, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab(ylabel) +
     ggplot2::scale_x_log10() +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -398,7 +398,7 @@ plot_occupancy <- function(db,
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Occupancy Rate") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Compare occupancy in a scenario over time.
@@ -425,6 +425,6 @@ compare_occupancy <- function(db1, db2,
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference in occupancy rate") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

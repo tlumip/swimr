@@ -87,7 +87,7 @@ plot_gdp <- function(db,
     ggplot2::facet_wrap(~facet_var, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab("GDP of Labor [$B]") +
     ggplot2::scale_color_discrete("Sector") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 
@@ -117,7 +117,7 @@ compare_gdp <- function(db1, db2,
     ggplot2::facet_wrap(~ facet_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("GDP of Labor [% difference]") +
     ggplot2::scale_color_discrete("Sector") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 
@@ -155,6 +155,6 @@ multiple_gdp <- function(dbset, db_names,
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab("GDP of Labor") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

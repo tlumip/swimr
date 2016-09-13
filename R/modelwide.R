@@ -34,6 +34,6 @@ plot_modelwide <- function(db, filters){
 
   p <- ggplot2::ggplot(df, ggplot2::aes(x = year, y = VALUE, color = DATA)) +
     ggplot2::geom_path() +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

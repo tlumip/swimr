@@ -93,7 +93,7 @@ plot_employment <- function(db,
     ggplot2::scale_y_log10() +
     ggplot2::xlab("Year") + ggplot2::ylab("Employees") +
     ggplot2::scale_color_discrete("Sector") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -137,7 +137,7 @@ compare_employment <- function(db1, db2,
     ggplot2::xlab("Year") +
     ggplot2::ylab("Percent difference (current - reference) in Number of Employees") +
     ggplot2::scale_color_discrete("Sector") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
 #' Compare Employment by sector across multiple scenarios.
@@ -173,6 +173,6 @@ multiple_employment <- function(dbset, db_names,
     ggplot2::geom_path() +
     ggplot2::facet_grid(facet_var ~ emp_type, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab("Employment") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }

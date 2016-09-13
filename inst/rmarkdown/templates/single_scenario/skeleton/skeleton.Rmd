@@ -13,6 +13,8 @@ output:
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
+library(dplyr)
+library(ggplot2)
 opts_chunk$set(
   echo = TRUE, message = FALSE, warning = TRUE,
   fig.keep = TRUE, fig.path = "./figures/",
@@ -25,7 +27,7 @@ library(swimr)
 ```{r setdb}
 # This is the path to the scenario SWIM databases; direct these to your
 # local paths.
-ref_db <- "/home/gregmacfarlane/data/scenario.db"
+ref_db <- "~/Documents/projects/swim/MFhousing.db"
 db <- src_sqlite(ref_db)
 scenario_name <- "Reference"
 
@@ -36,11 +38,11 @@ facet <- "COUNTY"
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 
 # The tables will only show data from these years.
-years <- c(2010, 2016, 2022)
+years <- c(2010, 2025, 2040)
 
 # The leaflet plots show a comparison between the scenarios in a specific year.
 # Set this to the year you wish to study.
-diff_year <- 2012 
+diff_year <- 2040
 
 # show leaflet plots; FALSE will skip them (saving disk space and time)
 use_leaflet <- FALSE

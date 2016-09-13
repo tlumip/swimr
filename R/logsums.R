@@ -86,11 +86,11 @@ map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
     )
 
     p <- ggmap(map, extent = "dev") +
-      ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+      ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
   } else {
     p <- ggplot2::ggplot() +
       coord_map("conic", lat0 = 43) +
-      ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+      ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
   }
 
   p + geom_polygon(
@@ -131,7 +131,7 @@ plot_logsums <- function(db,
     geom_line() +
     ggplot2::scale_color_discrete(color_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Average destination choice log sum") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
 
@@ -172,6 +172,6 @@ compare_logsums <- function(db1, db2,
     geom_line() +
     ggplot2::scale_color_discrete(color_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference between average logsums") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
