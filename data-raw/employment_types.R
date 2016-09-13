@@ -73,13 +73,22 @@ employment_types <- data_frame(
     "61 - Education"
   ),
   naics1 = substr(naics, 1, 1),
-  naics_label = factor(
+  naics_label = as.character(factor(
     naics1,
-    labels = c("2 - Energy/Utilities", "3- Technical/Manufacturing",
+    labels = c("Energy/Utilities", "Technical/Manufacturing",
                "Retail/Transport", "Professional", "Health/Education",
                "Food", "Services", "Government")
+  ))) %>%
+  mutate(
+    naics_label = ifelse(
+      sector == "BuySell_Personal_and_Other_Services_and_Amusements", "Retail/Transport",
+      ifelse(
+        sector == "BuySell_Internal_Services_Resources", "Energy/Utilities",
+        ifelse(
+          sector == "BuySell_Internal_Services_Education_k12", "Health/Education", naics_label
+        ) )),
+    naics_label = ifelse(naics_label == "Food", "Retail/Transport", naics_label)
   )
-)
 
 devtools::use_data(employment_types, overwrite = TRUE)
 
@@ -91,9 +100,9 @@ emp_types <- data_frame(
   ),
   emp_type = c(
     "Const/Man/Transp", "Energy/Resources", "Retail",
-    "Services", "Public Services", "Education", "Health", "Health",
-    "Services", "Education", "Const/Man/Transp", "Energy/Resources",
-    "Retail", "Services", "Const/Man/Transp",
+    "Institutional", "Public Services", "Education", "Health", "Health",
+    "Professional", "Education", "Const/Man/Transp", "Energy/Resources",
+    "Retail", "Retail", "Const/Man/Transp",
     "Energy/Resources", "Const/Man/Transp"
   )
 )
