@@ -40,7 +40,7 @@ skim_leaflet <- function(zone, skim,
       )
 
     # error diff pallette
-    palq <- colorFactor(
+    palq <- leaflet::colorFactor(
       palette = "PuOr",
       domain = s$plot_value
     )
@@ -53,7 +53,7 @@ skim_leaflet <- function(zone, skim,
       dplyr::mutate(plot_value = value)
     # error diff pallette
 
-    palq <- colorBin(
+    palq <- leaflet::colorBin(
       palette = "PuRd",
       domain = s$plot_value
     )

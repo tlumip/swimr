@@ -36,7 +36,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
     dplyr::left_join(extract_zonedata(db, year1, year2))
 
   # Create a palette for
-  palq <- colorFactor(
+  palq <- leaflet::colorFactor(
     palette = "RdBu",
     domain = cut_diverror(shp@data$pop_rate)
   )
@@ -121,7 +121,7 @@ diff_leaflet <- function(db1, db2, year,
     dplyr::left_join(se, by = "AZONE")
 
   # Create a palette for
-  palq <- colorFactor(
+  palq <- leaflet::colorFactor(
     palette = "PRGn",
     domain = cut_abserror(shp@data$diff)
   )
