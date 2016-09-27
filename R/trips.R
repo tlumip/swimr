@@ -128,6 +128,8 @@ plot_trips <- function(db,
 #' @param facet_levels Regions to include in summary.
 #' @param color_levels Modes to include in summary. Defaults to all modes other
 #'   than \code{school}. See consolidated modes in \link{mode_types}.
+#' @param diff_type Character string saying whether to use abolute (\code{diff}) or
+#'   percent {\code(pct_diff)} differences. Defaults to percent.
 #'
 #' @return A ggplot2 object.
 #'
@@ -136,7 +138,8 @@ compare_trips <- function(db1, db2,
                           facet_var = c("MPO", "COUNTY", "STATE"),
                           facet_levels = NULL,
                           color_levels = c("auto", "transit",
-                                           "non-motorized", "truck")){
+                                           "non-motorized", "truck"),
+                          diff_type = "pct_diff"){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels, color_levels, index = FALSE) %>%
@@ -147,19 +150,20 @@ compare_trips <- function(db1, db2,
 
   df <- dplyr::left_join(fref, fcom, by = c("facet_var", "year", "mode")) %>%
     dplyr::mutate(
-      diff = (com - ref) / ref * 100,
-      diff = ifelse(is.na(diff), 0, diff)
+      diff = com - ref,
+      pct_diff = diff / ref * 100
     )
 
   # plot of percent difference
-  p <- ggplot2::ggplot(df,
-              ggplot2::aes(x = year, y = diff, color = mode)) +
+  p <- ggplot2::ggplot(df, ggplot2::aes_string(
+    x = "year", y = diff_type, color = "mode")) +
     ggplot2::geom_path() +
     ggplot2::facet_wrap(~ facet_var)
 
   p +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Percent difference in trip productions (current - reference)") +
+    ggplot2::ylab(ifelse(diff_type == "pct_diff", "Percent Difference",
+                         "Difference in Trips")) +
     ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 
 }
