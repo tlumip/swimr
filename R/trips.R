@@ -55,7 +55,7 @@ extract_trips <- function(db,
     dplyr::summarize(trips = sum(trips, na.rm = TRUE)) %>%
 
     #consolidate modes
-    dplyr::left_join(mode_types) %>%
+    dplyr::left_join(mode_types, by = "mode") %>%
     dplyr::mutate(mode = consolidated_mode) %>%
     dplyr::filter(mode %in% color_levels) %>%
     dplyr::group_by(facet_var, year, mode) %>%
@@ -145,7 +145,7 @@ compare_trips <- function(db1, db2,
   fcom <- extract_trips(db2, facet_var, facet_levels, color_levels, index = FALSE) %>%
     dplyr::rename(com = trips)
 
-  df <- dplyr::left_join(fref, fcom) %>%
+  df <- dplyr::left_join(fref, fcom, by = c("facet_var", "year", "mode")) %>%
     dplyr::mutate(
       diff = (com - ref) / ref * 100,
       diff = ifelse(is.na(diff), 0, diff)
