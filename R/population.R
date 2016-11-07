@@ -5,7 +5,7 @@
 #' @param group The variable to use for grouping the zones (for instance,
 #'   "County").
 #'
-#' @param var The variable to sum (for instaance, "POPULATION")
+#' @param var The variable to sum (for instance, "POPULATION")
 #'
 #' @return A \code{data_frame} with the grouping variable in each row, and the
 #' value of the variable at each time stage going across the columns.
@@ -33,7 +33,7 @@ yearly_summary <- function(df, group, var){
 #'
 #' @export
 #' @return a data frame
-extract_se <- function(db, color_var = c("MPO", "COUNTY"),
+extract_se <- function(db, color_var = "MPO",
                        color_levels = NULL, controls = TRUE, index = FALSE){
 
 
@@ -64,7 +64,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
     }
 
     df <- df %>%
-      dplyr::select(COUNTY, year, population, employment) %>%
+      dplyr::select(color_var = COUNTY, year, population, employment) %>%
       tidyr::gather(var, y, population:employment) %>%
       dplyr::mutate(data = "SWIM")
 
@@ -99,13 +99,12 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
       dplyr::select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
       # join information for county and state
       dplyr::left_join(
-        dplyr::tbl(db, "ALLZONES") %>%
-          dplyr::select(AZONE = Azone, MPO = MPO, state = STATE)
-      ) %>%
-      dplyr::filter(MPO %in% color_levels) %>%
+        dplyr::tbl(db, "ALLZONES") %>% rename(AZONE = Azone), by = "AZONE") %>%
+      dplyr::left_join(grouping, by = "BZONE") %>%
+      dplyr::filter(color_var %in% color_levels) %>%
 
       # dplyr::summarize to the MPO level
-      dplyr::group_by(MPO, TSTEP) %>%
+      dplyr::group_by(color_var, TSTEP) %>%
       dplyr::summarize(
         population = sum(POPULATION),
         employment = sum(EMPLOYMENT),
@@ -114,14 +113,14 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
       dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%
 
-      dplyr::select(MPO, year, population, employment) %>%
+      dplyr::select(color_var, year, population, employment) %>%
       tidyr::gather(var, y, population:employment) %>%
       dplyr::mutate(data = "SWIM")
   }
 
   if(index){
     df <- df %>%
-      dplyr::group_by_(color_var, "var", "data") %>%
+      dplyr::group_by_("color_var", "var", "data") %>%
       dplyr::mutate(y = calc_index(y))
   }
 
@@ -142,7 +141,7 @@ extract_se <- function(db, color_var = c("MPO", "COUNTY"),
 #'   and population over time.
 #'
 #' @export
-plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
+plot_sevar <- function(db, color_var = "COUNTY",
                        color_levels = NULL, controls = TRUE,
                        index = FALSE ){
 
@@ -153,7 +152,7 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     df <- extract_se(db, color_var, color_levels, controls, index)
 
     p <- ggplot2::ggplot(df) +
-      geom_line(ggplot2::aes_string(x = "year", y = "y", color = color_var, lty = "data"))
+      geom_line(ggplot2::aes_string(x = "year", y = "y", color = "color_var", lty = "data"))
 
     if(controls){
       p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
@@ -164,7 +163,7 @@ plot_sevar <- function(db, color_var = c("MPO", "COUNTY"),
     df <- extract_se(db, color_var, color_levels, controls, index)
 
     p <- ggplot2::ggplot(df) +
-      geom_line(ggplot2::aes(x = year, y = y, color = MPO))
+      geom_line(ggplot2::aes(x = year, y = y, color = color_var))
   }
 
 
