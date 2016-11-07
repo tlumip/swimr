@@ -15,14 +15,19 @@
 #'
 add_lookup <- function(db, df){
 
+  tbl <- tbl(db, "ALLZONES")
 
-  tbl <- tbl(db, "ALLZONES") %>%
-    collect() %>%
-    left_join(df)
+  # check if field already exists
+  new_field <- names(df)[2]
+  if(new_field %in% names(tbl)){
+    stop("Field already exists")
+  } else {
+    tbl <- tbl %>%
+      collect() %>%
+      left_join(df)
+  }
 
   db_drop_table(db$con, "ALLZONES", force = TRUE)
   copy_to(db, tbl, name = "ALLZONES", temporary = FALSE)
-
-
 
 }
