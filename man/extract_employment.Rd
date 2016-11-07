@@ -4,8 +4,8 @@
 \alias{extract_employment}
 \title{Extract employment statistics from scenario}
 \usage{
-extract_employment(db, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL)
+extract_employment(db, facet_var = NULL, facet_levels = NULL,
+  type_levels = NULL, employment_categories = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -16,6 +16,10 @@ extract_employment(db, facet_var = c("MPO", "COUNTY", "STATE"),
 levels other than external stations.}
 
 \item{type_levels}{The types of employment to show in the plot.}
+
+\item{employment_categories}{[Optional] data_frame of employment aggregation categories;
+if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
+\code{ACTIVITY} (full code of activity in AA databases) and \code{emp_type}.}
 }
 \description{
 This is an internal function to pull the employment data from a scenario and

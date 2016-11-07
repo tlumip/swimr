@@ -4,8 +4,8 @@
 \alias{compare_employment}
 \title{Compare labor output between two scenarios}
 \usage{
-compare_employment(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL)
+compare_employment(db1, db2, facet_var = "MPO", facet_levels = NULL,
+  type_levels = NULL, employment_categories = NULL)
 }
 \arguments{
 \item{db1}{The reference scenario database.}
@@ -18,6 +18,10 @@ compare_employment(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
 levels other than external stations.}
 
 \item{type_levels}{The types of employment to show in the plot.}
+
+\item{employment_categories}{[Optional] data_frame of employment aggregation categories;
+if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
+\code{ACTIVITY} (full code of activity in AA databases) and \code{emp_type}.}
 }
 \value{
 A ggplot2 object showing the employment by type and and year.
