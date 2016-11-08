@@ -10,9 +10,13 @@ troubleshoot_aa <- function(db){
 
   a <- tbl(db, "ExchangeResults") %>%
     group_by(TSTEP, Commodity) %>%
-    summarise_each(funs(mean), InternalBought, Exports, Price, Imports, InternalSold) %>%
+    summarise(
+      demand_weighted_price = sum(Demand * Price) / sum(Demand),
+      mean_price = mean(price)
+    ) %>%
+
     collect() %>%
-    gather(series, value, InternalBought:InternalSold) %>%
+    gather(series, value, demand_weighted_price, mean_price) %>%
 
   # calculate indexed value and volatility for each data series
     group_by(Commodity, series) %>%
@@ -24,8 +28,10 @@ troubleshoot_aa <- function(db){
     group_by(Commodity, series) %>%
 
     summarise(
-      which_max = which.max(abs(indexed))[1],
-      maximum_index = max(abs(indexed)) * sign(indexed[which_max]),
+      maximum_index = max(indexed),
+      which_max = which.max(indexed)[1],
+      minimum_index = min(indexed),
+      which_min = which.min(indexed)[1],
       volatile_grt = max(growth) - min(growth),
       volatility = sd(growth)
     )
