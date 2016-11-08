@@ -113,6 +113,14 @@ calc_index <- function(x){
 }
 
 
+#' Calculate the growth rate in a vector
+#'
+#' @param x A numeric vector in the proper order
+#' @return A numeric vector of length(x)
+calc_grt <- function(x){
+  ifelse(is.na(lag(x)), 0, x / lag(x))
+}
+
 #' Percent difference between two conditions
 #'
 #' @param x base value
