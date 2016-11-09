@@ -26,7 +26,9 @@ extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+    facet_levels <- grouping %>%
+      dplyr::group_by(facet_var) %>%
+      dplyr::collect(n=Inf) %>%
       dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -76,17 +78,14 @@ extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
 #' This function plots the employment by type in an area over time between two
 #' scenarios.
 #'
-#' @inheritParams extract_employment
+#' @inheritDotParams extract_employment db:employment_categories
 #'
 #' @return A ggplot2 object showing the employment by type and and year.
 #'
 #' @export
-plot_employment <- function(db, facet_var = "MPO",
-                            facet_levels = NULL, type_levels = NULL,
-                            employment_categories = NULL){
+plot_employment <- function(db, ...){
 
-  employment <- extract_employment(db, facet_var, facet_levels, type_levels,
-                                   employment_categories)
+  employment <- extract_employment(db, ...)
 
   # make plot
   ggplot2::ggplot(employment,
@@ -110,13 +109,12 @@ plot_employment <- function(db, facet_var = "MPO",
 #'
 #' @param db1 The reference scenario database.
 #' @param db2 The current scenario database.
-#' @inheritParams extract_employment
+#' @inheritDotParams extract_employment facet_var:employment_categories
 #'
 #' @return A ggplot2 object showing the employment by type and and year.
 #'
 #' @export
-compare_employment <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
-                               type_levels = NULL, employment_categories = NULL){
+compare_employment <- function(db1, db2, ...){
 
   # get the reference scenario data
   fref <- extract_employment(db1, facet_var, facet_levels, type_levels,
@@ -146,24 +144,18 @@ compare_employment <- function(db1, db2, facet_var = "MPO", facet_levels = NULL,
 #'
 #' @param dbset A list of connections to SWIM databases.
 #' @param db_names A character vector naming the scenarios.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of employment to show in the plot.
+#' @inheritDotParams extract_employment
 #'
 #' @return a ggplot2 object.
 #'
 #' @export
-multiple_employment <- function(dbset, db_names,
-                                facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
-                                facet_levels = NULL,
-                                type_levels = NULL) {
+multiple_employment <- function(dbset, db_names, ...) {
 
   # get the employment table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_employment(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+      extract_employment(dbset[[i]], ...) %>%
         dplyr::mutate(scenario = names(dbset)[[i]])
     )
   )
@@ -175,6 +167,7 @@ multiple_employment <- function(dbset, db_names,
     ggplot2::geom_path() +
     ggplot2::facet_grid(facet_var ~ emp_type, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab("Employment") +
-    ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
+    ggplot2::theme_bw() + ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = 30))
 
 }
