@@ -39,3 +39,23 @@ add_lookup <- function(db, df){
   }
 
 }
+
+#' Remove a column from a database table
+#'
+#' This might be useful if you make a mistake with \link{add_lookup}.
+#' As a warning, this is a destructive operation. Use with care.
+#'
+#' @param db A scenario database.
+#' @param table The name of the table in the database.
+#' @param column The name of the column to drop.
+#'
+#'
+#'
+remove_field <- function(db, table, column){
+  db_tbl <- tbl(db, table) %>%
+    select_(.dots = interp(~ -x, x= as.name(column)))
+
+  db_drop_table(db$con, table, force = TRUE)
+  copy_to(db, db_tbl, name = table, temporary = FALSE)
+
+}
