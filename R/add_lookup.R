@@ -15,24 +15,27 @@
 #'
 add_lookup <- function(db, df){
 
-  allzones <- tbl(db, "ALLZONES")
-  bzones <- tbl(db, "BZONE")
+  allzones <- tbl(db, "ALLZONES") %>% collect()
+  bzones <- tbl(db, "BZONE") %>% collect()
 
   # check if field already exists
   new_field <- names(df)[2]
-  if(new_field %in% names(allzones) | new_field %in% names(bzones)){
-    stop("Field already exists")
+  if(new_field %in% names(allzones)){
+    message("Field ", new_field, " already exists in allzones")
   } else {
-    # add to beta zones
-    bzones <- bzones %>% collect() %>% left_join(df, by = "BZONE")
-    db_drop_table(db$con, "BZONE", force = TRUE)
-    copy_to(db, bzones, name = "BZONE", temporary = FALSE)
-
     # add to alzones
-    allzones <- allzones %>% collect() %>% left_join(df, by = "BZONE")
+    allzones <- allzones %>% left_join(df, by = "BZONE")
     db_drop_table(db$con, "ALLZONES", force = TRUE)
     copy_to(db, allzones, name = "ALLZONES", temporary = FALSE)
   }
 
+  if(new_field %in% names(bzones)){
+    message("Field ", new_field, " already exists in allzones")
+  } else {
+    # add to beta zones
+    bzones <- bzones %>% left_join(df, by = "BZONE")
+    db_drop_table(db$con, "BZONE", force = TRUE)
+    copy_to(db, bzones, name = "BZONE", temporary = FALSE)
+  }
 
 }
