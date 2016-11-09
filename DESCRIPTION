@@ -26,4 +26,4 @@ Imports:
     lazyeval,
     stats
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.1.9000

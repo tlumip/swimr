@@ -78,7 +78,7 @@ extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
 #' This function plots the employment by type in an area over time between two
 #' scenarios.
 #'
-#' @inheritDotParams extract_employment db:employment_categories
+#' @inheritDotParams extract_employment
 #'
 #' @return A ggplot2 object showing the employment by type and and year.
 #'
@@ -109,7 +109,7 @@ plot_employment <- function(db, ...){
 #'
 #' @param db1 The reference scenario database.
 #' @param db2 The current scenario database.
-#' @inheritDotParams extract_employment facet_var:employment_categories
+#' @inheritDotParams extract_employment
 #'
 #' @return A ggplot2 object showing the employment by type and and year.
 #'
@@ -117,13 +117,11 @@ plot_employment <- function(db, ...){
 compare_employment <- function(db1, db2, ...){
 
   # get the reference scenario data
-  fref <- extract_employment(db1, facet_var, facet_levels, type_levels,
-                             employment_categories) %>%
+  fref <- extract_employment(db1, ...) %>%
     dplyr::rename(ref = emp)
 
   # get the comparison scenario
-  fcom <- extract_employment(db2, facet_var, facet_levels, type_levels,
-                             employment_categories) %>%
+  fcom <- extract_employment(db2, ...) %>%
     dplyr::rename(com = emp)
 
   f <- dplyr::left_join(fref, fcom) %>%
