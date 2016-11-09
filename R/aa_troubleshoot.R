@@ -6,6 +6,7 @@
 #' @param db A scenario database.
 #' @return A \link[DT](datatable) object.
 #'
+#' @export
 troubleshoot_aa <- function(db){
 
   a <- tbl(db, "ExchangeResults") %>%
