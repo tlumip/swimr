@@ -6,7 +6,7 @@
 \usage{
 compare_trips(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
   facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
-  "truck"))
+  "truck"), diff_type = "pct_diff")
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -19,6 +19,9 @@ compare_trips(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{color_levels}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
+
+\item{diff_type}{Character string saying whether to use abolute (\code{diff}) or
+percent {\code(pct_diff)} differences. Defaults to percent.}
 }
 \value{
 A ggplot2 object.

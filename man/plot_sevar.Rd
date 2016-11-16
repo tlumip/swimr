@@ -4,8 +4,8 @@
 \alias{plot_sevar}
 \title{Make a plot of population and employment}
 \usage{
-plot_sevar(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
-  controls = TRUE, index = FALSE)
+plot_sevar(db, color_var = "COUNTY", color_levels = NULL, controls = TRUE,
+  index = FALSE)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}

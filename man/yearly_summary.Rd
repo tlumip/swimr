@@ -13,7 +13,7 @@ database.}
 \item{group}{The variable to use for grouping the zones (for instance,
 "County").}
 
-\item{var}{The variable to sum (for instaance, "POPULATION")}
+\item{var}{The variable to sum (for instance, "POPULATION")}
 }
 \value{
 A \code{data_frame} with the grouping variable in each row, and the

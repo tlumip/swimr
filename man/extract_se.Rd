@@ -4,8 +4,8 @@
 \alias{extract_se}
 \title{Extract SE data from DB}
 \usage{
-extract_se(db, color_var = c("MPO", "COUNTY"), color_levels = NULL,
-  controls = TRUE, index = FALSE)
+extract_se(db, color_var = "MPO", color_levels = NULL, controls = TRUE,
+  index = FALSE)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}

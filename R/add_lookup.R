@@ -30,7 +30,7 @@ add_lookup <- function(db, df){
   }
 
   if(new_field %in% names(bzones)){
-    message("Field ", new_field, " already exists in allzones")
+    message("Field ", new_field, " already exists in bzones")
   } else {
     # add to beta zones
     bzones <- bzones %>% left_join(df, by = "BZONE")
