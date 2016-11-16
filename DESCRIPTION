@@ -26,4 +26,6 @@ Imports:
     lazyeval,
     stats
 VignetteBuilder: knitr
+Remotes: gregmacfarlane/omxr,
+  pbsag/outviz
 RoxygenNote: 5.0.1.9000
