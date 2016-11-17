@@ -93,11 +93,11 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 
 
 ```{r plot_se, fig.cap="Population and employment in selected areas."}
-plot_sevar(db, color_var = facet, color_levels = facet_v)
+plot_sevar(db, color_var = facet, color_levels = facet_levels, controls = FALSE, index = TRUE)
 ```
 
 ```{r plot_se_index, fig.cap="Indexed Population and employment in selected areas."}
-plot_sevar(db, facet, facet_levels, index = TRUE)
+plot_sevar(db, color_var = facet, color_levels = facet_levels, index = TRUE, controls = TRUE)
 ```
 
 ```{r plot_se_mpo, fig.cap="Population and employment - all MPOs."}
@@ -194,7 +194,7 @@ plot_trips(db,  share = TRUE)
 ```
 
 ```{r mode_vol, fig.cap="Total trips produced by mode."}
-plot_trips(db, facet, facet_levels, share = FALSE)
+plot_trips(db, facet, facet_levels, share = FALSE, index = FALSE)
 ```
 
 ```{r mode_vol_mpo, fig.cap="Total trips produced by mode - all MPOs"}
