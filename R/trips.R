@@ -85,6 +85,7 @@ extract_trips <- function(db,
 plot_trips <- function(..., share = TRUE){
 
   df <- extract_trips(...)
+  dots <- list(...)
 
   if(share) {
     df <- df %>%
@@ -100,7 +101,7 @@ plot_trips <- function(..., share = TRUE){
     p <- ggplot2::ggplot(df,
            ggplot2::aes(x = as.numeric(year), y = trips,
                group = mode, color = mode)) +
-      ggplot2::ylab(ifelse(index, "Trips Indexed to Base Year",
+      ggplot2::ylab(ifelse(dots$index, "Trips Indexed to Base Year",
                   "Total Trips"))
   }
 
@@ -126,11 +127,9 @@ plot_trips <- function(..., share = TRUE){
 compare_trips <- function(db1, db2, ..., diff_type = "pct_diff"){
 
   # reference scenario
-  fref <- extract_trips(db1, facet_var, facet_levels, color_levels, index = FALSE) %>%
-    dplyr::rename(ref = trips)
+  fref <- extract_trips(db = db1, ...) %>% dplyr::rename(ref = trips)
   # current scenario
-  fcom <- extract_trips(db2, facet_var, facet_levels, color_levels, index = FALSE) %>%
-    dplyr::rename(com = trips)
+  fcom <- extract_trips(db = db2, ...) %>% dplyr::rename(com = trips)
 
   df <- dplyr::left_join(fref, fcom, by = c("facet_var", "year", "mode")) %>%
     dplyr::mutate(

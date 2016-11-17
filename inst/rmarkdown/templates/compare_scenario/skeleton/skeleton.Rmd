@@ -15,18 +15,20 @@ output:
 library(knitr)
 opts_chunk$set(
   echo = FALSE, message = FALSE, warning = FALSE,
-  fig.keep = TRUE, fig.path = "./figures/",
+  fig.keep = TRUE, fig.path = ".figures/",
   fig.width=8, fig.height=6
 )
-
+library(RSQLite)
+library(tidyverse)
+library(leaflet)
 library(swimr)
 ```
 
 ```{r setdb}
 # This is the path to the scenario SWIM databases; direct these to your
 # local paths.
-ref_db <- "~/Documents/projects/swim/Mar_Recalib.db" # current
-cur_db <- "~/Documents/projects/swim/bridgeFail_1yr.db" # reference
+ref_db <- "~/Documents/projects/swim/scenario.db" # current
+cur_db <- "~/Documents/projects/swim/MFhousing.db" # reference
 
 # These are the names for the scenarios that will show up in the scenario
 # information table and other places.
@@ -48,7 +50,7 @@ years <- c(2010, 2016, 2022)
 diff_year <- 2012 
 
 # show leaflet plots; FALSE will skip them (saving disk space and time)
-use_leaflet <- TRUE
+use_leaflet <- FALSE
 ```
 
 
@@ -85,12 +87,12 @@ se <- left_join(
 ```{r tab_pop, results='asis'}
 pop <- se %>% filter(var == "population")
 
-ref <- yearly_summary(pop, "MPO", "reference")
-cur <- yearly_summary(pop, "MPO", "current")
-diff <- yearly_summary(pop, "MPO", "diff")
+ref <- yearly_summary(pop, "color_var", "reference")
+cur <- yearly_summary(pop, "color_var", "current")
+diff <- yearly_summary(pop, "color_var", "diff")
 
-pop <- left_join(ref, cur, by = "MPO") %>%
-  left_join(diff, by = "MPO")
+pop <- left_join(ref, cur, by = "color_var") %>%
+  left_join(diff, by = "color_var")
 
 names(pop) <- c("MPO", 
                 paste(rep(c("Reference", "Current", "Pct diff"), 
@@ -102,12 +104,12 @@ kable(pop, caption = "Population by MPO", digits = 2)
 ```{r tab_emp, results='asis'}
 emp <- se %>% filter(var == "employment")
 
-ref <- yearly_summary(emp, "MPO", "reference")
-cur <- yearly_summary(emp, "MPO", "current")
-diff <- yearly_summary(emp, "MPO", "diff")
+ref <- yearly_summary(emp, "color_var", "reference")
+cur <- yearly_summary(emp, "color_var", "current")
+diff <- yearly_summary(emp, "color_var", "diff")
 
-emp <- left_join(ref, cur, by = "MPO") %>%
-  left_join(diff, by = "MPO")
+emp <- left_join(ref, cur, by = "color_var") %>%
+  left_join(diff, by = "color_var")
 
 names(emp) <- c("MPO", 
                 paste(rep(c("Reference", "Current", "Pct diff"), 
@@ -119,11 +121,11 @@ kable(emp, caption = "Employment by MPO", digits = 2)
 ## Comparison
 
 ```{r compare_se, fig.cap="Comparison of population and employment in selected areas."}
-compare_sevar(db1, db2, facet, facet_levels)
+compare_sevar(db1, db2, color_var = facet, color_levels = facet_levels)
 ```
 
 ```{r compare_se_mpo, fig.cap="Comparison of population and employment - all MPOs."}
-compare_sevar(db1, db2, "MPO")
+compare_sevar(db1, db2, color_var = "MPO")
 ```
 
 ## Map
@@ -199,12 +201,12 @@ kable(trips, caption = "Total Trips by MPO", digits = 2)
 
 
 ```{r compare_mode, fig.cap="Comparison of trip productions by mode."}
-compare_trips(db1, db2, facet, facet_levels)
+compare_trips(db1, db2, facet_var = facet, facet_levels = facet_levels)
 ```
 
 
 ```{r compare_mode_mpo, fig.cap="Comparison of trip productions by mode - all MPOs."}
-compare_trips(db1, db2)
+compare_trips(db1, db2, facet_var = "MPO")
 ```
 
 

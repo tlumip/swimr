@@ -13,7 +13,6 @@ compare_sevar(db1, db2, ...)
 
 \item{...}{Arguments passed on to \code{extract_se}
 \describe{
-  \item{db}{The scenario sqlite database.}
   \item{color_var}{Field to color by: either "MPO" or "COUNTY".}
   \item{color_levels}{A character vector of the color variable specifiying
 which levels to include.}

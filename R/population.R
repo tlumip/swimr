@@ -149,7 +149,7 @@ plot_sevar <- function(...){
       ggplot2::geom_line(ggplot2::aes_string(
         x = "year", y = "y", color = "color_var", lty = "data"))
 
-    if(controls){
+    if(dots$controls){
       p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
     }
 
@@ -163,7 +163,7 @@ plot_sevar <- function(...){
   p +
     ggplot2::scale_color_discrete(dots$color_var) +
     ggplot2::facet_grid(. ~ var, scale = "free_y") +
-    ggplot2::xlab("Year") + ggplot2::ylab(ifelse(index, "Index Relative to Base", "Count")) +
+    ggplot2::xlab("Year") + ggplot2::ylab(ifelse(dots$index, "Index Relative to Base", "Count")) +
     ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
 
@@ -172,7 +172,7 @@ plot_sevar <- function(...){
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @inheritDotParams extract_se
+#' @inheritDotParams extract_se color_var:index
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.
@@ -182,8 +182,8 @@ compare_sevar <- function(db1, db2, ...){
 
   dots <- list(...)
 
-  seref <- extract_se(db = db1, ...) %>% dplyr::rename(ref = y)
-  secom <- extract_se(db = db2, ...) %>% dplyr::rename(com = y)
+  seref <- extract_se(db = db1, ..., controls = FALSE) %>% dplyr::rename(ref = y)
+  secom <- extract_se(db = db2, ..., controls = FALSE) %>% dplyr::rename(com = y)
 
   df <- dplyr::left_join(seref, secom) %>%
     dplyr::mutate(diff = (com - ref) / ref * 100)
@@ -191,7 +191,7 @@ compare_sevar <- function(db1, db2, ...){
   ggplot2::ggplot(df,
          ggplot2::aes_string(x = "year", y = "diff", color = "var")) +
     ggplot2::geom_path() +
-    ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var))) +
+    ggplot2::facet_wrap(~color_var) +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
     ggplot2::scale_color_discrete(dots$color_var) +
     ggplot2::theme_bw() +
