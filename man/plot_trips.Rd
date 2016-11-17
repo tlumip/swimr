@@ -4,23 +4,20 @@
 \alias{plot_trips}
 \title{Plot Trip productions}
 \usage{
-plot_trips(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
-  color_levels = c("auto", "transit", "non-motorized", "truck"),
-  share = TRUE, index = TRUE)
+plot_trips(..., share = TRUE)
 }
 \arguments{
-\item{db}{the scenario database.}
-
-\item{facet_var}{The region to dplyr::summarize by.}
-
-\item{facet_levels}{Regions to include in summary.}
-
-\item{color_levels}{Modes to include in summary. Defaults to all modes other
+\item{...}{Arguments passed on to \code{extract_trips}
+\describe{
+  \item{db}{the scenario database.}
+  \item{facet_var}{The region to dplyr::summarize by.}
+  \item{facet_levels}{Regions to include in summary.}
+  \item{color_levels}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
+  \item{index}{whether to index mode split off the base year.}
+}}
 
 \item{share}{Plot mode share instead of total trips? Defaults to \code{TRUE}.}
-
-\item{index}{whether to index mode split off the base year.}
 }
 \value{
 A ggplot2 object.

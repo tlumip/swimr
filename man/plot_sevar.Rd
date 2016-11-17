@@ -4,20 +4,19 @@
 \alias{plot_sevar}
 \title{Make a plot of population and employment}
 \usage{
-plot_sevar(db, color_var = "COUNTY", color_levels = NULL, controls = TRUE,
-  index = FALSE)
+plot_sevar(...)
 }
 \arguments{
-\item{db}{The scenario sqlite database.}
-
-\item{color_var}{Field to color by: either "MPO" or "COUNTY".}
-
-\item{color_levels}{A character vector of the color variable specifiying
+\item{...}{Arguments passed on to \code{extract_se}
+\describe{
+  \item{db}{The scenario sqlite database.}
+  \item{color_var}{Field to color by: either "MPO" or "COUNTY".}
+  \item{color_levels}{A character vector of the color variable specifiying
 which levels to include.}
-
-\item{controls}{Plot against the control totals. Defaults to TRUE}
-
-\item{index}{Whether to show the variables as indexed against the base year.}
+  \item{controls}{Plot against the control totals. Defaults to TRUE, cannot
+currently run with FALSE.}
+  \item{index}{Whether to show the variables as indexed against the base year.}
+}}
 }
 \value{
 A \code{ggplot2} plot object showing the modeled change in employment

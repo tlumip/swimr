@@ -4,7 +4,7 @@
 #' can help an analyst determine which commodities (if any) may cause problems.
 #'
 #' @param db A scenario database.
-#' @return A \link[DT](datatable) object.
+#' @return A [DT](`datatable`) object.
 #'
 #' @export
 troubleshoot_aa <- function(db){

@@ -4,20 +4,23 @@
 \alias{compare_sevar}
 \title{Compare population and employment}
 \usage{
-compare_sevar(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL,
-  index = FALSE)
+compare_sevar(db1, db2, ...)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
-
-\item{facet_levels}{A character vector of the facet variable specifiying
+\item{...}{Arguments passed on to \code{extract_se}
+\describe{
+  \item{db}{The scenario sqlite database.}
+  \item{color_var}{Field to color by: either "MPO" or "COUNTY".}
+  \item{color_levels}{A character vector of the color variable specifiying
 which levels to include.}
-
-\item{index}{Whether to show the variables as indexed against the base year.}
+  \item{controls}{Plot against the control totals. Defaults to TRUE, cannot
+currently run with FALSE.}
+  \item{index}{Whether to show the variables as indexed against the base year.}
+}}
 }
 \value{
 A \code{ggplot2} plot object showing the modeled change in employment

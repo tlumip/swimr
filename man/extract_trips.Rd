@@ -4,9 +4,9 @@
 \alias{extract_trips}
 \title{Extract trips from scenario}
 \usage{
-extract_trips(db, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
-  "truck"), index = FALSE)
+extract_trips(db, facet_var = NULL, facet_levels = NULL,
+  color_levels = c("auto", "transit", "non-motorized", "truck"),
+  index = FALSE)
 }
 \arguments{
 \item{db}{the scenario database.}

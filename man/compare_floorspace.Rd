@@ -4,22 +4,24 @@
 \alias{compare_floorspace}
 \title{Compare floorspace over time}
 \usage{
-compare_floorspace(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL, price = FALSE)
+compare_floorspace(db1, db2, ..., price = FALSE)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
-
-\item{facet_levels}{The levels of the facet variable to keep. Defaults to all
+\item{...}{Arguments passed on to \code{extract_floorspace}
+\describe{
+  \item{db}{The scenario database.}
+  \item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
+  \item{facet_levels}{The levels of the facet variable to keep. Defaults to all
 levels other than external stations.}
+  \item{type_levels}{The types of employment to show in the plot.}
+  \item{index}{Should the function extract indexed or absolute values?}
+}}
 
-\item{type_levels}{The types of floorspace to show in the plot.}
-
-\item{price}{Print price instead of floorspace.}
+\item{price}{Print price instead of floorspace, defaults to \code{FALSE}.}
 }
 \description{
 Compare floorspace over time

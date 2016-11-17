@@ -4,7 +4,7 @@
 \alias{extract_se}
 \title{Extract SE data from DB}
 \usage{
-extract_se(db, color_var = "MPO", color_levels = NULL, controls = TRUE,
+extract_se(db, color_var = NULL, color_levels = NULL, controls = TRUE,
   index = FALSE)
 }
 \arguments{

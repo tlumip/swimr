@@ -15,11 +15,13 @@
 #'
 #' @export
 extract_trips <- function(db,
-                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_var = NULL,
                           facet_levels = NULL,
                           color_levels = c("auto", "transit",
                                            "non-motorized", "truck"),
                           index = FALSE){
+
+  if(is.null(facet_var)){ facet_var = "MPO" }
 
   # Get lookup table of zones to grouping variable.
   df <- dplyr::tbl(db, "TRIPMATRIX") %>%
@@ -74,25 +76,15 @@ extract_trips <- function(db,
 
 #' Plot Trip productions
 #'
-#' @param db the scenario database.
-#' @param facet_var The region to dplyr::summarize by.
-#' @param facet_levels Regions to include in summary.
-#' @param color_levels Modes to include in summary. Defaults to all modes other
-#'   than \code{school}. See consolidated modes in \link{mode_types}.
+#' @inheritDotParams extract_trips
 #' @param share Plot mode share instead of total trips? Defaults to \code{TRUE}.
-#' @param index whether to index mode split off the base year.
 #'
 #' @return A ggplot2 object.
 #'
 #' @export
-plot_trips <- function(db,
-                       facet_var = c("MPO", "COUNTY", "STATE"),
-                       facet_levels = NULL,
-                       color_levels = c("auto", "transit",
-                                        "non-motorized", "truck"),
-                       share = TRUE, index = TRUE){
+plot_trips <- function(..., share = TRUE){
 
-  df <- extract_trips(db, facet_var, facet_levels, color_levels, index)
+  df <- extract_trips(...)
 
   if(share) {
     df <- df %>%
@@ -124,22 +116,14 @@ plot_trips <- function(db,
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param facet_var The region to dplyr::summarize by.
-#' @param facet_levels Regions to include in summary.
-#' @param color_levels Modes to include in summary. Defaults to all modes other
-#'   than \code{school}. See consolidated modes in \link{mode_types}.
-#' @param diff_type Character string saying whether to use abolute (\code{diff}) or
-#'   percent {\code(pct_diff)} differences. Defaults to percent.
+#' @inheritDotParams extract_trips
+#' @param diff_type Character string saying whether to use abolute (`diff`) or
+#'   percent (`pct_diff`) differences. Defaults to percent.
 #'
 #' @return A ggplot2 object.
 #'
 #' @export
-compare_trips <- function(db1, db2,
-                          facet_var = c("MPO", "COUNTY", "STATE"),
-                          facet_levels = NULL,
-                          color_levels = c("auto", "transit",
-                                           "non-motorized", "truck"),
-                          diff_type = "pct_diff"){
+compare_trips <- function(db1, db2, ..., diff_type = "pct_diff"){
 
   # reference scenario
   fref <- extract_trips(db1, facet_var, facet_levels, color_levels, index = FALSE) %>%
@@ -173,15 +157,12 @@ compare_trips <- function(db1, db2,
 #'
 #' @param dbset A list of connections to SWIM databases.
 #' @param db_names A character vector naming the scenarios.
-#' @param facet_var The region to dplyr::summarize by.
-#' @param facet_levels Regions to include in summary.
-#' @param color_levels Modes to include in summary. Defaults to all modes other
-#'   than \code{school}. See consolidated modes in \link{mode_types}.
-multiple_trips <- function(dbset, db_names,
-                           facet_var = c("MPO", "COUNTY", "STATE"),
-                           facet_levels = NULL,
-                           color_levels = c("auto", "transit",
-                                            "non-motorized", "truck")){
+#' @inheritDotParams extract_trips
+#'
+#' @return A ggplot2 object
+#'
+#' @export
+multiple_trips <- function(dbset, db_names, ...){
 
   # get the trips table for every scenario.
   names(dbset) <- db_names

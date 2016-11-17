@@ -69,26 +69,20 @@ extract_floorspace <- function(db,
   return(floorspace)
 }
 
-#' Extract occupancy rate
+#' Extract floorspace volume
 #'
 #' This function extracts the total value of floorspace sold in each region by
 #' floor_type.
-#' @param db The scenario database.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of employment to show in the plot.
+#'
+#' @inheritDotParams extract_floorspace
 #'
 #' @return A data frame with the total dollars sold.
 #'
 #' @export
-extract_volume <- function(db,
-                              facet_var = c("MPO", "COUNTY", "STATE"),
-                              facet_levels = NULL,
-                              type_levels = NULL){
+extract_volume <- function(...){
 
   # get floorspace available
-  total <- extract_floorspace(db, facet_var, facet_levels, type_levels)
+  total <- extract_floorspace(...)
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -137,16 +131,12 @@ extract_volume <- function(db,
 #'
 #' This function extracts the occupancy rate by floortype from a scenario over
 #' time.
-#' @param db The scenario database.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of employment to show in the plot.
-#' @param index Should the function extract indexed or absolute values?
+#'
+#' @inheritParams extract_floorspace
 #'
 #' @export
 extract_rents <- function(db,
-                          facet_var = c("MPO", "COUNTY", "STATE"),
+                          facet_var = NULL,
                           facet_levels = NULL,
                           type_levels = NULL, index = TRUE){
 
@@ -225,28 +215,21 @@ extract_rents <- function(db,
 #' This function plots the constructed floorspace by type over time facetted by a
 #' variable chosen from the zone attributes table.
 #'
-#' @param db The scenario database.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of floorspace to show in the plot.
-#' @param price Print price instead of floorspace.
+#' @param price Print price instead of floorspace, defaults to \code{FALSE}.
+#' @inheritDotParams extract_rents
 #'
 #'
 #' @return A ggplot2 object showing the floorspace by type and and year.
 #'
 #' @export
-plot_floorspace <- function(db,
-                            facet_var = c("MPO", "COUNTY", "STATE"),
-                            facet_levels = NULL,
-                            type_levels = NULL, price = FALSE){
+plot_floorspace <- function(..., price = FALSE){
 
   if(price){
-    floorspace <- extract_rents(db, facet_var, facet_levels, type_levels, index = TRUE) %>%
+    floorspace <- extract_rents(...) %>%
       dplyr::mutate(floor = price)
     ylabel = "Indexed Rent [$/sqft]"
   } else {
-    floorspace <- extract_floorspace(db, facet_var, facet_levels, type_levels, index = TRUE)
+    floorspace <- extract_floorspace(...)
     ylabel <- "Indexed Floorspace [sqft]"
   }
 
@@ -265,34 +248,28 @@ plot_floorspace <- function(db,
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of floorspace to show in the plot.
-#' @param price Print price instead of floorspace.
+#' @inheritParams plot_floorspace
+#' @inheritDotParams extract_floorspace
 #'
 #' @export
-compare_floorspace <- function(db1, db2,
-                               facet_var = c("MPO", "COUNTY", "STATE"),
-                               facet_levels = NULL,
-                               type_levels = NULL, price = FALSE){
+compare_floorspace <- function(db1, db2, ...,  price = FALSE){
 
   # get the reference scenario data
   if(price){
-    fref <- extract_rents(db1, facet_var, facet_levels, type_levels) %>%
+    fref <- extract_rents(db = db1, ...) %>%
       dplyr::select(facet_var, year, floor_type, floor_ref = price)
 
     # get the comparison scenario
-    fcom <- extract_rents(db2, facet_var, facet_levels, type_levels) %>%
+    fcom <- extract_rents(db = db2, ...) %>%
       dplyr::select(facet_var, year, floor_type, floor_com = price)
 
     ylabel <- "Percent difference (current - reference) in rent price"
   } else {
-    fref <- extract_floorspace(db1, facet_var, facet_levels, type_levels) %>%
+    fref <- extract_floorspace(db = db1, ...) %>%
       dplyr::select(facet_var, year, floor_type, floor_ref = built)
 
     # get the comparison scenario
-    fcom <- extract_floorspace(db2, facet_var, facet_levels, type_levels) %>%
+    fcom <- extract_floorspace(db = db2, ...) %>%
       dplyr::select(facet_var, year, floor_type, floor_com = built)
 
     ylabel <- "Percent difference (current - reference) in floor area"
@@ -316,21 +293,14 @@ compare_floorspace <- function(db1, db2,
 #'
 #' @param dbset A list of connections to SWIM databases.
 #' @param db_names A character vector naming the scenarios.
-#' @param facet_var The variable in the zone table to facet by. Defaults to MPO
-#' @param facet_levels The levels of the facet variable to keep. Defaults to all
-#'   levels other than external stations.
-#' @param type_levels The types of floorspace to show in the plot.
-#' @param price Print price instead of floorspace.
+#' @inheritDotParams extract_floorspace
 #' @param variable The variable to plot, one of rents, occupancy rate, or new
 #'   floorspace
 #'
 #' @return a ggplot2 object.
 #'
 #' @export
-multiple_floorspace <- function(dbset, db_names,
-                                facet_var = c("MPO", "COUNTY", "STATE"),
-                                facet_levels = NULL,
-                                type_levels = NULL,
+multiple_floorspace <- function(dbset, db_names, ...,
                                 variable = c("floorspace", "rent", "occupancy")) {
 
   # get the wapr table for every scenario.
@@ -339,7 +309,7 @@ multiple_floorspace <- function(dbset, db_names,
   if(variable %in% c("rent", "occupancy")){
     df <- bind_rows(
       lapply(seq_along(dbset), function(i)
-        extract_rents(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+        extract_rents(dbset[[i]], ...) %>%
           dplyr::mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
@@ -358,7 +328,7 @@ multiple_floorspace <- function(dbset, db_names,
   } else {
     df <- bind_rows(
       lapply(seq_along(dbset), function(i)
-        extract_floorspace(dbset[[i]], facet_var, facet_levels, type_levels) %>%
+        extract_floorspace(dbset[[i]], ...) %>%
           dplyr::mutate(scenario = names(dbset)[[i]])
       )
     ) %>%
@@ -383,16 +353,12 @@ multiple_floorspace <- function(dbset, db_names,
 
 #' Plot occupancy in a scenario over time.
 #'
-#' @inheritParams extract_rents
-#' @return A ggplot2 plot object.
+#' @inheritDotParams extract_rents
 #'
 #' @export
-plot_occupancy <- function(db,
-                           facet_var = c("MPO", "COUNTY", "STATE"),
-                           facet_levels = NULL,
-                           type_levels = NULL){
+plot_occupancy <- function(...){
 
-  rents <- extract_rents(db, facet_var, facet_levels, type_levels, index = FALSE)
+  rents <- extract_rents(...)
 
   ggplot2::ggplot(rents,  ggplot2::aes(x = year, y = occrate, color = floor_type) ) +
     ggplot2::geom_path() +
@@ -403,19 +369,19 @@ plot_occupancy <- function(db,
 
 #' Compare occupancy in a scenario over time.
 #'
-#' @inheritParams compare_floorspace
+#' @param db1 The swim database for the "Reference" scenario.
+#' @param db2 The swim database for the "Current" scenario.
+#' @inheritDotParams extract_rents
+#'
 #' @return A ggplot2 plot object
 #'
 #' @export
-compare_occupancy <- function(db1, db2,
-                              facet_var = c("MPO", "COUNTY", "STATE"),
-                              facet_levels = NULL,
-                              type_levels = NULL){
+compare_occupancy <- function(db1, db2, ...){
 
-  fref <- extract_rents(db1, facet_var, facet_levels, type_levels, index = FALSE) %>%
+  fref <- extract_rents(db = db1, ...) %>%
     dplyr::select(facet_var, year, floor_type, rate_ref = occrate)
 
-  fcom <- extract_rents(db2, facet_var, facet_levels, type_levels, index = FALSE) %>%
+  fcom <- extract_rents(db = db2, ...) %>%
     dplyr::select(facet_var, year, floor_type, rate_com = occrate)
 
   df <- dplyr::left_join(fref, fcom) %>%

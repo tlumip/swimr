@@ -33,9 +33,10 @@ yearly_summary <- function(df, group, var){
 #'
 #' @export
 #' @return a data frame
-extract_se <- function(db, color_var = "MPO",
+extract_se <- function(db, color_var = NULL,
                        color_levels = NULL, controls = TRUE, index = FALSE){
 
+  if(is.null(color_var)){color_var = "COUNTY"}
 
   # county plot with controls
   if(color_var == "COUNTY"){
@@ -71,10 +72,10 @@ extract_se <- function(db, color_var = "MPO",
     # add COUNTY controls
     if(controls){
       ct <- county_controls %>%
-        dplyr::rename(COUNTY = county) %>%
-        dplyr::filter(COUNTY %in% df$COUNTY) %>%
+        dplyr::rename(color_var = county) %>%
+        dplyr::filter(color_var %in% df$color_var) %>%
         dplyr::filter(year > 2005) %>%
-        dplyr::select(COUNTY, year, var, y) %>%
+        dplyr::select(color_var, year, var, y) %>%
         dplyr::mutate(data = "OEA Forecast")
 
       df <- rbind(df, ct)
@@ -130,38 +131,29 @@ extract_se <- function(db, color_var = "MPO",
 
 #' Make a plot of population and employment
 #'
-#' @param db The scenario sqlite database.
-#' @param color_var Field to color by: either "MPO" or "COUNTY".
-#' @param color_levels A character vector of the color variable specifiying
-#'   which levels to include.
-#' @param controls Plot against the control totals. Defaults to TRUE
-#' @param index Whether to show the variables as indexed against the base year.
+#' @inheritDotParams extract_se
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.
 #'
 #' @export
-plot_sevar <- function(db, color_var = "COUNTY",
-                       color_levels = NULL, controls = TRUE,
-                       index = FALSE ){
+plot_sevar <- function(...){
 
+  df <- extract_se(...)
+  dots <- list(...)
 
   # county plot with controls
-  if(color_var == "COUNTY"){
-
-    df <- extract_se(db, color_var, color_levels, controls, index)
+  if(dots$color_var == "COUNTY"){
 
     p <- ggplot2::ggplot(df) +
-      geom_line(ggplot2::aes_string(x = "year", y = "y", color = "color_var", lty = "data"))
+      ggplot2::geom_line(ggplot2::aes_string(
+        x = "year", y = "y", color = "color_var", lty = "data"))
 
     if(controls){
       p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
     }
 
   } else { # MPO plot without controls
-
-    df <- extract_se(db, color_var, color_levels, controls, index)
-
     p <- ggplot2::ggplot(df) +
       geom_line(ggplot2::aes(x = year, y = y, color = color_var))
   }
@@ -169,6 +161,7 @@ plot_sevar <- function(db, color_var = "COUNTY",
 
   # ggplot2::theme, etc
   p +
+    ggplot2::scale_color_discrete(dots$color_var) +
     ggplot2::facet_grid(. ~ var, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab(ifelse(index, "Index Relative to Base", "Count")) +
     ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
@@ -179,23 +172,18 @@ plot_sevar <- function(db, color_var = "COUNTY",
 #'
 #' @param db1 The swim database for the "Reference" scenario.
 #' @param db2 The swim database for the "Current" scenario.
-#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
-#' @param facet_levels A character vector of the facet variable specifiying
-#'   which levels to include.
-#' @param index Whether to show the variables as indexed against the base year.
+#' @inheritDotParams extract_se
 #'
 #' @return A \code{ggplot2} plot object showing the modeled change in employment
 #'   and population over time.
 #'
 #' @export
-compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
-                          facet_levels = NULL, index = FALSE){
+compare_sevar <- function(db1, db2, ...){
 
+  dots <- list(...)
 
-  seref <- extract_se(db1, facet_var, facet_levels, controls = FALSE, index) %>%
-    dplyr::rename(ref = y)
-  secom <- extract_se(db2, facet_var, facet_levels, controls = FALSE, index) %>%
-    dplyr::rename(com = y)
+  seref <- extract_se(db = db1, ...) %>% dplyr::rename(ref = y)
+  secom <- extract_se(db = db2, ...) %>% dplyr::rename(com = y)
 
   df <- dplyr::left_join(seref, secom) %>%
     dplyr::mutate(diff = (com - ref) / ref * 100)
@@ -205,7 +193,7 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
     ggplot2::geom_path() +
     ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var))) +
     ggplot2::xlab("Year") + ggplot2::ylab("Percent difference (current - reference).") +
-    ggplot2::scale_color_discrete("Variable") +
+    ggplot2::scale_color_discrete(dots$color_var) +
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
 }
@@ -219,14 +207,13 @@ compare_sevar <- function(db1, db2, facet_var = c("MPO", "COUNTY"),
 #' @export
 plot_history <- function(db, counties = NULL) {
 
-  df <- extract_se(db, "COUNTY", counties, controls = TRUE) %>%
-    dplyr::rename(county = COUNTY) %>%
+  df <- extract_se(db, color_var = "COUNTY", color_levels = counties, controls = TRUE) %>%
     dplyr::filter(var == "population") %>%
     dplyr::select(-var) %>%
-    rbind_list(., historical_pop %>% dplyr::mutate(data = "Census")) %>%
-    dplyr::filter(county %in% counties)
+    dplyr::bind_rows(., historical_pop %>% dplyr::mutate(data = "Census")) %>%
+    dplyr::filter(color_var %in% counties)
 
-  ggplot2::ggplot(df, ggplot2::aes(x = year, y = y, color = county, lty = data)) +
+  ggplot2::ggplot(df, ggplot2::aes(x = year, y = y, color = color_var, lty = data)) +
     ggplot2::geom_path() +
     ggplot2::xlab("Year") + ggplot2::ylab("Population") +
     ggplot2::scale_linetype_manual("Data", values = c("solid", "dotted", "longdash")) +
@@ -397,20 +384,13 @@ discover_outlying_rates <- function(db, counties = NULL,
 #' @param db_names A character vector naming the scenarios.
 #' @param variable One of \code{c("population", "employment")} defining which
 #'   socioeconomic variable to include in
-#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
-#' @param facet_levels A character vector of the facet variable specifiying
-#'   which levels to include.
-#' @param controls If \code{facet_var = "COUNTY" & variable = "employment"}
-#'     then can print OEA forecast.
+#' @inheritDotParams extract_se
 #'
 #' @return a ggplot2 object.
 #'
 #' @export
 multiple_sevar <- function(dbset, db_names,
-                           variable = c("population", "employment"),
-                           facet_var = c("MPO", "COUNTY"),
-                           controls = FALSE,
-                           facet_levels = NULL ) {
+                           variable = c("population", "employment"), ... ) {
 
   # only allow controls if possible
   if(controls){
@@ -424,7 +404,7 @@ multiple_sevar <- function(dbset, db_names,
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_se(dbset[[i]], facet_var, facet_levels, controls) %>%
+      extract_se(dbset[[i]], ...) %>%
         dplyr::mutate(scenario = names(dbset)[[i]]) %>%
         dplyr::filter(var == variable)
     )

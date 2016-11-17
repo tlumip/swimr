@@ -4,24 +4,25 @@
 \alias{compare_trips}
 \title{Compare Trips}
 \usage{
-compare_trips(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, color_levels = c("auto", "transit", "non-motorized",
-  "truck"), diff_type = "pct_diff")
+compare_trips(db1, db2, ..., diff_type = "pct_diff")
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{facet_var}{The region to dplyr::summarize by.}
-
-\item{facet_levels}{Regions to include in summary.}
-
-\item{color_levels}{Modes to include in summary. Defaults to all modes other
+\item{...}{Arguments passed on to \code{extract_trips}
+\describe{
+  \item{db}{the scenario database.}
+  \item{facet_var}{The region to dplyr::summarize by.}
+  \item{facet_levels}{Regions to include in summary.}
+  \item{color_levels}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
+  \item{index}{whether to index mode split off the base year.}
+}}
 
-\item{diff_type}{Character string saying whether to use abolute (\code{diff}) or
-percent {\code(pct_diff)} differences. Defaults to percent.}
+\item{diff_type}{Character string saying whether to use abolute (`diff`) or
+percent (`pct_diff`) differences. Defaults to percent.}
 }
 \value{
 A ggplot2 object.

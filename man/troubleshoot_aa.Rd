@@ -10,7 +10,7 @@ troubleshoot_aa(db)
 \item{db}{A scenario database.}
 }
 \value{
-A \link[DT](datatable) object.
+A [DT](`datatable`) object.
 }
 \description{
 This function prints aggregate statistics from the AA buy/sell matrix. This

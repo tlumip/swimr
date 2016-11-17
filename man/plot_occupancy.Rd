@@ -4,21 +4,18 @@
 \alias{plot_occupancy}
 \title{Plot occupancy in a scenario over time.}
 \usage{
-plot_occupancy(db, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, type_levels = NULL)
+plot_occupancy(...)
 }
 \arguments{
-\item{db}{The scenario database.}
-
-\item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
-
-\item{facet_levels}{The levels of the facet variable to keep. Defaults to all
+\item{...}{Arguments passed on to \code{extract_rents}
+\describe{
+  \item{db}{The scenario database.}
+  \item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
+  \item{facet_levels}{The levels of the facet variable to keep. Defaults to all
 levels other than external stations.}
-
-\item{type_levels}{The types of employment to show in the plot.}
-}
-\value{
-A ggplot2 plot object.
+  \item{type_levels}{The types of employment to show in the plot.}
+  \item{index}{Should the function extract indexed or absolute values?}
+}}
 }
 \description{
 Plot occupancy in a scenario over time.
