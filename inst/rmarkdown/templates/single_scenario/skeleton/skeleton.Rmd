@@ -13,14 +13,8 @@ output:
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
-library(dplyr)
-library(ggplot2)
-opts_chunk$set(
-  echo = TRUE, message = FALSE, warning = TRUE,
-  fig.keep = TRUE, fig.path = "./figures/",
-  fig.width=8, fig.height=6, error = TRUE
-)
-
+opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = "RRA_fig/")
+library(tidyverse)
 library(swimr)
 ```
 
@@ -83,7 +77,7 @@ se <- extract_se(db, "MPO") %>%
 
 ```{r tab_pop, results='asis'}
 pop <- se %>% filter(var == "population") %>%
-  yearly_summary(group = "MPO", var = "y")
+  yearly_summary(group = "color_var", var = "y")
 
 kable(pop, caption = "Population by MPO", digits = 2)
 ```
@@ -92,14 +86,14 @@ kable(pop, caption = "Population by MPO", digits = 2)
 ## Employment
 ```{r tab_emp, results='asis'}
 emp <- se %>% filter(var == "employment") %>%
-  yearly_summary(group = "MPO", var = "y")
+  yearly_summary(group = "color_var", var = "y")
 
 kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
 
 ```{r plot_se, fig.cap="Population and employment in selected areas."}
-plot_sevar(db, facet, facet_levels)
+plot_sevar(db, color_var = facet, color_levels = facet_v)
 ```
 
 ```{r plot_se_index, fig.cap="Indexed Population and employment in selected areas."}
@@ -107,16 +101,16 @@ plot_sevar(db, facet, facet_levels, index = TRUE)
 ```
 
 ```{r plot_se_mpo, fig.cap="Population and employment - all MPOs."}
-plot_sevar(db, "MPO")
+plot_sevar(db, color_var = "MPO")
 ```
 
 ```{r plot_se_mpo_index, fig.cap="Indexed population and employment - all MPOs."}
-plot_sevar(db, "MPO", index = TRUE)
+plot_sevar(db, color_var = "MPO", index = TRUE)
 ```
 
 ## Historical Trends
 ```{r plot_history, fig.cap="Historical population trends in selected areas."}
-plot_history(db, facet_levels)
+plot_history(db, counties = facet_levels)
 ```
 
 
@@ -236,6 +230,11 @@ plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
 
 
 # Economics{.tabset}
+
+```{r aa_diagnostics}
+troubleshoot_aa(db)
+```
+
 
 ## Built Floorspace
 ```{r plot_floorspace, fig.cap="Floorspace by type."}
