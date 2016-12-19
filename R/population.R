@@ -392,11 +392,15 @@ discover_outlying_rates <- function(db, counties = NULL,
 multiple_sevar <- function(dbset, db_names,
                            variable = c("population", "employment"), ... ) {
 
-  # only allow controls if possible
-  if(controls){
-    if(facet_var != "COUNTY" | variable != "population"){
-      warning("Controls only available for county-level population forecasts.")
-      controls <- FALSE
+
+  if(is.null(controls)){ # no controls asked, set to false
+    controls <- FALSE
+  } else {
+    if(controls){ # if controls are asked for, then make sure that they are available
+      if(facet_var != "COUNTY" | variable != "population"){
+        warning("Controls only available for county-level population forecasts.")
+        controls <- FALSE
+      }
     }
   }
 
