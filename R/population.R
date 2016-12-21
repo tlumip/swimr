@@ -393,7 +393,7 @@ multiple_sevar <- function(dbset, db_names,
                            variable = c("population", "employment"), ... ) {
 
 
-  if(is.null(controls)){ # no controls asked, set to false
+  if(!exists(controls)){ # no controls asked, set to false
     controls <- FALSE
   } else {
     if(controls){ # if controls are asked for, then make sure that they are available
