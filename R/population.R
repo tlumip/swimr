@@ -38,6 +38,13 @@ extract_se <- function(db, color_var = NULL,
 
   if(is.null(color_var)){color_var = "COUNTY"}
 
+  if(controls){ # if controls are asked for, then make sure that they are available
+    if(color_var != "COUNTY"){
+      warning("Controls only available for county-level population forecasts.")
+      controls <- FALSE
+    }
+  }
+
   # county plot with controls
   if(color_var == "COUNTY"){
     # Pull se data
@@ -391,18 +398,7 @@ discover_outlying_rates <- function(db, counties = NULL,
 #' @export
 multiple_sevar <- function(dbset, db_names,
                            variable = c("population", "employment"), ... ) {
-
-
-  if(!exists(controls)){ # no controls asked, set to false
-    controls <- FALSE
-  } else {
-    if(controls){ # if controls are asked for, then make sure that they are available
-      if(facet_var != "COUNTY" | variable != "population"){
-        warning("Controls only available for county-level population forecasts.")
-        controls <- FALSE
-      }
-    }
-  }
+  dots <- list(...)
 
   # get the population table for every scenario.
   names(dbset) <- db_names
@@ -417,7 +413,7 @@ multiple_sevar <- function(dbset, db_names,
 
 
   # add control data if desired
-  if(controls){
+  if(dots$controls){
     p <- ggplot2::ggplot(
       data = df %>%
         # only need control once
