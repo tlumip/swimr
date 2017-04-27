@@ -51,14 +51,14 @@ extract_floorspace <- function(db,
 
     # sum within facet, year, and type
     dplyr::group_by(facet_var, year, commodity) %>%
-    dplyr::summarize_each(funs(sum), floor:built) %>%
+    dplyr::summarize_at(vars(floor:built), funs(sum)) %>%
     dplyr::collect(n=Inf) %>%
 
     # consolidate floortypes and dplyr::filter to desired levels
     dplyr::left_join(floor_types, by = "commodity") %>%
     dplyr::filter(floor_type %in% type_levels) %>%
     dplyr::group_by(facet_var, year, floor_type) %>%
-    dplyr::summarize_each(funs(sum), floor:built)
+    dplyr::summarize_at(vars(floor:built), funs(sum))
 
   if(index){
     floorspace <- floorspace %>%
@@ -114,7 +114,7 @@ extract_volume <- function(...){
     dplyr::left_join(grouping) %>%
     dplyr::ungroup() %>%
     dplyr::group_by(facet_var, year) %>%
-    dplyr::summarize_each(funs(sum)) %>%
+    dplyr::summarize_all(funs(sum)) %>%
 
     dplyr::collect(n=Inf) %>%
     tidyr::gather(commodity, used, -BZONE, -year, -facet_var) %>%

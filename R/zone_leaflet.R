@@ -180,7 +180,7 @@ extract_zonedata <- function(db, year1, year2 = NULL){
         dplyr::transmute(AZONE = Azone, sqmi = AREASQFT * 3.587048e-8),
       by = "AZONE") %>%
     dplyr::collect(n=Inf) %>%
-    dplyr::mutate_each(funs( ./sqmi), pop:hh) %>%
+    dplyr::mutate_at(vars(pop:hh), funs( ./sqmi)) %>%
     dplyr::select(-sqmi) %>%
 
     tidyr::gather(variable, value, -AZONE, -year) %>%

@@ -151,7 +151,7 @@ get_counts <- function(db, trucks = FALSE, year = c(2010, 2013, 2015)){
       dplyr::filter(ATR_NUM != "") %>%
       collect(n=Inf) %>%
       tidyr::gather(year, aawdt, `2000`:`2015`) %>%
-      dplyr::mutate_each(funs(as.numeric(.)), aawdt, year) %>%
+      dplyr::mutate_at(vars(aawdt, year), funs(as.numeric(.))) %>%
       dplyr::filter_(lazyeval::interp(~ x == year, x = as.name("year"), year = year))
 
   }

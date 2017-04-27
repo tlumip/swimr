@@ -24,8 +24,10 @@ Imports:
     tidyr,
     omxr,
     lazyeval,
-    stats
+    stats,
+    RSQLite
 VignetteBuilder: knitr
 Remotes: gregmacfarlane/omxr,
-  pbsag/outviz
+  pbsag/outviz,
+  hadley/dblpyr
 RoxygenNote: 5.0.1.9000
