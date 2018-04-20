@@ -66,4 +66,4 @@ set_config( config( ssl_verifypeer = 0L ) )
     - population analysis
     - reference scenario
   - The template Rmd files are available via File + New File + R Markdown + From Template
-  - After loading a template Rmd, update any required settings such as the input databases
+  - After loading a template Rmd, update any required settings such as the input databases, and then knit it
