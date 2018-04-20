@@ -53,3 +53,17 @@ library(httr)
 set_config(use_proxy(url="proxynew.odot.state.or.us", port=8080)) 
 set_config( config( ssl_verifypeer = 0L ) )
 ```
+
+### Getting Started
+  - Make sure you have a SWIM reporting database (*.db sqlite file)
+  - Open `swimr.Rproj` in RStudio
+  - Open the `vignettes\pop_and_emp.Rmd` Rmarkdown file
+  - Update the input reporting datatbase file name - `db_path`
+  - Render the Rmd as html with [knitr](https://yihui.name/knitr/) via the Knit button
+  - swimR contains four template Rmd files:
+    - assignment validation
+    - compare scenarios
+    - population analysis
+    - reference scenario
+  - The template Rmd files are available via File + New File + R Markdown + From Template
+  - After loading a template Rmd, update any required settings such as the input databases
