@@ -5,7 +5,7 @@ Visualizations and Reports for SWIM
 Install with the `devtools` package:
 
 ```r
-devtools::install.packages("tlumip/swimr")
+devtools::install_github("tlumip/swimr")
 ```
 
 This package uses some dependencies that are not on CRAN. Devtools should find most of these, 
