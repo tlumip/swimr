@@ -22,11 +22,11 @@ See https://github.com/tlumip/tlumip/wiki/Visualizing-Outputs
     - swimr contains a number of static data sets in the data folder, including the zone polygons used for mapping
     - To update these files, do the following:
       - Open `swimr.Rproj` in RStudio
-      - Find the relevant R script and/or data in data-raw folder
-      - Update the relevant raw data and re-run the script to update the version in the data folder
+      - Find the relevant R script and/or data in `data-raw` folder
+      - Update the relevant raw data and re-run the script to update the version in the `data` folder
     - For example, to update the zone polygons, do the following:
       - Open the VISUM version file in VISUM and export the zones to shapefile via File + Export + Shapefile
       - Make sure to export all fields
-      - Copy the shapefile to the data-raw folder
-      - Run data-raw\layers.R
-      - The data\zones.rda, data\zones_data.rda, and data\zones_shp.rda will be updated
+      - Copy the shapefile to the `data-raw` folder
+      - Run `data-raw\layers.R`
+      - The `data\zones.rda`, `data\zones_data.rda`, and `data\zones_shp.rda` will be updated
