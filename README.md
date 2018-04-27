@@ -74,4 +74,4 @@ if("swimr" %in% rownames(installed.packages()) == FALSE) {
       - Copy the shapefile to the `data-raw` folder
       - Run `data-raw\layers.R`
       - The `data\zones.rda`, `data\zones_data.rda`, and `data\zones_shp.rda` will be updated
-      - Push the changes back up to the repo so you can later install the library with the install directions
+      - Push the changes back up to the repo so you can later install the library with the instructions in the user's guide
