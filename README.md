@@ -50,6 +50,7 @@ if("swimr" %in% rownames(installed.packages()) == FALSE) {
 ### Developer's Guide
   - Getting Started
     - Make sure you have a SWIM reporting database (*.db sqlite file)
+    - Clone this repo
     - Open `swimr.Rproj` in RStudio
     - Open the `vignettes\pop_and_emp.Rmd` Rmarkdown file
     - Update the input reporting datatbase file name - `db_path`
@@ -62,7 +63,7 @@ if("swimr" %in% rownames(installed.packages()) == FALSE) {
     - The template Rmd files are available via File + New File + R Markdown + From Template
     - After loading a template Rmd, update any required settings such as the input databases, and then knit it
   - Static Package Data
-    - swimr contains a number of static data sets in the data folder, including the zone polygons used for mapping
+    - swimr contains a number of static package data sets in the data folder, including the zone polygons used for mapping
     - To update these files, do the following:
       - Open `swimr.Rproj` in RStudio
       - Find the relevant R script and/or data in `data-raw` folder
@@ -73,3 +74,4 @@ if("swimr" %in% rownames(installed.packages()) == FALSE) {
       - Copy the shapefile to the `data-raw` folder
       - Run `data-raw\layers.R`
       - The `data\zones.rda`, `data\zones_data.rda`, and `data\zones_shp.rda` will be updated
+      - Push the changes back up to the repo so you can later install the library 
