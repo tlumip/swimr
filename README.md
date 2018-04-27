@@ -75,3 +75,4 @@ if("swimr" %in% rownames(installed.packages()) == FALSE) {
       - Run `data-raw\layers.R`
       - The `data\zones.rda`, `data\zones_data.rda`, and `data\zones_shp.rda` will be updated
       - Push the changes back up to the repo so you can later install the library with the instructions in the user's guide
+    - The package only knows about one set of swim zones and so the user needs to rename the swim25 or swim26 versions of the rda files to the generic names before use.
