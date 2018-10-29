@@ -102,12 +102,8 @@
 #' A fortified shapefile containing link attributes
 "links"
 
-#' Zone table
+#' Regions table
 #'
-#' A fortified shapefile containing the zone geometries
-"zones"
+#' A table relating ODOT regions to counties.
+"regions"
 
-#' Zone Shapefile
-#'
-#' A SpatialPolygonsDataFrame of the zone system for plotting in leaflet.
-"zones_shp"
