@@ -33,7 +33,7 @@ extract_zones <- function(db,
   names(zones_tbl)[grep('Azone', names(zones_tbl))] <- 'AZONE'
 
   zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
-    st_transform(crs=wgs84)
+    sf::st_transform(crs=wgs84)
 
   zones_shp <- sf::as_Spatial(zones_sf)
   return(zones_shp)
