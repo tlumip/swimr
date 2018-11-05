@@ -84,22 +84,22 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
   )
 
   zone_leaflet(shp) %>%
-    addPolygons(
-      group = "Population", fill = TRUE, color = FALSE,
+    leaflet::addPolygons(
+      group = "Population", fill = TRUE, color = FALSE, stroke=FALSE,
       fillColor = ~palq(cut_diverror(pop_rate)),
       popup = change_popup(shp, "pop", year1, year2)
     ) %>%
-    addPolygons(
-      group = "Employment", fill = TRUE, color = FALSE,
+    leaflet::addPolygons(
+      group = "Employment", fill = TRUE, color = FALSE, stroke=FALSE,
       fillColor = ~palq(cut_diverror(emp_rate)),
       popup = change_popup(shp, "emp", year1, year2)
     ) %>%
-    addPolygons(
-      group = "HH", fill = TRUE, color = FALSE,
+    leaflet::addPolygons(
+      group = "HH", fill = TRUE, color = FALSE, stroke=FALSE,
       fillColor = ~palq(cut_diverror(hh_rate)),
       popup = change_popup(shp, "hh", year1, year2)
     ) %>%
-    addLayersControl(
+    leaflet::addLayersControl(
       overlayGroups = c("Population", "Employment", "HH"),
       options = layersControlOptions(collapsed = FALSE)
     )
@@ -169,21 +169,21 @@ diff_leaflet <- function(db1, db2, year,
   )
 
   zone_leaflet(shp) %>%
-    addPolygons(
-      group = "Absolute", stroke = FALSE,
+    leaflet::addPolygons(
+      group = "Absolute", stroke = FALSE, fillOpacity=0.7,
       color = ~palq(cut_abserror(diff)),
       popup = diff_popup(shp, variable, scen_names)
     ) %>%
-    addPolygons(
-      group = "Percent", stroke = FALSE,
+    leaflet::addPolygons(
+      group = "Percent", stroke = FALSE, fillOpacity=0.7,
       color = ~palq(cut_abserror(pct)),
       popup = diff_popup(shp, variable, scen_names)
     ) %>%
-    addLayersControl(
+    leaflet::addLayersControl(
       baseGroups = c("Absolute", "Percent"),
       options = layersControlOptions(collapsed = FALSE)
     ) %>%
-    addLegend(
+    leaflet::addLegend(
       "bottomright", pal = palq, values = ~cut_abserror(diff),
       title = paste0("Change in ", variable, " per sqmi<br>",
                      scen_names[1], " - ", scen_names[2] )
@@ -254,9 +254,9 @@ extract_zonedata <- function(db, year1, year2 = NULL){
 #'
 zone_leaflet <- function(shp){
 
-  leaflet(shp) %>%
-    addProviderTiles("CartoDB.Positron") %>%
-    addPolygons(color = "grey", weight = 0.5, fill = FALSE)
+  leaflet::leaflet(shp) %>%
+    leaflet::addProviderTiles("CartoDB.Positron") %>%
+    leaflet::addPolygons(color = "grey", weight = 0.5, fill = FALSE)
 
 }
 
