@@ -62,7 +62,9 @@ skim_leaflet <- function(zone, skim,
   }
 
   # Join skim information to zones shapefile
-  shp <- zones_shp
+  # extract_zones may fail if parameters are not the defaults
+  shp <- extract_zones(db, tbl_name = 'ALLZONES', wkt_col = 'WKTSURFACE')
+
   shp@data <- shp@data %>%
     dplyr::left_join(s, by = c("AZONE" = "zone"))
 
@@ -113,7 +115,7 @@ get_skim <- function(skim, zone, from = TRUE){
 #'
 #' @inheritParams skim_leaflet
 #' @param shp A shapefile containing data table attributes
-#' 
+#'
 #'
 skim_popup <- function(shp, zone){
   # build popup
