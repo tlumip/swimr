@@ -21,4 +21,3 @@ A data frame with the
 \description{
 Extract VHT
 }
-

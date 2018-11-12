@@ -23,4 +23,3 @@ A ggplot2 object showing VHT by facility type in each facet level
 \description{
 Compare VMT between multiple scenarios
 }
-

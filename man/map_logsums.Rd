@@ -21,4 +21,3 @@ map_logsums(db, scope = NULL, purposes = NULL, ggmap = FALSE,
 \description{
 Map destination choice logsums from a single scenario
 }
-

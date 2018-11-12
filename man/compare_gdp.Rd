@@ -26,4 +26,3 @@ ggplot2 object
 \description{
 Compare GDP between two scenarios
 }
-

@@ -39,4 +39,3 @@ We call our definition "workers to adult population ratio," or "WAPR". Again,
 it corresponds to the labor force participation rate but is not precisely
 defined.
 }
-

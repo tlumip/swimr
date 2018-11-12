@@ -19,4 +19,3 @@ A dataset mapping the NAICS sectors in the buy/sell from the database to
 consolidated categories.
 }
 \keyword{datasets}
-

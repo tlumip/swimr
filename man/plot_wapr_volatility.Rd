@@ -23,4 +23,3 @@ This function calculates the volatility of worker to adult population ratio
 at an arbitrary geographic level. Volatility is defined as the standard
 deviation of the percent growth rate of wapr between consecutive periods.
 }
-

@@ -23,4 +23,3 @@ A dataset containing the control totals for employment and population for
 counties in the Oregon statewide model.
 }
 \keyword{datasets}
-

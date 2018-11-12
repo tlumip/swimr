@@ -4,8 +4,8 @@
 \alias{compare_wapr}
 \title{Compare workforce participation in two scenarios}
 \usage{
-compare_wapr(db1, db2, facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
-  "STATE"), facet_levels = NULL)
+compare_wapr(db1, db2, facet_var = c("BZONE", "MPO", "COUNTY",
+  "DOT_REGION", "STATE"), facet_levels = NULL)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -23,4 +23,3 @@ ggplot2 object
 \description{
 Compare workforce participation in two scenarios
 }
-

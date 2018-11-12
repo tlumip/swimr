@@ -29,4 +29,3 @@ a ggplot2 object.
 \description{
 Compare Employment by sector across multiple scenarios.
 }
-

@@ -22,4 +22,3 @@ value of the variable at each time stage going across the columns.
 \description{
 Make a yearly summary table of a land use variable
 }
-

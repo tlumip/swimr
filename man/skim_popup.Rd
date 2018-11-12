@@ -14,4 +14,3 @@ skim_popup(shp, zone)
 \description{
 Build skim popup tag for leaflet
 }
-

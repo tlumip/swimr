@@ -23,4 +23,3 @@ Writes the new column to the \code{ALLZONES} table of the database.
 \description{
 Add a geographic facet lookup to a database
 }
-

@@ -30,4 +30,3 @@ A ggplot2 object.
 \description{
 Compare Trips
 }
-

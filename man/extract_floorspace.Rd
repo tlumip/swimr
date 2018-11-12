@@ -23,4 +23,3 @@ levels other than external stations.}
 This is an internal function to pull the floorspace data from a scenario and
 return it to either the single scenario or scenario comparison functions.
 }
-

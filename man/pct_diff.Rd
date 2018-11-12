@@ -14,4 +14,3 @@ pct_diff(x, y)
 \description{
 Percent difference between two conditions
 }
-

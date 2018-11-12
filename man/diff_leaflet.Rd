@@ -4,8 +4,8 @@
 \alias{diff_leaflet}
 \title{Leaflet plot of difference between two scenarios.}
 \usage{
-diff_leaflet(db1, db2, year, variable = c("Population", "Employment", "HH"),
-  scen_names = c("Reference", "Current"))
+diff_leaflet(db1, db2, year, variable = c("Population", "Employment",
+  "HH"), scen_names = c("Reference", "Current"))
 }
 \arguments{
 \item{db1}{Reference scenario VIZ database connection.}
@@ -23,4 +23,3 @@ diff_leaflet(db1, db2, year, variable = c("Population", "Employment", "HH"),
 \description{
 Leaflet plot of difference between two scenarios.
 }
-

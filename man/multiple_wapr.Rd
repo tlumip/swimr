@@ -23,4 +23,3 @@ a ggplot2 object.
 \description{
 Compare WAPR  across multiple scenarios.
 }
-

@@ -17,4 +17,3 @@ a ggplot2 object
 \description{
 Plot population with controls and historical data.
 }
-

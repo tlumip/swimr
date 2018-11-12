@@ -4,8 +4,8 @@
 \alias{extract_tlfd}
 \title{Extract trip length frequency distribution data}
 \usage{
-extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  cumulative = FALSE, years = NULL)
+extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"),
+  regions = NULL, cumulative = FALSE, years = NULL)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -27,4 +27,3 @@ A data frame with the trip length frequency distribution by year
 \description{
 Extract trip length frequency distribution data
 }
-

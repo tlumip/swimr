@@ -19,4 +19,3 @@ A ggplot2 object.
 \description{
 Create a plot of the base scenario link volumes compared with observed AADT.
 }
-

@@ -15,4 +15,3 @@ A numeric vector of length(x)
 \description{
 Calculate the growth rate in a vector
 }
-

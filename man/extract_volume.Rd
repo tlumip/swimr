@@ -24,4 +24,3 @@ A data frame with the total dollars sold.
 This function extracts the total value of floorspace sold in each region by
 floor_type.
 }
-

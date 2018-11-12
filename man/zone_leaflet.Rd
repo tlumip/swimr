@@ -14,4 +14,3 @@ plotting fields already appended.}
 This function creates a standard leaflet base image that we can add
 information to.
 }
-

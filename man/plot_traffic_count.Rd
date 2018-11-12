@@ -17,4 +17,3 @@ A ggplot2 object
 \description{
 Plot historical and projected traffic counts
 }
-

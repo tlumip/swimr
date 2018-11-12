@@ -15,4 +15,3 @@ parameters.}
 \description{
 Plot model wide parameters.
 }
-

@@ -15,4 +15,3 @@ a factor showing the bin
 \description{
 Cut absolute differences into ranges
 }
-

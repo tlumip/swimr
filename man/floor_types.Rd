@@ -16,4 +16,3 @@ floor_types
 A dataset mapping the floor types in the database to consolidated categories.
 }
 \keyword{datasets}
-

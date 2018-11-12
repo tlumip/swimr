@@ -16,4 +16,3 @@ A [DT](`datatable`) object.
 This function prints aggregate statistics from the AA buy/sell matrix. This
 can help an analyst determine which commodities (if any) may cause problems.
 }
-

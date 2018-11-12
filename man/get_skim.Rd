@@ -16,4 +16,3 @@ get_skim(skim, zone, from = TRUE)
 \description{
 Process skim values from one zone.
 }
-

@@ -27,4 +27,3 @@ This function calculates an annualized exponential growth rate
 \examples{
 calc_exprate(10, 12, 2010, 2040)
 }
-

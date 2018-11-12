@@ -4,8 +4,8 @@
 \alias{extract_se}
 \title{Extract SE data from DB}
 \usage{
-extract_se(db, color_var = NULL, color_levels = NULL, controls = TRUE,
-  index = FALSE)
+extract_se(db, color_var = NULL, color_levels = NULL,
+  controls = TRUE, index = FALSE)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -26,4 +26,3 @@ a data frame
 \description{
 Extract SE data from DB
 }
-

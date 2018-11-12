@@ -4,8 +4,9 @@
 \alias{plot_wapr}
 \title{Plot the labor force participation rate.}
 \usage{
-plot_wapr(db, color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION", "STATE"),
-  color_levels = NULL, facet_var = NULL, facet_levels = NULL)
+plot_wapr(db, color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
+  "STATE"), color_levels = NULL, facet_var = NULL,
+  facet_levels = NULL)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -40,4 +41,3 @@ are looking for work.
 
 We call our definition "workers to adult population ratio," or "WAPR".
 }
-

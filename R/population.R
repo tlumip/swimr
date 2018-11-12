@@ -404,7 +404,7 @@ multiple_sevar <- function(dbset, db_names,
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_se(dbset[[i]], ...) %>%
+      extract_se(dbset[[i]]) %>%
         dplyr::mutate(scenario = names(dbset)[[i]]) %>%
         dplyr::filter(var == variable)
     )
