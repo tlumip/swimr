@@ -4,7 +4,8 @@
 \alias{compare_vht}
 \title{Compare VHT between scenarios}
 \usage{
-compare_vht(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL)
+compare_vht(db1, db2, facet_var = c("MPO", "COUNTY"),
+  facet_levels = NULL)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -23,4 +24,3 @@ A ggplot2 object showing VHT by facility type in each facet level
 \description{
 Compare VHT between scenarios
 }
-

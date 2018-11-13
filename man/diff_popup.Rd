@@ -18,4 +18,3 @@ plotting fields already appended.}
 \description{
 Build diff popup tag for leaflet
 }
-

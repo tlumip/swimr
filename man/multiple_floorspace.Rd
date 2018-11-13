@@ -4,8 +4,8 @@
 \alias{multiple_floorspace}
 \title{Compare floorspace by type across multiple scenarios.}
 \usage{
-multiple_floorspace(dbset, db_names, ..., variable = c("floorspace", "rent",
-  "occupancy"))
+multiple_floorspace(dbset, db_names, ..., variable = c("floorspace",
+  "rent", "occupancy"))
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -31,4 +31,3 @@ a ggplot2 object.
 \description{
 Compare floorspace by type across multiple scenarios.
 }
-

@@ -15,4 +15,3 @@ names of all levels of the factor
 \description{
 Return all levels of a factor other than external stations
 }
-

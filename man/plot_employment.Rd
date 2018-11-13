@@ -26,4 +26,3 @@ A ggplot2 object showing the employment by type and and year.
 This function plots the employment by type in an area over time between two
 scenarios.
 }
-

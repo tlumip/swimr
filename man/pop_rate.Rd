@@ -15,4 +15,3 @@ pop_rate(db, counties = NULL)
 This function calculates the annualized growth rate between Census years and
 between SWIM population synthesizer runs.
 }
-

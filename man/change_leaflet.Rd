@@ -27,4 +27,3 @@ This function creates an interactive Leaflet plot of the alpha zone
   the transport model does not run. If the user asks for year that does not
   exist, then the plot will use the nearest available year.
 }
-

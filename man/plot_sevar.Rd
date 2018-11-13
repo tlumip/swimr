@@ -25,4 +25,3 @@ A \code{ggplot2} plot object showing the modeled change in employment
 \description{
 Make a plot of population and employment
 }
-

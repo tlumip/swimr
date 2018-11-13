@@ -22,4 +22,3 @@ A ggplot2 figure object.
 This function plots the sum of the daily vehicle travel time, colored and
 faceted by arbitrary variables in the link or zone table.
 }
-

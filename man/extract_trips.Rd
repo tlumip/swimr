@@ -28,4 +28,3 @@ A data frame with total trips originating in the region by mode and
 This function looks at the trip matrix for a scenario and dplyr::summarizes trips on
 the origin end by mode and region of origin.
 }
-

@@ -26,4 +26,3 @@ A ggplot2 object showing the floorspace by type and and year.
 This function plots the constructed floorspace by type over time facetted by a
 variable chosen from the zone attributes table.
 }
-

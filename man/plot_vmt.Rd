@@ -25,4 +25,3 @@ A ggplot2 object showing VMT by facility type in each facet level
 This function plots the sum of the daily link volumes over time, colored and
 faceted by arbitrary variables in the link table.
 }
-

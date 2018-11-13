@@ -59,9 +59,9 @@ extract_se <- function(db, color_var = NULL,
       # dplyr::summarize to the county level
       dplyr::group_by(COUNTY, state, TSTEP) %>%
       dplyr::summarize(
-        population = sum(POPULATION),
-        employment = sum(EMPLOYMENT),
-        totalhh = sum(TOTALHHS)
+        population = sum(POPULATION, na.rm=TRUE),
+        employment = sum(EMPLOYMENT, na.rm=TRUE),
+        totalhh = sum(TOTALHHS, na.rm=TRUE)
       ) %>%
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
       dplyr::ungroup() %>% dplyr::collect(n=Inf)
@@ -114,9 +114,9 @@ extract_se <- function(db, color_var = NULL,
       # dplyr::summarize to the MPO level
       dplyr::group_by(color_var, TSTEP) %>%
       dplyr::summarize(
-        population = sum(POPULATION),
-        employment = sum(EMPLOYMENT),
-        totalhh = sum(TOTALHHS)
+        population = sum(POPULATION, na.rm=TRUE),
+        employment = sum(EMPLOYMENT, na.rm=TRUE),
+        totalhh = sum(TOTALHHS, na.rm=TRUE)
       ) %>%
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
       dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%
@@ -387,24 +387,32 @@ discover_outlying_rates <- function(db, counties = NULL,
 
 #' Compare Population or Employment across multiple scenarios.
 #'
+#' Scenarios (represented by elements of \code{dbset}) are represented as colors, while \code{facet_var} specifies the
+#' variable to use for facets.
+#'
 #' @param dbset A list of connections to SWIM databases.
 #' @param db_names A character vector naming the scenarios.
 #' @param variable One of \code{c("population", "employment")} defining which
 #'   socioeconomic variable to include in
-#' @inheritDotParams extract_se
+#' @param facet_var Field to facet by: either "MPO" or "COUNTY".
+#' @param facet_levels A character vector of the facet variable specifying
+#'   which levels to include.
+
+#' @inherit extract_se params
 #'
 #' @return a ggplot2 object.
 #'
 #' @export
 multiple_sevar <- function(dbset, db_names,
-                           variable = c("population", "employment"), ... ) {
-  dots <- list(...)
+                           variable = c("population", "employment"),
+                           facet_var = NULL, facet_levels=NULL,
+                           controls = TRUE, index = FALSE) {
 
   # get the population table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_se(dbset[[i]], ...) %>%
+      extract_se(dbset[[i]], color_var = facet_var, color_levels=facet_levels) %>%
         dplyr::mutate(scenario = names(dbset)[[i]]) %>%
         dplyr::filter(var == variable)
     )
@@ -413,7 +421,7 @@ multiple_sevar <- function(dbset, db_names,
 
 
   # add control data if desired
-  if(dots$controls){
+  if(controls){
     p <- ggplot2::ggplot(
       data = df %>%
         # only need control once

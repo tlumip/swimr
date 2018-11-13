@@ -17,4 +17,3 @@ A dataset mapping the facility types in the database to consolidated
 categories.
 }
 \keyword{datasets}
-

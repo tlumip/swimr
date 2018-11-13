@@ -17,4 +17,3 @@ plot_logsums(db, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
 \description{
 Plot average logsums over time for a single scenario
 }
-

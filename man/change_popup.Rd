@@ -19,4 +19,3 @@ plotting fields already appended.}
 \description{
 Build change popup tag for leaflet
 }
-

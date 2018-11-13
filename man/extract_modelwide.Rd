@@ -15,4 +15,3 @@ parameters.}
 \description{
 Extract model-wide composite utilities
 }
-

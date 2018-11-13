@@ -122,7 +122,7 @@ extract_volume <- function(...){
     dplyr::left_join(floor_types) %>%
     dplyr::filter(floor_type %in% type_levels) %>%
     dplyr::group_by(facet_var, year, floor_type) %>%
-    dplyr::summarize(volume = sum(used))
+    dplyr::summarize(volume = sum(used, na.rm=TRUE))
 
 
 }
@@ -194,7 +194,9 @@ extract_rents <- function(db,
 
     # dplyr::summarize within facet and year
     dplyr::group_by(facet_var, year, floor_type) %>%
-    dplyr::summarize(supply = sum(supply), price = mean(price), bought = sum(bought)) %>%
+    dplyr::summarize(supply = sum(supply, na.rm=TRUE),
+                     price = mean(price, na.rm=TRUE),
+                     bought = sum(bought, na.rm=TRUE)) %>%
     dplyr::mutate(occrate = bought / supply)
 
   if(index){

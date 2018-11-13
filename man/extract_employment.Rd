@@ -25,4 +25,3 @@ if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
 This is an internal function to pull the employment data from a scenario and
 return it to either the single scenario or scenario comparison functions.
 }
-

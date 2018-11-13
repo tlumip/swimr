@@ -23,4 +23,3 @@ levels other than external stations.}
 This function extracts the occupancy rate by floortype from a scenario over
 time.
 }
-

@@ -4,8 +4,8 @@
 \alias{plot_gdp}
 \title{Plot the GDP contribution of Labor over time in a scenario}
 \usage{
-plot_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"), facet_levels = NULL,
-  color_levels = NULL)
+plot_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL, color_levels = NULL)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -24,4 +24,3 @@ a ggplot2 plot object.
 \description{
 Plot the GDP contribution of Labor over time in a scenario
 }
-

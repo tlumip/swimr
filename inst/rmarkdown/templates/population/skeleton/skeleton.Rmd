@@ -13,6 +13,8 @@ output:
 ```{r setup, message=FALSE}
 library(swimr, warn.conflicts = FALSE)
 library(knitr)
+library(dplyr)
+library(ggplot2)
 
 opts_chunk$set(fig.width = 8.5, fig.height = 10, echo = FALSE)
 ```
@@ -27,6 +29,13 @@ dbset <- list(ref, db1, db3)
 db_names <- c(
   "FinalReference_Test", "Extra_Floorspace_wCongestion", "Revised_FLR"
 )
+```
+
+```{r load_zones, echo=TRUE}
+zones_shp <- extract_zones(db = ref)
+zones_data <- zones_shp@data
+zones <- fortify(zones_shp) %>%
+  left_join(zones_data, by='id')
 ```
 
 # ODOT Regions
@@ -46,7 +55,8 @@ for(r in 1:9){
   counties <- zones_data %>% filter(DOT_REGION == r)
 
   p <- multiple_sevar(dbset, db_names, variable = "population",    
-                      facet_var = "COUNTY",  facet_levels = counties$COUNTY) +
+                      facet_var = "COUNTY",
+                      facet_levels = unique(counties$COUNTY)) +
     ggtitle(paste("Region", r)) + theme(legend.position = "bottom")
   
   print(p)
@@ -106,7 +116,8 @@ for(r in 1:9){
 for(r in 1:9){
   counties <- zones_data %>% filter(DOT_REGION == r)
   
-  p <- multiple_floorspace(dbset, db_names,  
+  p <- multiple_floorspace(dbset = dbset, db_names = db_names,
+                           variable = 'floorspace',
                            facet_var = "COUNTY", facet_levels = counties$COUNTY)
   
   print(p + ggtitle(paste("Region", r)) + theme(legend.position = "bottom"))

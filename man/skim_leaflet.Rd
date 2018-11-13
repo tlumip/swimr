@@ -32,4 +32,3 @@ If \code{dir2} and \code{year2} are both \code{NULL}, will show an
   absolute measure of travel time. If one or the other is given, will show
   a percent change from \code{dir1, year1}.
 }
-

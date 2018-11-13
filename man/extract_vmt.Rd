@@ -4,7 +4,8 @@
 \alias{extract_vmt}
 \title{Extract VMT}
 \usage{
-extract_vmt(db, facet_var = "MPO", facet_levels = NULL, index = FALSE)
+extract_vmt(db, facet_var = "MPO", facet_levels = NULL,
+  index = FALSE)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -23,4 +24,3 @@ A data frame with VMT dplyr::summarized by facility type and facet variable.
 \description{
 Extract VMT
 }
-

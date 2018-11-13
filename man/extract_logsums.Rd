@@ -23,4 +23,3 @@ The logsums are provided at production-side beta zones, by purpose and market
 segment. This function aggregates market segments by averaging and purposes
 by summation (sum of all purpose logsums faced by the average user).
 }
-

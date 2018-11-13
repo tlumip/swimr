@@ -17,4 +17,3 @@ A counts dataframe w
 \description{
 Get counts table
 }
-

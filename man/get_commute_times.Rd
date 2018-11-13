@@ -23,4 +23,3 @@ Calculate trip times by residence region
 Note that this function does not work on a VIZ database, but rather
   on the scenario outputs directly.
 }
-

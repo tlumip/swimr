@@ -16,4 +16,3 @@ This function returns a box plot comparing the annualized population growth
 rates in a set of counties. This can help identify problems that the model
 may be having relative to historical trends.
 }
-

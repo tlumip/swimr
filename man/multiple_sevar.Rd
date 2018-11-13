@@ -4,7 +4,8 @@
 \alias{multiple_sevar}
 \title{Compare Population or Employment across multiple scenarios.}
 \usage{
-multiple_sevar(dbset, db_names, variable = c("population", "employment"), ...)
+multiple_sevar(dbset, db_names, variable = c("population", "employment"),
+  ...)
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -31,4 +32,3 @@ a ggplot2 object.
 \description{
 Compare Population or Employment across multiple scenarios.
 }
-

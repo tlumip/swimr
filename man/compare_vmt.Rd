@@ -4,8 +4,8 @@
 \alias{compare_vmt}
 \title{Compare VMT between scenarios}
 \usage{
-compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"), facet_levels = NULL,
-  index = TRUE)
+compare_vmt(db1, db2, facet_var = c("MPO", "COUNTY"),
+  facet_levels = NULL, index = TRUE)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -26,4 +26,3 @@ A ggplot2 object showing VMT by facility type in each facet level
 \description{
 Compare VMT between scenarios
 }
-

@@ -20,4 +20,3 @@ Extract se data for leaflet zone plots
 If \code{year2 = NULL}, then will return only the values from year 1
   and will not calculate the implied exponential growth rate.
 }
-

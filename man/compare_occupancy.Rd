@@ -27,4 +27,3 @@ A ggplot2 plot object
 \description{
 Compare occupancy in a scenario over time.
 }
-

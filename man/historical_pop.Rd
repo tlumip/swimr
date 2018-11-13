@@ -21,4 +21,3 @@ A dataset containing the historical population from the decennial census of
 population and housing for Oregon from 1930-2010
 }
 \keyword{datasets}
-

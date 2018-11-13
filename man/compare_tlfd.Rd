@@ -27,4 +27,3 @@ A ggplot2 object.
 \description{
 Compare Trip Length Frequency Distributions
 }
-

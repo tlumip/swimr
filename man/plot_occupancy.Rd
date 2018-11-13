@@ -20,4 +20,3 @@ levels other than external stations.}
 \description{
 Plot occupancy in a scenario over time.
 }
-

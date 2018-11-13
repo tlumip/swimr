@@ -4,8 +4,8 @@
 \alias{compare_logsums}
 \title{Compare logsums from two scenarios}
 \usage{
-compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
-  "DOT_REGION"), color_levels = NULL)
+compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION",
+  "STATE", "DOT_REGION"), color_levels = NULL)
 }
 \arguments{
 \item{db1}{The reference scenario VIZ database.}
@@ -19,4 +19,3 @@ compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
 \description{
 Compare logsums from two scenarios
 }
-

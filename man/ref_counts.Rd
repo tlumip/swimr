@@ -24,4 +24,3 @@ A dataset containing the reference highway counts for comparing modeled
 traffic volumes in multiple historical years.
 }
 \keyword{datasets}
-

@@ -15,4 +15,3 @@ A numeric vector of length(x)
 \description{
 Calculate the indexed value of a vector
 }
-

@@ -25,4 +25,3 @@ A ggplot2 object.
 \description{
 Plot a trip length frequency distribution
 }
-

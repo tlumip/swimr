@@ -17,4 +17,3 @@ remove_field(db, table, column)
 This might be useful if you make a mistake with \link{add_lookup}.
 As a warning, this is a destructive operation. Use with care.
 }
-

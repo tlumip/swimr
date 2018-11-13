@@ -16,4 +16,3 @@ mode_types
 A dataset mapping modes in the trip matrix to consolidated values for plotting.
 }
 \keyword{datasets}
-

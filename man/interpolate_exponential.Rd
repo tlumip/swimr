@@ -32,4 +32,3 @@ interpolate_exponential(10, 12, 2010, 2040, 2008)
 \seealso{
 calc_exprate
 }
-
