@@ -57,8 +57,8 @@ extract_wapr <- function(db,
     # dplyr::summarize on faceting variable
     dplyr::group_by_("TSTEP", facet_var) %>%
     dplyr::summarize(
-      workers = sum(workers),
-      laborforce = sum(laborforce)
+      workers = sum(workers, na.rm=TRUE),
+      laborforce = sum(laborforce, na.rm=TRUE)
     ) %>%
 
     # calculate wapr

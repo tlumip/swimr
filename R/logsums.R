@@ -28,9 +28,11 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
       dplyr::filter(PURPOSE %in% purposes)
   }
 
+  zones_data <- extract_zones(db)@data
+
   if(!is.null(scope)){
     # Get a list of zones in the scope
-    zt <- zones_data %>%
+     zt <- zones_data %>%
       dplyr::filter_(.dots = scope)
   } else {
     zt <- zones_data
