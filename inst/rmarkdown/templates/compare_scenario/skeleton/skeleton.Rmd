@@ -88,36 +88,26 @@ se <- left_join(
 ```
 
 ```{r tab_pop, results='asis'}
-pop <- se %>% filter(var == "population")
+pop <- se %>% filter(var == "population") %>%
+  select(color_var, year, Reference = reference, Current = current) %>%
+  mutate(`Pct diff` = (Current - Reference)/Reference * 100) %>%
+  gather(key = scenario, value=value, -color_var, -year) %>%
+  unite(scenario_year, scenario, year, sep = ' ') %>%
+  spread(key=scenario_year, value=value) %>%
+  select(MPO = color_var, starts_with('Reference'), starts_with('Current'), starts_with('Pct'))
 
-ref <- yearly_summary(pop, "color_var", "reference")
-cur <- yearly_summary(pop, "color_var", "current")
-diff <- yearly_summary(pop, "color_var", "diff")
-
-pop <- left_join(ref, cur, by = "color_var") %>%
-  left_join(diff, by = "color_var")
-
-names(pop) <- c("MPO", 
-                paste(rep(c("Reference", "Current", "Pct diff"), 
-                          each = length(years)),
-                      rep(years, 3)))
 kable(pop, caption = "Population by MPO", digits = 2)
 ```
 
 ```{r tab_emp, results='asis'}
-emp <- se %>% filter(var == "employment")
+emp <- se %>% filter(var == "employment") %>%
+  select(color_var, year, Reference = reference, Current = current) %>%
+  mutate(`Pct diff` = (Current - Reference)/Reference * 100) %>%
+  gather(key = scenario, value=value, -color_var, -year) %>%
+  unite(scenario_year, scenario, year, sep = ' ') %>%
+  spread(key=scenario_year, value=value) %>%
+  select(MPO = color_var, starts_with('Reference'), starts_with('Current'), starts_with('Pct'))
 
-ref <- yearly_summary(emp, "color_var", "reference")
-cur <- yearly_summary(emp, "color_var", "current")
-diff <- yearly_summary(emp, "color_var", "diff")
-
-emp <- left_join(ref, cur, by = "color_var") %>%
-  left_join(diff, by = "color_var")
-
-names(emp) <- c("MPO", 
-                paste(rep(c("Reference", "Current", "Pct diff"), 
-                          each = length(years)),
-                      rep(years, 3)))
 kable(emp, caption = "Employment by MPO", digits = 2)
 ```
 
@@ -150,20 +140,20 @@ vmt <- left_join(
   extract_vmt(db1, "MPO") %>% rename(reference = vmt),
   extract_vmt(db2, "MPO") %>% rename(current   = vmt)
 ) %>%
-  filter(year %in% years) %>%
-  mutate(diff = (current - reference) / reference * 100) 
+  filter(year %in% years)
  
-ref <- yearly_summary(vmt, "MPO", "reference") 
-cur <- yearly_summary(vmt, "MPO", "current")
-diff <- yearly_summary(vmt, "MPO", "diff")
+ref <- yearly_summary(vmt, "MPO", "reference") %>%
+  gather(key = 'year', value = 'Reference', -MPO)
+cur <- yearly_summary(vmt, "MPO", "current") %>%
+  gather(key = 'year', value = 'Current', -MPO)
 
-vmt <- left_join(ref, cur, by = "MPO") %>%
-  left_join(diff, by = "MPO")
+vmt <- left_join(ref, cur, by = c("MPO", "year")) %>%
+  mutate(`Pct diff` = (Current - Reference) / Reference * 100) %>%
+  gather(key='scenario', value='vmt', -MPO, -year) %>%
+  unite(col = 'scenario_year', scenario, year, sep = ' ') %>%
+  spread(key=scenario_year, value=vmt) %>%
+  select(MPO, starts_with('Reference'), starts_with('Current'), starts_with('Pct'))
 
-names(vmt) <- c("MPO", 
-                paste(rep(c("Reference", "Current", "Pct diff"), 
-                          each = length(years)),
-                      rep(years, 3)))
 kable(vmt, caption = "VMT by MPO", digits = 2)
 ```
 
@@ -188,17 +178,20 @@ trips <- left_join(
     diff = (current - reference) / reference * 100,
     diff = ifelse(is.na(diff), 0, diff))
  
-ref <- yearly_summary(trips, "facet_var", "reference")
-cur <- yearly_summary(trips, "facet_var", "current")
-diff <- yearly_summary(trips, "facet_var", "diff")
+ref <- yearly_summary(trips, "facet_var", "reference") %>%
+  gather(key = 'year', value = 'Reference', -facet_var)
 
-trips <- left_join(ref, cur, by = "facet_var") %>%
-  left_join(diff, by = "facet_var")
+cur <- yearly_summary(trips, "facet_var", "current") %>%
+  gather(key = 'year', value = 'Current', -facet_var)
 
-names(trips) <- c("MPO", 
-                paste(rep(c(scenario_names, "Pct diff"), 
-                          each = length(years)),
-                      rep(years, 3)))
+trips <- left_join(ref, cur, by = c("facet_var", "year")) %>%
+  mutate(`Pct diff` = (Current - Reference) / Reference * 100) %>%
+  gather(key='scenario', value='value', -facet_var, -year) %>%
+  unite(col = 'scenario_year', scenario, year, sep = ' ') %>%
+  spread(key=scenario_year, value=value) %>%
+  select(MPO = facet_var, 
+         starts_with('Reference'), starts_with('Current'), starts_with('Pct'))
+
 kable(trips, caption = "Total Trips by MPO", digits = 2)
 ```
 
