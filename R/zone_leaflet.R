@@ -7,9 +7,13 @@
 #'        WKT geometry. Defaults to WKTSURFACE
 #' @param proj4string chr.  The proj4 string for the
 #'        \code{wkt_col} coordinates.  Defaults to Oregon Lambert.
-#'
+#' @param zones_shp_name chr.  The name of the zones_shp object in \code{data} to use if
+#'        the database does not contain the WKT geometry for zones.  Possible values are
+#'        "zones_shp", "zones_shp-swim25", "zones_shp-swim26".
 #' @details This function extracts the geography for the zones from the scenario
 #'          database. It automatically reprojects the data to WGS84 using \code{st_transform}.
+#'          If the database does not contain geography, then data(zones_shp) is returned instead,
+#'          unless otherwise specified by the user.
 #'
 #' @return a \code{SpatialPolygonsDataFrame} in WGS84 lat long coordinates.
 #'
@@ -17,25 +21,40 @@
 extract_zones <- function(db,
                           tbl_name='ALLZONES',
                           wkt_col='WKTSURFACE',
-                          proj4string = "+proj=lcc +lat_1=43 +lat_2=45.5 +lat_0=41.75 +lon_0=-120.5 +x_0=399999.9999999999 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs"
+                          proj4string = "+proj=lcc +lat_1=43 +lat_2=45.5 +lat_0=41.75 +lon_0=-120.5 +x_0=399999.9999999999 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs",
+                          zones_shp_name = NULL
 ){
 
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs"
 
-  zones_tbl <- dplyr::tbl(db, tbl_name) %>%
-    dplyr::collect() %>%
-    #dplyr::filter(!is.na(!!quo(wkt_col)))  # Doesn't work
-    dplyr::filter(!is.na(.[[wkt_col]]) & !grepl('EMPTY', .[[wkt_col]])) %>%
-    dplyr::mutate(id = as.character(row_number() - 1)) %>%
-    dplyr::left_join(y = regions, by='COUNTY')
+  if ( !is.null(zones_shp_name) ){
+    data(zones_shp_name)
+  } else if ( !wkt_col %in% colnames(tbl(db, tbl_name)) ){
 
-  # Make sure AZONE is capitalized because other functions assume that it is.
-  names(zones_tbl)[grep('Azone', names(zones_tbl))] <- 'AZONE'
+    warning('Column ', wkt_col, ' not found in the database.  Using data("zones_shp") instead.')
 
-  zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
-    sf::st_transform(crs=wgs84)
+    data('zones_shp')
 
-  zones_shp <- sf::as_Spatial(zones_sf)
+  } else {
+
+    zones_tbl <- dplyr::tbl(db, tbl_name) %>%
+      dplyr::collect()
+
+    zones_tbl <- zones_tbl %>%
+      #dplyr::filter(!is.na(!!quo(wkt_col)))  # Doesn't work
+      dplyr::filter(!is.na(.[[wkt_col]]) & !grepl('EMPTY', .[[wkt_col]])) %>%
+      dplyr::mutate(id = as.character(row_number() - 1)) %>%
+      dplyr::left_join(y = regions, by='COUNTY')
+
+    # Make sure AZONE is capitalized because other functions assume that it is.
+    names(zones_tbl)[grep('Azone', names(zones_tbl))] <- 'AZONE'
+
+    zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
+      sf::st_transform(crs=wgs84)
+
+    zones_shp <- sf::as_Spatial(zones_sf)
+
+  }
   return(zones_shp)
 }
 
