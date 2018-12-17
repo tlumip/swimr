@@ -1,5 +1,8 @@
-#' Get zones geometry from the database
+#' Get zones geometry from the database or built-in files
 #'
+#' @param zones_shp_name chr.  The name of the zones_shp object in \code{data} to use if
+#'        the database does not contain the WKT geometry for zones.  Possible values are
+#'        "zones_shp", "zones_shp_swim25".
 #' @param db class \code{src}.  The connection to the database.
 #' @param tbl_name chr.  The name of the table in \code{db} containing the geometry
 #'        Defaults to ALLZONES.
@@ -7,14 +10,16 @@
 #'        WKT geometry. Defaults to WKTSURFACE
 #' @param proj4string chr.  The proj4 string for the
 #'        \code{wkt_col} coordinates.  Defaults to Oregon Lambert.
-#'
 #' @details This function extracts the geography for the zones from the scenario
 #'          database. It automatically reprojects the data to WGS84 using \code{st_transform}.
+#'          If the database does not contain geography, then data(zones_shp) is returned instead,
+#'          unless otherwise specified by the user.
 #'
 #' @return a \code{SpatialPolygonsDataFrame} in WGS84 lat long coordinates.
 #'
 #' @export
-extract_zones <- function(db,
+extract_zones <- function(zones_shp_name = NULL,
+                          db = NULL,
                           tbl_name='ALLZONES',
                           wkt_col='WKTSURFACE',
                           proj4string = "+proj=lcc +lat_1=43 +lat_2=45.5 +lat_0=41.75 +lon_0=-120.5 +x_0=399999.9999999999 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs"
@@ -22,20 +27,35 @@ extract_zones <- function(db,
 
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs"
 
-  zones_tbl <- dplyr::tbl(db, tbl_name) %>%
-    dplyr::collect() %>%
-    #dplyr::filter(!is.na(!!quo(wkt_col)))  # Doesn't work
-    dplyr::filter(!is.na(.[[wkt_col]]) & !grepl('EMPTY', .[[wkt_col]])) %>%
-    dplyr::mutate(id = as.character(row_number() - 1)) %>%
-    dplyr::left_join(y = regions, by='COUNTY')
+  if ( !is.null(zones_shp_name) ){
+    get(zones_shp_name)
+  } else if ( !wkt_col %in% colnames(tbl(db, tbl_name)) ){
 
-  # Make sure AZONE is capitalized because other functions assume that it is.
-  names(zones_tbl)[grep('Azone', names(zones_tbl))] <- 'AZONE'
+    warning('Column ', wkt_col, ' not found in ', tbl_name, ' in ', db$con@dbname,
+            '. Using "zones_shp" instead.')
 
-  zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
-    sf::st_transform(crs=wgs84)
+    get('zones_shp')
 
-  zones_shp <- sf::as_Spatial(zones_sf)
+  } else {
+
+    zones_tbl <- dplyr::tbl(db, tbl_name) %>%
+      dplyr::collect()
+
+    zones_tbl <- zones_tbl %>%
+      #dplyr::filter(!is.na(!!quo(wkt_col)))  # Doesn't work
+      dplyr::filter(!is.na(.[[wkt_col]]) & !grepl('EMPTY', .[[wkt_col]])) %>%
+      dplyr::mutate(id = as.character(row_number() - 1)) %>%
+      dplyr::left_join(y = regions, by='COUNTY')
+
+    # Make sure AZONE is capitalized because other functions assume that it is.
+    names(zones_tbl)[grep('Azone', names(zones_tbl))] <- 'AZONE'
+
+    zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
+      sf::st_transform(crs=wgs84)
+
+    zones_shp <- sf::as_Spatial(zones_sf)
+
+  }
   return(zones_shp)
 }
 
@@ -45,7 +65,8 @@ extract_zones <- function(db,
 #' @param db The scenario database
 #' @param year1  The first year
 #' @param year2  The second year
-#'
+#' @param ...    Additional parameters passed to \code{\link{extract_zones}}.
+#'               Specify the source for the zones here.
 #' @details This function creates an interactive Leaflet plot of the alpha zone
 #'   system, showing annualized implied growth rates of key socioeconomic
 #'   variables between two years. For instance, the user can select 2010 and
@@ -58,7 +79,7 @@ extract_zones <- function(db,
 #'
 #'
 #' @export
-change_leaflet <- function(db, year1 = 2010, year2 = 2030){
+change_leaflet <- function(db, year1 = 2010, year2 = 2030, ...){
 
   # Get nearest years in db to year1 and year2
   #
@@ -73,7 +94,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
 
   # Get scenario information and put it onto the shapefile for
   # leaflet plotting.
-  shp <- extract_zones(db, tbl_name = 'ALLZONES', wkt_col = 'WKTSURFACE')
+  shp <- extract_zones(db=db, ...)
   shp@data <- shp@data %>%
     dplyr::left_join(extract_zonedata(db, year1, year2))
 
@@ -115,11 +136,16 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030){
 #'  \code{variable = c("Population", "Employment", "HH")}
 #' @param scen_names Names of the scenarios in the comparison. Defaults to
 #'   "Reference", "Current".
-#'
+#' @param ...    Additional parameters passed to \code{\link{extract_zones}}.
+#                Specify the source for the zones here.
+#' @details Note that if the zones geography is pulled from the database (the default),
+#'          only zones from \code{db1} are used for the map.  In case zones differ
+#'          between \code{db1} and \code{db2}, note that the difference is based
+#'          on a join between the zone data based on \code{AZONE}.
 #' @export
 diff_leaflet <- function(db1, db2, year,
                          variable = c("Population", "Employment", "HH"),
-                         scen_names = c("Reference", "Current")){
+                         scen_names = c("Reference", "Current"), ...){
 
   if(variable == "Population"){
     crit <- "variable == 'pop'"
@@ -157,7 +183,7 @@ diff_leaflet <- function(db1, db2, year,
 
   # Get scenario information and put it onto the shapefile for
   # leaflet plotting.
-  shp <- extract_zones(db1, tbl_name = 'ALLZONES', wkt_col = 'WKTSURFACE')
+  shp <- extract_zones(db1, ...)
 
   shp@data <- shp@data %>%
     dplyr::left_join(se, by = "AZONE")
