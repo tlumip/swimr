@@ -29,6 +29,5 @@ Imports:
     RSQLite
 VignetteBuilder: knitr
 Remotes: gregmacfarlane/omxr,
-  pbsag/outviz,
-  hadley/dblpyr
+  pbsag/outviz
 RoxygenNote: 6.1.0
