@@ -19,6 +19,7 @@ if("zoo" %in% rownames(installed.packages()) == FALSE) {install.packages("zoo")}
 if("leaflet" %in% rownames(installed.packages()) == FALSE) {install.packages("leaflet")}
 if("digest" %in% rownames(installed.packages()) == FALSE) {install.packages("digest")}
 if("DT" %in% rownames(installed.packages()) == FALSE) {install.packages("DT")}
+if("sf" %in% rownames(installed.packages()) == FALSE) {install.packages("sf")}
 ```
 
 Bioconductor dependency for omxr
@@ -43,7 +44,7 @@ if("outviz" %in% rownames(installed.packages()) == FALSE) {
   devtools::install_github("pbsag/outviz")
 }
 if("swimr" %in% rownames(installed.packages()) == FALSE) {
-  devtools::install_github("tlumip/swimr")
+  devtools::install_github("tlumip/swimr", dependencies=FALSE)
 }
 ```
 
