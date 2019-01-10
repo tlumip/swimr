@@ -22,6 +22,7 @@ Imports:
     outviz,
     ggplot2,
     dplyr,
+    dbplyr,
     tidyr,
     omxr,
     lazyeval,
