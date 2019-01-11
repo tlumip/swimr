@@ -23,6 +23,7 @@ Imports:
     ggplot2,
     dbplyr,
     dplyr,
+    dbplyr,
     tidyr,
     omxr,
     lazyeval,
