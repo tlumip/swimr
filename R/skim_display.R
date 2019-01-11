@@ -63,7 +63,7 @@ skim_leaflet <- function(zone, skim,
 
   # Join skim information to zones shapefile
   # extract_zones may fail if parameters are not the defaults
-  shp <- extract_zones(db, tbl_name = 'ALLZONES', wkt_col = 'WKTSURFACE')
+  shp <- extract_zones(db=db, tbl_name = 'ALLZONES', wkt_col = 'WKTSURFACE')
 
   shp@data <- shp@data %>%
     dplyr::left_join(s, by = c("AZONE" = "zone"))
