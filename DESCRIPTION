@@ -21,6 +21,7 @@ Imports:
     sf (>= 0.6-3),
     outviz,
     ggplot2,
+    dbplyr,
     dplyr,
     dbplyr,
     tidyr,
