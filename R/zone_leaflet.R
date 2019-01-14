@@ -183,7 +183,7 @@ diff_leaflet <- function(db1, db2, year,
 
   # Get scenario information and put it onto the shapefile for
   # leaflet plotting.
-  shp <- extract_zones(db1, ...)
+  shp <- extract_zones(db=db1, ...)
 
   shp@data <- shp@data %>%
     dplyr::left_join(se, by = "AZONE")
