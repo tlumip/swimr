@@ -28,19 +28,16 @@ plot_countcomparison <- function(db, year = c(2010, 2013, 2015), trucks = FALSE)
 #'
 plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
 
-
-
   counts <- dplyr::tbl(db, "COUNTLOCATIONS") %>%
-    dplyr::select(
-      ANODE = FROMNODENO, BNODE = TONODENO, ATR_NUM,
-      `2000` = AAWDT_2000, `2005` = AAWDT_2005, `2010` = AAWDT_2010,
-      `2015` = AAWDT_2015
-    ) %>%
+    dplyr::select(ANODE = FROMNODENO, BNODE = TONODENO, ATR_NUM,
+                  matches("AAWDT_[0-9]{4}")) %>%
     dplyr::filter(ATR_NUM %in% atr) %>%
-    collect(n=Inf) %>%
-    tidyr::gather(year, volume, `2000`:`2015`) %>%
+    dplyr::collect(n=Inf) %>%
+    tidyr::gather(year, volume, starts_with("AAWDT")) %>%
+    dplyr::mutate(year = as.numeric(str_replace(year, "AAWDT_", ""))) %>%
     dplyr::filter(volume > 1) %>%
-    dplyr::mutate(data = "ODOT", volume = as.numeric(volume), year = as.numeric(year))
+    dplyr::mutate(data="ODOT", volume=as.numeric(volume))
+
 
   # get link traffic volumes
   swim <- dplyr::tbl(db, "LINK_DATA") %>%
