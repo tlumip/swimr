@@ -15,7 +15,7 @@ yearly_summary <- function(df, group, var){
   df %>%
     dplyr::group_by_(group, "year") %>%
     dplyr::mutate_("var" = var) %>%
-    dplyr::summarize(var = sum(var)) %>%
+    dplyr::summarize(var = sum(var, na.rm=TRUE)) %>%
     dplyr::collect(n=Inf) %>%
     tidyr::spread(year, var, fill = NA)
 }
