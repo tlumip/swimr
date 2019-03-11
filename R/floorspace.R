@@ -51,7 +51,7 @@ extract_floorspace <- function(db,
 
     # sum within facet, year, and type
     dplyr::group_by(facet_var, year, commodity) %>%
-    dplyr::summarize_at(vars(floor:built), funs(sum)) %>%
+    dplyr::summarize_at(vars(floor:built), funs(sum, .args=list(na.rm=TRUE))) %>%
     dplyr::collect(n=Inf) %>%
 
     # consolidate floortypes and dplyr::filter to desired levels

@@ -13,7 +13,7 @@ troubleshoot_aa <- function(db){
     group_by(TSTEP, Commodity) %>%
     summarise(
       demand_weighted_price = sum(Demand * Price, na.rm=TRUE) / sum(Demand, na.rm=TRUE),
-      mean_price = mean(price)
+      mean_price = mean(price, na.rm=TRUE)
     ) %>%
 
     collect() %>%

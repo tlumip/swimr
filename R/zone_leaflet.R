@@ -122,7 +122,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030, ...){
     ) %>%
     leaflet::addLayersControl(
       overlayGroups = c("Population", "Employment", "HH"),
-      options = layersControlOptions(collapsed = FALSE)
+      options = leaflet::layersControlOptions(collapsed = FALSE)
     )
 
 }
@@ -207,7 +207,7 @@ diff_leaflet <- function(db1, db2, year,
     ) %>%
     leaflet::addLayersControl(
       baseGroups = c("Absolute", "Percent"),
-      options = layersControlOptions(collapsed = FALSE)
+      options = leaflet::layersControlOptions(collapsed = FALSE)
     ) %>%
     leaflet::addLegend(
       "bottomright", pal = palq, values = ~cut_abserror(diff),

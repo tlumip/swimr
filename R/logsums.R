@@ -41,7 +41,7 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
   df %>%
     # collapse market segments
     dplyr::group_by(BZONE, PURPOSE, TSTEP) %>%
-    dplyr::summarize(logsum = mean(AVGLOGSUM)) %>%
+    dplyr::summarize(logsum = mean(AVGLOGSUM, na.rm=TRUE)) %>%
 
     # collapse purposes
     dplyr::group_by(BZONE, TSTEP) %>%
