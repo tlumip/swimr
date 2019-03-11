@@ -34,7 +34,7 @@ plot_traffic_count <- function(db, atr = c("01-001", "01-011", "01-012")){
     dplyr::filter(ATR_NUM %in% atr) %>%
     dplyr::collect(n=Inf) %>%
     tidyr::gather(year, volume, starts_with("AAWDT")) %>%
-    dplyr::mutate(year = as.numeric(str_replace(year, "AAWDT_", ""))) %>%
+    dplyr::mutate(year = as.numeric(stringr::str_replace(year, "AAWDT_", ""))) %>%
     dplyr::filter(volume > 1) %>%
     dplyr::mutate(data="ODOT", volume=as.numeric(volume))
 
