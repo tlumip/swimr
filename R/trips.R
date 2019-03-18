@@ -42,7 +42,7 @@ extract_trips <- function(db,
 
   df <- df %>%
     dplyr::group_by(facet_var, TSTEP) %>%
-    dplyr::summarize_all(funs(sum)) %>%
+    dplyr::summarize_all(funs(sum, .args=list(na.rm=TRUE))) %>%
     dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%
 
     # combine periods
