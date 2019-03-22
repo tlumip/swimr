@@ -9,13 +9,22 @@ output:
     code_folding: hide
     fig_caption: true
     theme: spacelab
+params:
+  fig.path: compare_figs
+  ref_db: E:/SWIM/root/scenario/outputs/scenario.db
+  current_db: E:/SWIM/root/scenario/outputs/scenario.db
+  ref_name: Reference
+  current_name: Current
+  facet: COUNTY
+  diff_year: 2012
+  use_leaflet: true
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
   echo = FALSE, message = FALSE, warning = FALSE,
-  fig.keep = TRUE, fig.path = ".figures/",
+  fig.keep = TRUE, fig.path = params$fig.path,
   fig.width=8, fig.height=6
 )
 library(RSQLite)
@@ -27,17 +36,17 @@ library(swimr)
 ```{r setdb}
 # This is the path to the scenario SWIM databases; direct these to your
 # local paths.
-ref_db <- "J:/swim2/RRA_Reference/outputs/RRA_Reference.db" 
-cur_db <- "M:/swim2/RRA_Scen1/outputs/RRA_Scen1.db"  #"J:/swim2/ALD_1_Region_test/outputs/ALD_1_Region_test.db"
+ref_db <- params$ref_db 
+cur_db <- params$current_db
 
 # These are the names for the scenarios that will show up in the scenario
 # information table and other places.
-scenario_names <- c("Reference", "Rough Roads Scen 1")
+scenario_names <- c(params$ref_name, params$current_name)
 
 # Update to reflect scope of analysis.
 # If you wish to focus on the Metro and Bend MPOs, for instance, change `facet`
 # to "MPO" and facet_levels to `c("Metro", "Bend")`
-facet <- "COUNTY" 
+facet <- params$facet 
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 
 # The tables will only show data from these years.
@@ -47,13 +56,13 @@ years <- c(2010, 2025, 2040)
 # Set this to the year you wish to study. For bridge scenarios, it should be the
 # year after the bridge breaks. For others, it should probably be the last year
 # version of the simulation.
-diff_year <- 2012 
+diff_year <- params$diff_year 
 
 MPOs <- c("Albany","Bend", "Corvallis", "Eugene/Springfield","Medford", "METRO", "METRO_CLARK","Middle Rogue", "NonMPO", "Halo", "Salem/Keizer")
 MPOs <- c("Bend", "Corvallis", "EugeneSpringfield","Metro", "RougeValley", "NonMPO", "OOO", "SalemKeizer")
 
 # show leaflet plots; FALSE will skip them (saving disk space and time)
-use_leaflet <- TRUE
+use_leaflet <- params$use_leaflet
 ```
 
 

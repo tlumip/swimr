@@ -15,7 +15,7 @@ params:
   scenario_name: Reference
   facet: COUNTY
   diff_year: 2040
-  use_leaflet: false
+  use_leaflet: true
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
