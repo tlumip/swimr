@@ -2,7 +2,7 @@
 title: "Reference Scenario"
 author: "Parsons Brinckerhoff"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
+output:
   html_document:
     toc: true
     toc_float: true
@@ -22,6 +22,7 @@ params:
 library(knitr)
 opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = params$fig.path)
 library(tidyverse)
+library(DT)
 library(swimr)
 ```
 
@@ -37,7 +38,7 @@ scenario_name <- params$scenario_name
 # Update to reflect scope of analysis.
 # If you wish to focus on the Metro and Bend MPOs, for instance, change `facet`
 # to "MPO" and facet_levels to `c("Metro", "Bend")`
-# facet <- "COUNTY" 
+# facet <- "COUNTY"
 facet <- params$facet
 facet_levels <-  c("Multnomah", "Washington", "Clackamas")
 
@@ -59,7 +60,7 @@ use_leaflet <- params$use_leaflet
 
 
 
-# Scenario Description 
+# Scenario Description
 
 
 ```{r scenario, results='asis'}
@@ -75,7 +76,7 @@ kable(scen_info, caption = "Scenario Information")
 
 # Socioeconomics {.tabset}
 
-## Population 
+## Population
 
 ```{r leaflet, fig.cap="Change in socioeconomic data over model run."}
 if(use_leaflet){
@@ -145,8 +146,8 @@ plot_countcomparison(db, 2010) + facet_wrap(~ FacType, scales = "free")
 ```
 
 ```{r plot_historical_atr, fig.cap="AAWDT count and projection at selected ATR locations"}
-plot_traffic_count(db, atr = 
-                     c("03-011", "10-006", "03-013", "34-009", "24-022", 
+plot_traffic_count(db, atr =
+                     c("03-011", "10-006", "03-013", "34-009", "24-022",
                        "15-020", "03-018", "10-008"))
 ```
 
@@ -238,7 +239,7 @@ plot_logsums(db, facet, facet_levels)
 ```
 
 ```{r plot_logsum_mpo, fig.cap = "Destination choice model logsums - all MPO's"}
-plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield", 
+plot_logsums(db, "MPO", c("Bend", "Corvallis", "EugeneSpringfield",
                "Metro", "NonMPO", "RogueValley", "SalemKeizer"))
 ```
 
