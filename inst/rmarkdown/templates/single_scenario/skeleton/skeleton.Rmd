@@ -21,6 +21,7 @@ params:
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = params$fig.path)
+library(methods)
 library(tidyverse)
 library(DT)
 library(RSQLite)
