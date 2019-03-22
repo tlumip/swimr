@@ -23,6 +23,7 @@ library(knitr)
 opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = params$fig.path)
 library(tidyverse)
 library(DT)
+library(RSQLite)
 library(swimr)
 ```
 
