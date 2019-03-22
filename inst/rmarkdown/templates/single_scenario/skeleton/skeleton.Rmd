@@ -20,17 +20,22 @@ params:
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
 library(knitr)
-opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = params$fig.path)
+opts_chunk$set(echo = TRUE, fig.keep = TRUE, fig.path = params$fig.path,
+               eval=FALSE)
 library(tidyverse)
 library(DT)
 library(swimr)
 ```
 
-```{r setdb}
+```{r setdb_path, eval=TRUE}
 # This is the path to the scenario SWIM databases; direct these to your
 # local paths.
 # ref_db <- "J:/swim2/ALD_1_Region_test/outputs/ALD_1_Region_test.db"
 ref_db <- params$ref_db
+print(ref_db)
+```
+
+```{r setdb}
 db <- src_sqlite(ref_db)
 # scenario_name <- "Reference"
 scenario_name <- params$scenario_name
