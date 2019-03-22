@@ -27,7 +27,7 @@ extract_tlfd <- function(db,
   tlfd <- dplyr::tbl(db, "TLFD_SDT") %>%
     inner_join(region) %>%
     dplyr::group_by(region_var, TSTEP, distance) %>%
-    dplyr::summarize(trips = sum(trips, na.rm=TRUE)) %>%
+    dplyr::summarize(trips = sum(trips)) %>%
     dplyr::collect(n=Inf) %>%
 
     dplyr::mutate(

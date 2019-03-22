@@ -43,7 +43,7 @@ extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
     dplyr::left_join(grouping, by = "BZONE") %>%
     dplyr::filter(facet_var %in% facet_levels) %>%
     dplyr::group_by(facet_var, ACTIVITY, TSTEP) %>%
-    dplyr::summarize(emp = sum(Employment, na.rm=TRUE)) %>%
+    dplyr::summarize(emp = sum(Employment)) %>%
     dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
     dplyr::ungroup() %>%
     dplyr::collect(n=Inf)

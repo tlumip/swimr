@@ -12,8 +12,8 @@ troubleshoot_aa <- function(db){
   a <- tbl(db, "ExchangeResults") %>%
     group_by(TSTEP, Commodity) %>%
     summarise(
-      demand_weighted_price = sum(Demand * Price, na.rm=TRUE) / sum(Demand, na.rm=TRUE),
-      mean_price = mean(price, na.rm=TRUE)
+      demand_weighted_price = sum(Demand * Price) / sum(Demand),
+      mean_price = mean(price)
     ) %>%
 
     collect() %>%

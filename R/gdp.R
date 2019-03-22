@@ -49,7 +49,7 @@ extract_gdp <- function(db,
     # dplyr::summarize on faceting variable
     dplyr::filter(sold  > 0) %>%
     group_by(facet_var, year, commodity) %>%
-    dplyr::summarize( sold = sum(sold, na.rm=TRUE) ) %>%
+    dplyr::summarize( sold = sum(sold) ) %>%
     dplyr::collect(n=Inf) %>%
 
     # only keep employment types
