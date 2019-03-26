@@ -59,9 +59,9 @@ extract_se <- function(db, color_var = NULL,
       # dplyr::summarize to the county level
       dplyr::group_by(COUNTY, state, TSTEP) %>%
       dplyr::summarize(
-        population = sum(POPULATION, na.rm=TRUE),
-        employment = sum(EMPLOYMENT, na.rm=TRUE),
-        totalhh = sum(TOTALHHS, na.rm=TRUE)
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
       ) %>%
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
       dplyr::ungroup() %>% dplyr::collect(n=Inf)
@@ -114,9 +114,9 @@ extract_se <- function(db, color_var = NULL,
       # dplyr::summarize to the MPO level
       dplyr::group_by(color_var, TSTEP) %>%
       dplyr::summarize(
-        population = sum(POPULATION, na.rm=TRUE),
-        employment = sum(EMPLOYMENT, na.rm=TRUE),
-        totalhh = sum(TOTALHHS, na.rm=TRUE)
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
       ) %>%
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
       dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%

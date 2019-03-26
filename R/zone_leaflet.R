@@ -53,7 +53,7 @@ extract_zones <- function(zones_shp_name = NULL,
     zones_sf <- sf::st_as_sf(as.data.frame(zones_tbl), wkt=wkt_col, crs=proj4string) %>%
       sf::st_transform(crs=wgs84)
 
-    zones_shp <- sf::as_Spatial(zones_sf)
+    zones_shp <- as(zones_sf, "Spatial")
 
   }
   return(zones_shp)
@@ -122,7 +122,7 @@ change_leaflet <- function(db, year1 = 2010, year2 = 2030, ...){
     ) %>%
     leaflet::addLayersControl(
       overlayGroups = c("Population", "Employment", "HH"),
-      options = layersControlOptions(collapsed = FALSE)
+      options = leaflet::layersControlOptions(collapsed = FALSE)
     )
 
 }
@@ -207,7 +207,7 @@ diff_leaflet <- function(db1, db2, year,
     ) %>%
     leaflet::addLayersControl(
       baseGroups = c("Absolute", "Percent"),
-      options = layersControlOptions(collapsed = FALSE)
+      options = leaflet::layersControlOptions(collapsed = FALSE)
     ) %>%
     leaflet::addLegend(
       "bottomright", pal = palq, values = ~cut_abserror(diff),

@@ -7,6 +7,14 @@ output:
     toc: true
     fig_caption: true
     theme: spacelab
+params:
+  fig.path: compare_figs
+  ref_db: E:/SWIM/root/scenario/outputs/scenario.db
+  current_db: E:/SWIM/root/scenario/outputs/scenario.db
+  compare_db: E:/SWIM/root/scenario/outputs/scenario.db
+  ref_name: Reference
+  current_name: Current
+  compare_name: Compare
 ---
 
 
@@ -21,13 +29,13 @@ opts_chunk$set(fig.width = 8.5, fig.height = 10, echo = FALSE)
 
 
 ```{r setdb, echo = TRUE}
-ref <- src_sqlite("~/Documents/projects/swim/FinalReference_Test.db") # reference
-db1 <- src_sqlite("~/Documents/projects/swim/Extra_Floorspace_wCongestion.db") # current
-db3 <- src_sqlite("~/Documents/projects/swim/Revised_FLR.db") # current
+ref <- src_sqlite(params$ref_db) # reference
+db1 <- src_sqlite(params$current_db) # current
+db3 <- src_sqlite(params$compare_db) # current
 
 dbset <- list(ref, db1, db3)
 db_names <- c(
-  "FinalReference_Test", "Extra_Floorspace_wCongestion", "Revised_FLR"
+  params$ref_name, params$current_name, params$compare_name
 )
 ```
 

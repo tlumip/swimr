@@ -20,7 +20,7 @@ extract_vmt <- function(db, facet_var = "MPO", facet_levels = NULL, index = FALS
 
   l <- dplyr::tbl(db, "LINK_DATA") %>%
     dplyr::left_join(grouping) %>%
-  dplyr::collect(n = Inf) %>%
+    dplyr::collect(n = Inf) %>%
     # consolidate facility types
     dplyr::left_join(fac_types) %>%
     dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
