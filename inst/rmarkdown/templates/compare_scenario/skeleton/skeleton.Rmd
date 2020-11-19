@@ -1,6 +1,6 @@
 ---
 title: "Compare Scenarios"
-author: "Parsons Brinckerhoff"
+author: "RSG, Inc"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
@@ -10,7 +10,7 @@ output:
     fig_caption: true
     theme: spacelab
 params:
-  fig.path: compare_figs
+  fig.path: fig-compare_scenario/
   ref_db: E:/SWIM/root/scenario/outputs/scenario.db
   current_db: E:/SWIM/root/scenario/outputs/scenario.db
   ref_name: Reference
@@ -18,6 +18,8 @@ params:
   facet: COUNTY
   diff_year: 2012
   use_leaflet: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
@@ -70,8 +72,8 @@ use_leaflet <- params$use_leaflet
 
 
 ```{r scenario, results='asis'}
-db1 <- src_sqlite(ref_db) 
-db2 <- src_sqlite(cur_db) 
+db1 <- dbConnect(SQLite(), dbname=ref_db) 
+db2 <- dbConnect(SQLite(), dbname=cur_db) 
 
 # update to reflect current scenario
 scen_info <- data_frame(

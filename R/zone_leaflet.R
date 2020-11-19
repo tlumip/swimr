@@ -194,25 +194,55 @@ diff_leaflet <- function(db1, db2, year,
     domain = cut_abserror(shp@data$diff)
   )
 
+  # Fix legend as shown here:
+  # https://github.com/rstudio/leaflet/issues/477#issuecomment-678542769
+
   zone_leaflet(shp) %>%
     leaflet::addPolygons(
       group = "Absolute", stroke = FALSE, fillOpacity=0.7,
       color = ~palq(cut_abserror(diff)),
       popup = diff_popup(shp, variable, scen_names)
     ) %>%
+    leaflet::addLegend(
+      "bottomright",
+      pal = palq,
+      values = ~cut_abserror(diff),
+      group = "Absolute",
+      className = "info legend Absolute",
+      title = paste0("Change in ", variable, " per sqmi<br>",
+                     scen_names[1], " - ", scen_names[2] )
+    ) %>%
     leaflet::addPolygons(
       group = "Percent", stroke = FALSE, fillOpacity=0.7,
       color = ~palq(cut_abserror(pct)),
       popup = diff_popup(shp, variable, scen_names)
     ) %>%
+    leaflet::addLegend(
+      "bottomright",
+      pal=palq,
+      values = ~cut_abserror(pct),
+      group = "Percent",
+      className = "info legend Percent",
+      title = paste0("Pct change in ", variable, " per sqmi<br>",
+                     scen_names[1], " - ", scen_names[2] )
+    ) %>%
     leaflet::addLayersControl(
       baseGroups = c("Absolute", "Percent"),
       options = leaflet::layersControlOptions(collapsed = FALSE)
     ) %>%
-    leaflet::addLegend(
-      "bottomright", pal = palq, values = ~cut_abserror(diff),
-      title = paste0("Change in ", variable, " per sqmi<br>",
-                     scen_names[1], " - ", scen_names[2] )
+    htmlwidgets::onRender("
+      function(el, x) {
+         var updateLegend = function () {
+            var selectedGroup = document.querySelectorAll('input:checked')[0].nextSibling.innerText.substr(1);
+
+            document.querySelectorAll('.legend').forEach(a => a.hidden=true);
+            document.querySelectorAll('.legend').forEach(l => {
+               if (l.classList.contains(selectedGroup)) l.hidden=false;
+            });
+         };
+         updateLegend();
+         this.on('baselayerchange', el => updateLegend());
+      }"
     )
 
 }
