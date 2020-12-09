@@ -1,6 +1,6 @@
 ---
 title: "Reference Scenario"
-author: "Parsons Brinckerhoff"
+author: "RSG, Inc"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -10,12 +10,14 @@ output:
     fig_caption: true
     theme: spacelab
 params:
-  fig.path: ref_fig
+  fig.path: fig-single_scenario/
   ref_db: E:/SWIM/root/scenario/outputs/scenario.db
   scenario_name: Reference
   facet: COUNTY
   diff_year: 2040
   use_leaflet: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning = FALSE}
@@ -33,7 +35,8 @@ library(swimr)
 # local paths.
 # ref_db <- "J:/swim2/ALD_1_Region_test/outputs/ALD_1_Region_test.db"
 ref_db <- params$ref_db
-db <- src_sqlite(ref_db)
+db <- dbConnect(SQLite(), dbname=ref_db)
+
 # scenario_name <- "Reference"
 scenario_name <- params$scenario_name
 

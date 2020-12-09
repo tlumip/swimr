@@ -1,6 +1,6 @@
 ---
 title: "Population and Employment - Multiple Scenarios"
-author: "Parsons Brinckerhoff"
+author: "RSG, Inc"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
@@ -8,13 +8,15 @@ output:
     fig_caption: true
     theme: spacelab
 params:
-  fig.path: compare_figs
+  fig.path: fig-population/
   ref_db: E:/SWIM/root/scenario/outputs/scenario.db
   current_db: E:/SWIM/root/scenario/outputs/scenario.db
   compare_db: E:/SWIM/root/scenario/outputs/scenario.db
   ref_name: Reference
   current_name: Current
   compare_name: Compare
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -24,14 +26,19 @@ library(knitr)
 library(dplyr)
 library(ggplot2)
 
-opts_chunk$set(fig.width = 8.5, fig.height = 10, echo = FALSE)
+opts_chunk$set(
+  echo = FALSE, message = FALSE, warning = FALSE,
+  fig.keep = TRUE, fig.path = params$fig.path,
+  fig.width=8, fig.height=6
+)
 ```
 
 
 ```{r setdb, echo = TRUE}
-ref <- src_sqlite(params$ref_db) # reference
-db1 <- src_sqlite(params$current_db) # current
-db3 <- src_sqlite(params$compare_db) # current
+
+ref <- dbConnect(SQLite(), dbname=params$ref_db) # reference
+db1 <- dbConnect(SQLite(), dbname=params$current_db) # current
+db3 <- dbConnect(SQLite(), dbname=params$compare_db) # current
 
 dbset <- list(ref, db1, db3)
 db_names <- c(
@@ -59,7 +66,11 @@ ggplot(zones, aes(x = long, y = lat, fill = factor(DOT_REGION), group = group)) 
 
 # Population
 ```{r fig_population, message = FALSE}
-for(r in 1:9){
+regions = zones_data$DOT_REGION %>%
+  unique() %>%
+  sort() 
+
+for(r in regions){
   counties <- zones_data %>% filter(DOT_REGION == r)
 
   p <- multiple_sevar(dbset, db_names, variable = "population",    
@@ -81,7 +92,7 @@ for(r in 1:9){
 # Employment
 
 ```{r fig_employment, message = FALSE}
-for(r in 1:9){
+for(r in regions){
   counties <- zones_data %>% filter(DOT_REGION == r)
   
   p <- multiple_sevar(dbset, db_names, variable = "employment",   
@@ -94,7 +105,7 @@ for(r in 1:9){
 
 ## By Sector
 ```{r fig_empsector, message = FALSE}
-for(r in 1:9){
+for(r in regions){
   counties <- zones_data %>% filter(DOT_REGION == r)
   
   p <- multiple_employment(dbset, db_names,
@@ -105,8 +116,9 @@ for(r in 1:9){
 ```
 
 # WAPR
+
 ```{r fig_wapr, message = FALSE}
-for(r in 1:9){
+for(r in regions){
   counties <- zones_data %>% filter(DOT_REGION == r)
   
   p <- multiple_wapr(dbset, db_names, 
@@ -121,7 +133,7 @@ for(r in 1:9){
 # Floorspace
 
 ```{r fig_floorspace}
-for(r in 1:9){
+for(r in regions){
   counties <- zones_data %>% filter(DOT_REGION == r)
   
   p <- multiple_floorspace(dbset = dbset, db_names = db_names,

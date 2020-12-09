@@ -150,7 +150,9 @@ extract_rents <- function(db,
 
   # get levels of facet_var if none given
   if(is.null(facet_levels)){
-    facet_levels <- grouping %>% dplyr::group_by(facet_var) %>% dplyr::collect(n=Inf) %>%
+    facet_levels <- grouping %>%
+      dplyr::group_by(facet_var) %>%
+      dplyr::collect(n=Inf) %>%
       dplyr::slice(1) %>% .$facet_var
 
     facet_levels <- facet_levels[which(facet_levels != "EXTSTA")]
@@ -178,7 +180,7 @@ extract_rents <- function(db,
       bought = InternalBought  # quantity consumed from AA
     ) %>%
     # join facet and dplyr::filter desired levels
-    dplyr::filter(commodity %in% floor_types$commodity)
+    dplyr::filter(commodity %in% local(floor_types$commodity))
 
 
   df <- dplyr::left_join(supply, demand, by = c("BZONE", "year", "commodity")) %>%
