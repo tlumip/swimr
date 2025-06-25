@@ -4,8 +4,13 @@
 \alias{plot_gdp}
 \title{Plot the GDP contribution of Labor over time in a scenario}
 \usage{
-plot_gdp(db, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, color_levels = NULL)
+plot_gdp(
+  db,
+  facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL,
+  color_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -17,6 +22,8 @@ which levels to include.}
 
 \item{color_levels}{A character vector of the industry sectors to include.
 Defaults to all.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 plot object.

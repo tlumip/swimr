@@ -4,7 +4,7 @@
 \alias{change_leaflet}
 \title{Leaflet plot of change over time in one scenario.}
 \usage{
-change_leaflet(db, year1 = 2010, year2 = 2030)
+change_leaflet(db, year1 = 2010, year2 = 2030, ...)
 }
 \arguments{
 \item{db}{The scenario database}
@@ -12,6 +12,9 @@ change_leaflet(db, year1 = 2010, year2 = 2030)
 \item{year1}{The first year}
 
 \item{year2}{The second year}
+
+\item{...}{Additional parameters passed to \code{\link{extract_zones}}.
+Specify the source for the zones here.}
 }
 \description{
 Leaflet plot of change over time in one scenario.

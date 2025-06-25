@@ -6,6 +6,7 @@
 #' @param years The years to show in the plot. If null, will show the first
 #' @param max_bin The maximum bin size to return.
 #' @param cumulative Return a cumulative PDF?
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return A data frame with the trip length frequency distribution by year
 #'   and region.
@@ -13,7 +14,7 @@
 #' @export
 extract_tlfd <- function(db,
                          region_var = c("MPO", "COUNTY", "STATE"),
-                         regions = NULL, cumulative = FALSE, years = NULL){
+                         regions = NULL, cumulative = FALSE, years = NULL, index_year=2000){
 
   region <- dplyr::tbl(db, "ALLZONES") %>%
     dplyr::select_("azone" = "Azone", "region_var" = region_var)
@@ -44,6 +45,7 @@ extract_tlfd <- function(db,
   } else {
     tlfd <- tlfd %>% dplyr::filter(year %in% years)
   }
+  tlfd <- tlfd %>% dplyr::filter(year >= index_year)
 
   # return cumulative if wanted
   if(cumulative){
@@ -64,15 +66,16 @@ extract_tlfd <- function(db,
 #' @param cumulative Plot cumulative instead of probability density distribution.
 #' @param years The years to show in the plot. If null, will show the first
 #'   and last years.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return A ggplot2 object.
 #'
 #' @export
 plot_tlfd <- function(db,
                       region_var = c("MPO", "COUNTY", "STATE"),
-                      regions = NULL, cumulative = FALSE, years = NULL){
+                      regions = NULL, cumulative = FALSE, years = NULL, index_year=2000){
 
-  tlfd <- extract_tlfd(db, region_var, regions, cumulative, years)
+  tlfd <- extract_tlfd(db, region_var, regions, cumulative, years, index_year=index_year)
 
   p <-
     ggplot2::ggplot(tlfd,
@@ -99,16 +102,16 @@ plot_tlfd <- function(db,
 #' @export
 compare_tlfd <- function(db1, db2,
                          region_var = c("MPO", "COUNTY", "STATE"),
-                         regions = NULL, cumulative = FALSE, years = NULL){
+                         regions = NULL, cumulative = FALSE, years = NULL, index_year=2000){
   if(cumulative){
     freq <- "freq"
   } else {
     freq <- "cum_freq"
   }
 
-  tlfd1 <- extract_tlfd(db1, region_var, regions, cumulative, years) %>%
+  tlfd1 <- extract_tlfd(db1, region_var, regions, cumulative, years, index_year=index_year) %>%
     dplyr::select_("region_var", "distance", "year", "ref" = freq)
-  tlfd2 <- extract_tlfd(db2, region_var, regions, cumulative, years) %>%
+  tlfd2 <- extract_tlfd(db2, region_var, regions, cumulative, years, index_year=index_year) %>%
     dplyr::select_("region_var", "distance", "year", "com" = freq)
 
 

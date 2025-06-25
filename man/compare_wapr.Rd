@@ -4,8 +4,13 @@
 \alias{compare_wapr}
 \title{Compare workforce participation in two scenarios}
 \usage{
-compare_wapr(db1, db2, facet_var = c("BZONE", "MPO", "COUNTY",
-  "DOT_REGION", "STATE"), facet_levels = NULL)
+compare_wapr(
+  db1,
+  db2,
+  facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION", "STATE"),
+  facet_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -16,6 +21,8 @@ compare_wapr(db1, db2, facet_var = c("BZONE", "MPO", "COUNTY",
 
 \item{facet_levels}{A character vector of the facet variable specifiying
 which levels to include.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 ggplot2 object

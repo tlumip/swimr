@@ -4,7 +4,13 @@
 \alias{extract_logsums}
 \title{Extract destination choice logsums}
 \usage{
-extract_logsums(db, scope = NULL, purposes = NULL, agg_var = "AZONE")
+extract_logsums(
+  db,
+  scope = NULL,
+  purposes = NULL,
+  agg_var = "AZONE",
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -14,6 +20,8 @@ extract_logsums(db, scope = NULL, purposes = NULL, agg_var = "AZONE")
 \item{purposes}{a vector of trip purposes to include in the average logsum.}
 
 \item{agg_var}{The region variable on which to aggregate logsums.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a data_frame

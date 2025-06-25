@@ -4,8 +4,14 @@
 \alias{diff_leaflet}
 \title{Leaflet plot of difference between two scenarios.}
 \usage{
-diff_leaflet(db1, db2, year, variable = c("Population", "Employment",
-  "HH"), scen_names = c("Reference", "Current"))
+diff_leaflet(
+  db1,
+  db2,
+  year,
+  variable = c("Population", "Employment", "HH"),
+  scen_names = c("Reference", "Current"),
+  ...
+)
 }
 \arguments{
 \item{db1}{Reference scenario VIZ database connection.}
@@ -19,7 +25,15 @@ diff_leaflet(db1, db2, year, variable = c("Population", "Employment",
 
 \item{scen_names}{Names of the scenarios in the comparison. Defaults to
 "Reference", "Current".}
+
+\item{...}{Additional parameters passed to \code{\link{extract_zones}}.}
 }
 \description{
 Leaflet plot of difference between two scenarios.
+}
+\details{
+Note that if the zones geography is pulled from the database (the default),
+         only zones from \code{db1} are used for the map.  In case zones differ
+         between \code{db1} and \code{db2}, note that the difference is based
+         on a join between the zone data based on \code{AZONE}.
 }

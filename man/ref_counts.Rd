@@ -4,7 +4,8 @@
 \name{ref_counts}
 \alias{ref_counts}
 \title{Reference counts}
-\format{A data frame with 2,170 observations.
+\format{
+A data frame with 2,170 observations.
 \describe{
   \item{site}{The site location of the count.}
   \item{FROMNODENO}{The from node of the link in the SWIM highway network.}
@@ -12,7 +13,8 @@
   \item{aawdt}{Observed traffic flow; calculated AAWDT by ODOT data analysis
   division.}
   \item{year}{The year of the count.}
-}}
+}
+}
 \source{
 Calculated by Rick Donnelly from data supplied by ODOT.
 }

@@ -4,8 +4,14 @@
 \alias{extract_tlfd}
 \title{Extract trip length frequency distribution data}
 \usage{
-extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"),
-  regions = NULL, cumulative = FALSE, years = NULL)
+extract_tlfd(
+  db,
+  region_var = c("MPO", "COUNTY", "STATE"),
+  regions = NULL,
+  cumulative = FALSE,
+  years = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -17,6 +23,8 @@ extract_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"),
 \item{cumulative}{Return a cumulative PDF?}
 
 \item{years}{The years to show in the plot. If null, will show the first}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 
 \item{max_bin}{The maximum bin size to return.}
 }

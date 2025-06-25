@@ -4,8 +4,12 @@
 \alias{get_commute_times}
 \title{Calculate trip times by residence region}
 \usage{
-get_commute_times(dir, year, region_var = c("MPO", "COUNTY", "STATE"),
-  regions = NULL)
+get_commute_times(
+  dir,
+  year,
+  region_var = c("MPO", "COUNTY", "STATE"),
+  regions = NULL
+)
 }
 \arguments{
 \item{dir}{Scenario directory}

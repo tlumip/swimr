@@ -9,12 +9,13 @@
 #'   levels other than external stations.
 #' @param type_levels The types of employment to show in the plot.
 #' @param employment_categories [Optional] data_frame of employment aggregation categories;
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'   if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
 #'   \code{ACTIVITY} (full code of activity in AA databases) and \code{emp_type}.
 #'
 #' @export
 extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
-                               type_levels = NULL, employment_categories = NULL){
+                               type_levels = NULL, employment_categories = NULL, index_year=2000){
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -46,7 +47,8 @@ extract_employment <- function(db, facet_var = NULL, facet_levels = NULL,
     dplyr::summarize(emp = sum(Employment)) %>%
     dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
     dplyr::ungroup() %>%
-    dplyr::collect(n=Inf)
+    dplyr::collect(n=Inf) %>%
+    dplyr::filter(year >= index_year)
 
   # consolidate employment categories
   if(is.null(employment_categories)){ # use included aggregation

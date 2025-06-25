@@ -4,8 +4,15 @@
 \alias{compare_tlfd}
 \title{Compare Trip Length Frequency Distributions}
 \usage{
-compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
-  regions = NULL, cumulative = FALSE, years = NULL)
+compare_tlfd(
+  db1,
+  db2,
+  region_var = c("MPO", "COUNTY", "STATE"),
+  regions = NULL,
+  cumulative = FALSE,
+  years = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -20,6 +27,8 @@ compare_tlfd(db1, db2, region_var = c("MPO", "COUNTY", "STATE"),
 
 \item{years}{The years to show in the plot. If null, will show the first
 and last years.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A ggplot2 object.

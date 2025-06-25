@@ -4,8 +4,14 @@
 \alias{extract_se}
 \title{Extract SE data from DB}
 \usage{
-extract_se(db, color_var = NULL, color_levels = NULL,
-  controls = TRUE, index = FALSE)
+extract_se(
+  db,
+  color_var = NULL,
+  color_levels = NULL,
+  controls = TRUE,
+  index = FALSE,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -19,6 +25,8 @@ which levels to include.}
 currently run with FALSE.}
 
 \item{index}{Whether to show the variables as indexed against the base year.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a data frame

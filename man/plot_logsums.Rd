@@ -4,8 +4,12 @@
 \alias{plot_logsums}
 \title{Plot average logsums over time for a single scenario}
 \usage{
-plot_logsums(db, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
-  "DOT_REGION"), color_levels = NULL)
+plot_logsums(
+  db,
+  color_var = c("COUNTY", "MPO", "ALDREGION", "STATE", "DOT_REGION"),
+  color_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -13,6 +17,8 @@ plot_logsums(db, color_var = c("COUNTY", "MPO", "ALDREGION", "STATE",
 \item{color_var}{The variable to color the plot by.}
 
 \item{color_levels}{The variable to}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \description{
 Plot average logsums over time for a single scenario

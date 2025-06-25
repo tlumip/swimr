@@ -4,8 +4,13 @@
 \alias{extract_wapr}
 \title{Extract labor force participation}
 \usage{
-extract_wapr(db, facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
-  "STATE"), facet_levels = NULL, color_levels = NULL)
+extract_wapr(
+  db,
+  facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION", "STATE"),
+  facet_levels = NULL,
+  color_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -17,6 +22,8 @@ which levels to include.}
 
 \item{color_levels}{A character vector of the industry sectors to include.
 Defaults to all.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A \code{data_frame} with the participation rate in each facet region

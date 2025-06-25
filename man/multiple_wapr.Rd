@@ -4,8 +4,13 @@
 \alias{multiple_wapr}
 \title{Compare WAPR  across multiple scenarios.}
 \usage{
-multiple_wapr(dbset, db_names, facet_var = c("BZONE", "MPO", "COUNTY",
-  "STATE"), facet_levels = NULL)
+multiple_wapr(
+  dbset,
+  db_names,
+  facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
+  facet_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -16,6 +21,8 @@ multiple_wapr(dbset, db_names, facet_var = c("BZONE", "MPO", "COUNTY",
 
 \item{facet_levels}{A character vector of the facet variable specifiying
 which levels to include.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 object.

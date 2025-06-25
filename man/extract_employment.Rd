@@ -4,8 +4,14 @@
 \alias{extract_employment}
 \title{Extract employment statistics from scenario}
 \usage{
-extract_employment(db, facet_var = NULL, facet_levels = NULL,
-  type_levels = NULL, employment_categories = NULL)
+extract_employment(
+  db,
+  facet_var = NULL,
+  facet_levels = NULL,
+  type_levels = NULL,
+  employment_categories = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -17,7 +23,9 @@ levels other than external stations.}
 
 \item{type_levels}{The types of employment to show in the plot.}
 
-\item{employment_categories}{[Optional] data_frame of employment aggregation categories;
+\item{employment_categories}{[Optional] data_frame of employment aggregation categories;}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;
 if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
 \code{ACTIVITY} (full code of activity in AA databases) and \code{emp_type}.}
 }

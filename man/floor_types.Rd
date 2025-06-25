@@ -4,11 +4,13 @@
 \name{floor_types}
 \alias{floor_types}
 \title{Floor types}
-\format{A data frame with 16 observations.
+\format{
+A data frame with 16 observations.
 \describe{
   \item{commodity}{The floorspace commodity types in the db.}
   \item{floor_type}{The consolidated categories.}
-}}
+}
+}
 \usage{
 floor_types
 }

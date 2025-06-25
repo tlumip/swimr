@@ -4,9 +4,14 @@
 \alias{extract_trips}
 \title{Extract trips from scenario}
 \usage{
-extract_trips(db, facet_var = NULL, facet_levels = NULL,
+extract_trips(
+  db,
+  facet_var = NULL,
+  facet_levels = NULL,
   color_levels = c("auto", "transit", "non-motorized", "truck"),
-  index = FALSE)
+  index = FALSE,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{the scenario database.}
@@ -19,6 +24,8 @@ extract_trips(db, facet_var = NULL, facet_levels = NULL,
 than \code{school}. See consolidated modes in \link{mode_types}.}
 
 \item{index}{whether to index mode split off the base year.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A data frame with total trips originating in the region by mode and

@@ -8,11 +8,12 @@
 #' @param scope a dplyr::filtering criteria to limit the scope of the dataframe
 #' @param purposes a vector of trip purposes to include in the average logsum.
 #' @param agg_var The region variable on which to aggregate logsums.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @export
 #' @return a data_frame
 extract_logsums <- function(db, scope = NULL, purposes = NULL,
-                            agg_var = "AZONE"){
+                            agg_var = "AZONE", index_year=2000){
 
   if(is.null(purposes)){
     # all purposes: currently no WORK_BASED
@@ -49,6 +50,7 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
 
     dplyr::collect(n=Inf) %>%
     dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
+    dplyr::filter(year>=index_year) %>%
 
     # trim to scope
     inner_join(zt) %>% dplyr::ungroup() %>%
@@ -71,10 +73,10 @@ extract_logsums <- function(db, scope = NULL, purposes = NULL,
 #'
 #' @export
 map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
-                        show_year = 2010){
+                        show_year = 2010, index_year=2000){
 
   df <- extract_logsums(db, scope = scope, purposes = purposes,
-                        agg_var = "BZONE") %>%
+                        agg_var = "BZONE", index_year=index_year) %>%
     dplyr::filter(year == show_year) %>%
     dplyr::mutate(logsum = cut_number(logsum, 5))
 
@@ -116,10 +118,10 @@ map_logsums <- function(db, scope = NULL, purposes = NULL, ggmap = FALSE,
 plot_logsums <- function(db,
                          color_var = c("COUNTY", "MPO", "ALDREGION",
                                        "STATE", "DOT_REGION"),
-                         color_levels = NULL){
+                         color_levels = NULL, index_year=2000){
 
   df <- extract_logsums(db, scope = NULL, purposes = NULL,
-                        agg_var = color_var)
+                        agg_var = color_var, index_year=index_year)
 
   # if no levels given, then  use all
   if(!is.null(color_levels)){
@@ -148,15 +150,15 @@ plot_logsums <- function(db,
 compare_logsums <- function(db1, db2,
                             color_var = c("COUNTY", "MPO", "ALDREGION",
                                           "STATE", "DOT_REGION"),
-                            color_levels = NULL){
+                            color_levels = NULL, index_year=2000){
 
 
   ref <- extract_logsums(db1, scope = NULL, purposes = NULL,
-                         agg_var = color_var) %>%
+                         agg_var = color_var, index_year=index_year) %>%
     dplyr::rename(ref = logsum)
 
   cur <- extract_logsums(db2, scope = NULL, purposes = NULL,
-                         agg_var = color_var) %>%
+                         agg_var = color_var, index_year=index_year) %>%
     dplyr::rename(cur = logsum)
 
   df <- dplyr::left_join(ref, cur) %>%

@@ -8,12 +8,13 @@
 #'   levels other than external stations.
 #' @param type_levels The types of employment to show in the plot.
 #' @param index Should the function extract indexed or absolute values?
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @export
 extract_floorspace <- function(db,
                                facet_var = c("MPO", "COUNTY", "STATE"),
                                facet_levels = NULL,
-                               type_levels = NULL, index = TRUE){
+                               type_levels = NULL, index = TRUE, index_year=2000){
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -44,6 +45,7 @@ extract_floorspace <- function(db,
       commodity = COMMODITY,
       floor = FLR, built = INCREMENT
     ) %>%
+    dplyr::filter(year >= index_year) %>%
 
     # join facet and dplyr::filter desired levels
     dplyr::left_join(grouping, by = "BZONE") %>%
@@ -138,7 +140,7 @@ extract_volume <- function(...){
 extract_rents <- function(db,
                           facet_var = NULL,
                           facet_levels = NULL,
-                          type_levels = NULL, index = TRUE){
+                          type_levels = NULL, index = TRUE, index_year=2000){
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -169,7 +171,7 @@ extract_rents <- function(db,
       year = TSTEP + 1990,
       commodity = COMMODITY,
       supply = FLR
-    )
+    ) %>% dplyr::filter(year >= index_year)
 
   demand <- dplyr::tbl(db, "ExchangeResults") %>%
     dplyr::transmute(
@@ -180,7 +182,7 @@ extract_rents <- function(db,
       bought = InternalBought  # quantity consumed from AA
     ) %>%
     # join facet and dplyr::filter desired levels
-    dplyr::filter(commodity %in% local(floor_types$commodity))
+    dplyr::filter(commodity %in% local(floor_types$commodity))%>% dplyr::filter(year >= index_year)
 
 
   df <- dplyr::left_join(supply, demand, by = c("BZONE", "year", "commodity")) %>%

@@ -4,8 +4,14 @@
 \alias{map_logsums}
 \title{Map destination choice logsums from a single scenario}
 \usage{
-map_logsums(db, scope = NULL, purposes = NULL, ggmap = FALSE,
-  show_year = 2010)
+map_logsums(
+  db,
+  scope = NULL,
+  purposes = NULL,
+  ggmap = FALSE,
+  show_year = 2010,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -17,6 +23,8 @@ map_logsums(db, scope = NULL, purposes = NULL, ggmap = FALSE,
 \item{ggmap}{If TRUE, then include a ggmap background.}
 
 \item{show_year}{The year in which to plot the logsums.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \description{
 Map destination choice logsums from a single scenario

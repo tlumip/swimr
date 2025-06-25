@@ -4,13 +4,15 @@
 \name{employment_types}
 \alias{employment_types}
 \title{Employment types}
-\format{A data frame with 43 observations.
+\format{
+A data frame with 43 observations.
 \describe{
   \item{sector}{The employment sector in the db.}
   \item{naics}{The two-digit NAICS code largely corresponding to the sector.}
   \item{naics1}{The one-digit NAICS code aggregation level.}
   \item{naics_label}{Label for the one-digit NAICS Code.}
-}}
+}
+}
 \usage{
 employment_types
 }

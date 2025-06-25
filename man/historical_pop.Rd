@@ -4,12 +4,14 @@
 \name{historical_pop}
 \alias{historical_pop}
 \title{Historical county population}
-\format{A data frame with 324 observations.
+\format{
+A data frame with 324 observations.
 \describe{
   \item{county}{name of the county in Oregon}
   \item{year}{1930-2010 by decennial.}
   \item{y}{The population count (coded as y for joining to interior data).}
-}}
+}
+}
 \source{
 Reconstructed from data provided by Rick Donnelly
 }

@@ -4,7 +4,7 @@
 \alias{yearly_summary}
 \title{Make a yearly summary table of a land use variable}
 \usage{
-yearly_summary(df, group, var)
+yearly_summary(df, group, var, use_forecast = FALSE)
 }
 \arguments{
 \item{df}{A \code{data_frame} of zones, such as is stored in the sqlite

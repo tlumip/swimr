@@ -4,7 +4,9 @@
 \name{regions}
 \alias{regions}
 \title{Regions table}
-\format{An object of class \code{data.frame} with 75 rows and 2 columns.}
+\format{
+An object of class \code{data.frame} with 75 rows and 2 columns.
+}
 \usage{
 regions
 }

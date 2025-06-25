@@ -4,8 +4,16 @@
 \alias{multiple_sevar}
 \title{Compare Population or Employment across multiple scenarios.}
 \usage{
-multiple_sevar(dbset, db_names, variable = c("population", "employment"),
-  ...)
+multiple_sevar(
+  dbset,
+  db_names,
+  variable = c("population", "employment"),
+  facet_var = NULL,
+  facet_levels = NULL,
+  controls = TRUE,
+  index = FALSE,
+  index_year = 2000
+)
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -15,20 +23,22 @@ multiple_sevar(dbset, db_names, variable = c("population", "employment"),
 \item{variable}{One of \code{c("population", "employment")} defining which
 socioeconomic variable to include in}
 
-\item{...}{Arguments passed on to \code{extract_se}
-\describe{
-  \item{db}{The scenario sqlite database.}
-  \item{color_var}{Field to color by: either "MPO" or "COUNTY".}
-  \item{color_levels}{A character vector of the color variable specifiying
+\item{facet_var}{Field to facet by: either "MPO" or "COUNTY".}
+
+\item{facet_levels}{A character vector of the facet variable specifying
 which levels to include.}
-  \item{controls}{Plot against the control totals. Defaults to TRUE, cannot
+
+\item{controls}{Plot against the control totals. Defaults to TRUE, cannot
 currently run with FALSE.}
-  \item{index}{Whether to show the variables as indexed against the base year.}
-}}
+
+\item{index}{Whether to show the variables as indexed against the base year.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 object.
 }
 \description{
-Compare Population or Employment across multiple scenarios.
+Scenarios (represented by elements of \code{dbset}) are represented as colors, while \code{facet_var} specifies the
+variable to use for facets.
 }

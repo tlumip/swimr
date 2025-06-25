@@ -4,7 +4,7 @@
 \alias{extract_vht}
 \title{Extract VHT}
 \usage{
-extract_vht(db, facet_var, facet_levels = NULL)
+extract_vht(db, facet_var, facet_levels = NULL, index_year = 2000)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -14,6 +14,8 @@ extract_vht(db, facet_var, facet_levels = NULL)
 \item{facet_levels}{A character vector giving the levels of the faceting
 variable to use. Levels not called are dropped from the plot; default is
 \code{NULL}, meaning print all level.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A data frame with the

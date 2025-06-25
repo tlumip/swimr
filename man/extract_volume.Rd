@@ -7,15 +7,17 @@
 extract_volume(...)
 }
 \arguments{
-\item{...}{Arguments passed on to \code{extract_floorspace}
-\describe{
-  \item{db}{The scenario database.}
-  \item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
-  \item{facet_levels}{The levels of the facet variable to keep. Defaults to all
+\item{...}{
+  Arguments passed on to \code{\link[=extract_floorspace]{extract_floorspace}}
+  \describe{
+    \item{\code{db}}{The scenario database.}
+    \item{\code{facet_var}}{The variable in the zone table to facet by. Defaults to MPO}
+    \item{\code{facet_levels}}{The levels of the facet variable to keep. Defaults to all
 levels other than external stations.}
-  \item{type_levels}{The types of employment to show in the plot.}
-  \item{index}{Should the function extract indexed or absolute values?}
-}}
+    \item{\code{type_levels}}{The types of employment to show in the plot.}
+    \item{\code{index}}{Should the function extract indexed or absolute values?}
+    \item{\code{index_year}}{[Optional] index year that should be used as the starting year for data or plots;}
+  }}
 }
 \value{
 A data frame with the total dollars sold.

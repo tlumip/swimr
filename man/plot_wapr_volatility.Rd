@@ -4,8 +4,12 @@
 \alias{plot_wapr_volatility}
 \title{Plot WAPR Volatility in a Region}
 \usage{
-plot_wapr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ALDREGION",
-  "STATE"), scope = NULL)
+plot_wapr_volatility(
+  db,
+  level = c("BZONE", "COUNTY", "MPO", "ALDREGION", "STATE"),
+  scope = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{Scenario database.}
@@ -14,6 +18,8 @@ plot_wapr_volatility(db, level = c("BZONE", "COUNTY", "MPO", "ALDREGION",
 levels, such as BZONE will show higher volatility.}
 
 \item{scope}{a dplyr::filtering criteria to limit the scope of the dataframe}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 object.

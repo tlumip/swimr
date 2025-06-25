@@ -9,6 +9,7 @@
 #' @param color_levels Modes to include in summary. Defaults to all modes other
 #'   than \code{school}. See consolidated modes in \link{mode_types}.
 #' @param index whether to index mode split off the base year.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return A data frame with total trips originating in the region by mode and
 #'   year.
@@ -19,7 +20,7 @@ extract_trips <- function(db,
                           facet_levels = NULL,
                           color_levels = c("auto", "transit",
                                            "non-motorized", "truck"),
-                          index = FALSE){
+                          index = FALSE, index_year=2000){
 
   if(is.null(facet_var)){ facet_var = "MPO" }
 
@@ -51,6 +52,7 @@ extract_trips <- function(db,
     dplyr::select(-TSTEP) %>%
     tidyr::separate(mode, into = c("period", "mode"), sep = "_", extra = "merge") %>%
     dplyr::filter(mode != "SCHOOL_BUS") %>%
+    dplyr::filter(year >= index_year) %>%
 
     # join consolidated mode information
     dplyr::group_by(facet_var, year, mode) %>%
@@ -161,13 +163,13 @@ compare_trips <- function(db1, db2, ..., diff_type = "pct_diff"){
 #' @return A ggplot2 object
 #'
 #' @export
-multiple_trips <- function(dbset, db_names, ...){
+multiple_trips <- function(dbset, db_names, index_year=2000, ...){
 
   # get the trips table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_trips(dbset[[i]], facet_var, facet_levels, color_levels) %>%
+      extract_trips(dbset[[i]], facet_var, facet_levels, color_levels, index_year=index_year) %>%
         dplyr::mutate(scenario = names(dbset)[[i]])
     )
   )

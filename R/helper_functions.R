@@ -131,3 +131,24 @@ calc_grt <- function(x){
 pct_diff <- function(x, y) {
   (y - x) / x * 100
 }
+
+
+#' Custom sorting function
+#'
+#' @param col_names list of column names
+#'
+#' @export
+sort_fields <- function(col_names) {
+  # Ensure "color_var" is first
+  col_names <- col_names[order(!grepl("color_var", col_names))]
+
+  # Extract numeric years
+  years <- as.numeric(sub("_.*$", "", col_names))
+
+  # Prioritize _SWIM over _MPO Forecast
+  swim_first <- grepl("_SWIM", col_names)
+
+  # Order based on year and _SWIM priority
+  col_names[order(!grepl("color_var", col_names), years, -swim_first)]
+}
+

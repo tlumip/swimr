@@ -32,4 +32,4 @@ Imports:
 VignetteBuilder: knitr
 Remotes: gregmacfarlane/omxr,
   pbsag/outviz
-RoxygenNote: 6.1.0
+RoxygenNote: 7.1.1

@@ -11,15 +11,17 @@ compare_trips(db1, db2, ..., diff_type = "pct_diff")
 
 \item{db2}{The swim database for the "Current" scenario.}
 
-\item{...}{Arguments passed on to \code{extract_trips}
-\describe{
-  \item{db}{the scenario database.}
-  \item{facet_var}{The region to dplyr::summarize by.}
-  \item{facet_levels}{Regions to include in summary.}
-  \item{color_levels}{Modes to include in summary. Defaults to all modes other
+\item{...}{
+  Arguments passed on to \code{\link[=extract_trips]{extract_trips}}
+  \describe{
+    \item{\code{db}}{the scenario database.}
+    \item{\code{facet_var}}{The region to dplyr::summarize by.}
+    \item{\code{facet_levels}}{Regions to include in summary.}
+    \item{\code{color_levels}}{Modes to include in summary. Defaults to all modes other
 than \code{school}. See consolidated modes in \link{mode_types}.}
-  \item{index}{whether to index mode split off the base year.}
-}}
+    \item{\code{index}}{whether to index mode split off the base year.}
+    \item{\code{index_year}}{[Optional] index year that should be used as the starting year for data or plots;}
+  }}
 
 \item{diff_type}{Character string saying whether to use abolute (`diff`) or
 percent (`pct_diff`) differences. Defaults to percent.}

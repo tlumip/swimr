@@ -4,8 +4,7 @@
 \alias{discover_outlying_rates}
 \title{Discover outlying counties}
 \usage{
-discover_outlying_rates(db, counties = NULL, method = c("count",
-  "pval"))
+discover_outlying_rates(db, counties = NULL, method = c("count", "pval"))
 }
 \arguments{
 \item{db}{The swim database}

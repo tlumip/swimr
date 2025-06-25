@@ -4,8 +4,14 @@
 \alias{compare_gdp}
 \title{Compare GDP between two scenarios}
 \usage{
-compare_gdp(db1, db2, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL, color_levels = NULL)
+compare_gdp(
+  db1,
+  db2,
+  facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL,
+  color_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db1}{The swim database for the "Reference" scenario.}
@@ -19,6 +25,8 @@ which levels to include.}
 
 \item{color_levels}{A character vector of the industry sectors to include.
 Defaults to all.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 ggplot2 object

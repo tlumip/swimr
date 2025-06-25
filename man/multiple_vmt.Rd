@@ -4,8 +4,13 @@
 \alias{multiple_vmt}
 \title{Compare VMT between multiple scenarios}
 \usage{
-multiple_vmt(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL)
+multiple_vmt(
+  dbset,
+  db_names,
+  facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -15,6 +20,8 @@ multiple_vmt(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
 \item{facet_var}{The region to dplyr::summarize by.}
 
 \item{facet_levels}{Regions to include in summary.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A ggplot2 object showing VHT by facility type in each facet level

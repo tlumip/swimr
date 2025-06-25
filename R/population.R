@@ -11,13 +11,26 @@
 #' value of the variable at each time stage going across the columns.
 #'
 #' @export
-yearly_summary <- function(df, group, var){
-  df %>%
+yearly_summary <- function(df, group, var, use_forecast=FALSE){
+  if(!use_forecast){
+    if("data" %in% colnames(df)){
+      df <- df %>% filter(!grepl("forecast", data, ignore.case=TRUE))
+    }
+    df %>%
     dplyr::group_by_(group, "year") %>%
-    dplyr::mutate_("var" = var) %>%
-    dplyr::summarize(var = sum(var)) %>%
-    dplyr::collect(n=Inf) %>%
-    tidyr::spread(year, var, fill = NA)
+      dplyr::mutate_("var" = var) %>%
+      dplyr::summarize(var = sum(var)) %>%
+      dplyr::collect(n = Inf) %>%
+      tidyr::spread(year, var, fill = NA)
+  } else {
+    df %>%
+    dplyr::group_by_(group, "data", "year") %>%
+      dplyr::mutate_("var" = var) %>%
+      dplyr::summarize(var = sum(var)) %>%
+      dplyr::collect(n = Inf) %>%
+      tidyr::pivot_wider(id_cols = color_var, names_from=c("year", "data"), values_from=var, values_fill = NA)
+
+    }
 }
 
 #' Extract SE data from DB
@@ -30,20 +43,21 @@ yearly_summary <- function(df, group, var){
 #' @param controls Plot against the control totals. Defaults to TRUE, cannot
 #'   currently run with FALSE.
 #' @param index Whether to show the variables as indexed against the base year.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @export
 #' @return a data frame
 extract_se <- function(db, color_var = NULL,
-                       color_levels = NULL, controls = TRUE, index = FALSE){
+                       color_levels = NULL, controls = TRUE, index = FALSE, index_year=2000){
 
   if(is.null(color_var)){color_var = "COUNTY"}
 
-  if(controls){ # if controls are asked for, then make sure that they are available
-    if(color_var != "COUNTY"){
-      warning("Controls only available for county-level population forecasts.")
-      controls <- FALSE
-    }
-  }
+  # if(controls){ # if controls are asked for, then make sure that they are available
+  #   if(color_var != "COUNTY"){
+  #     warning("Controls only available for county-level population forecasts.")
+  #     controls <- FALSE
+  #   }
+  # }
 
   # county plot with controls
   if(color_var == "COUNTY"){
@@ -64,7 +78,7 @@ extract_se <- function(db, color_var = NULL,
         totalhh = sum(TOTALHHS)
       ) %>%
       dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
-      dplyr::ungroup() %>% dplyr::collect(n=Inf)
+      dplyr::ungroup() %>% dplyr::collect(n=Inf) %>% dplyr::filter(year >= index_year)
 
     # if no levels specified, then keep all
     if(!is.null(color_levels)){
@@ -77,22 +91,31 @@ extract_se <- function(db, color_var = NULL,
       dplyr::mutate(data = "SWIM")
 
     # add COUNTY controls
-    if(controls){
+    if(is.data.frame(controls)){
+      ct <- controls %>%
+        dplyr::rename(color_var = county) %>%
+        dplyr::filter(color_var %in% df$color_var) %>%
+        dplyr::filter(year > 2005) %>%
+        dplyr::select(color_var, year, var, y) %>%
+        dplyr::mutate(data = "OEA Forecast") %>% dplyr::filter(year >= index_year)
+
+      df <- rbind(df, ct)
+    } else if (controls) {
       ct <- county_controls %>%
         dplyr::rename(color_var = county) %>%
         dplyr::filter(color_var %in% df$color_var) %>%
         dplyr::filter(year > 2005) %>%
         dplyr::select(color_var, year, var, y) %>%
-        dplyr::mutate(data = "OEA Forecast")
+        dplyr::mutate(data = "OEA Forecast") %>% dplyr::filter(year >= index_year)
 
       df <- rbind(df, ct)
     }
 
 
-  } else {
+  } else if (toupper(color_var)=="MPOMODELEDZONES") {
 
-    grouping <- dplyr::tbl(db, "BZONE") %>%
-      dplyr::select_("BZONE", "color_var" = color_var)
+    grouping <- dplyr::tbl(db, "ALLZONES") %>%
+      dplyr::select_("BZONE", "color_var" = color_var) %>% distinct()
 
     # get levels of facet_var if none given
     if(is.null(color_levels)){
@@ -123,7 +146,54 @@ extract_se <- function(db, color_var = NULL,
 
       dplyr::select(color_var, year, population, employment) %>%
       tidyr::gather(var, y, population:employment) %>%
-      dplyr::mutate(data = "SWIM")
+      dplyr::mutate(data = "SWIM") %>% dplyr::filter(year >= index_year)
+
+    # add MPO controls
+    if(is.data.frame(controls)){
+      ct <- controls %>%
+        dplyr::rename(color_var = MPOmodeledzones) %>%
+        dplyr::filter(color_var %in% df$color_var) %>%
+        dplyr::filter(year > 2005) %>%
+        dplyr::select(color_var, year, var, y) %>%
+        dplyr::mutate(data = "MPO Forecast") %>% dplyr::filter(year >= index_year)
+
+      df <- rbind(df, ct)
+    }
+  } else {
+
+    grouping <- dplyr::tbl(db, "BZONE") %>%
+      dplyr::select_("BZONE", "color_var" = color_var) %>% distinct()
+
+    # get levels of facet_var if none given
+    if(is.null(color_levels)){
+      color_levels <- grouping %>% dplyr::group_by(color_var) %>% dplyr::collect(n=Inf) %>%
+        dplyr::slice(1) %>% .$color_var
+
+      color_levels <- color_levels[which(color_levels != "EXTSTA")]
+    }
+
+    # Pull se data
+    df <- dplyr::tbl(db, "AZONE") %>%
+      dplyr::select(AZONE, POPULATION, EMPLOYMENT, TOTALHHS, TSTEP) %>%
+      # join information for county and state
+      dplyr::left_join(
+        dplyr::tbl(db, "ALLZONES") %>% rename(AZONE = Azone), by = "AZONE") %>%
+      dplyr::left_join(grouping, by = "BZONE") %>%
+      dplyr::filter(color_var %in% color_levels) %>%
+
+      # dplyr::summarize to the MPO level
+      dplyr::group_by(color_var, TSTEP) %>%
+      dplyr::summarize(
+        population = sum(POPULATION),
+        employment = sum(EMPLOYMENT),
+        totalhh = sum(TOTALHHS)
+      ) %>%
+      dplyr::mutate(year = as.numeric(TSTEP) + 1990) %>%
+      dplyr::ungroup() %>% dplyr::collect(n=Inf) %>%
+
+      dplyr::select(color_var, year, population, employment) %>%
+      tidyr::gather(var, y, population:employment) %>%
+      dplyr::mutate(data = "SWIM") %>% dplyr::filter(year >= index_year)
   }
 
   if(index){
@@ -136,6 +206,7 @@ extract_se <- function(db, color_var = NULL,
 
 }
 
+
 #' Make a plot of population and employment
 #'
 #' @inheritDotParams extract_se
@@ -144,10 +215,16 @@ extract_se <- function(db, color_var = NULL,
 #'   and population over time.
 #'
 #' @export
-plot_sevar <- function(...){
+plot_sevar <- function(..., var="both"){
 
   df <- extract_se(...)
   dots <- list(...)
+
+  if(var=="population"){
+    df <- df %>% filter(var=="population")
+  } else if(var=="employment"){
+    df <- df %>% filter(var=="employment")
+  }
 
   # county plot with controls
   if(dots$color_var == "COUNTY"){
@@ -156,22 +233,38 @@ plot_sevar <- function(...){
       ggplot2::geom_line(ggplot2::aes_string(
         x = "year", y = "y", color = "color_var", lty = "data"))
 
-    if(dots$controls){
+    if(is.data.frame(dots$controls)){
+      p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
+    } else if(dots$controls){
       p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
     }
+
+  } else if (toupper(dots$color_var)=="MPOMODELEDZONES" & is.data.frame(dots$controls)){
+
+    p <- ggplot2::ggplot(df) +
+      ggplot2::geom_line(ggplot2::aes_string(
+        x = "year", y = "y", color = "color_var", lty = "data"))
+    p <- p + ggplot2::scale_linetype_manual("Data", values = c("dashed", "solid"))
 
   } else { # MPO plot without controls
     p <- ggplot2::ggplot(df) +
       geom_line(ggplot2::aes(x = year, y = y, color = color_var))
   }
 
-
-  # ggplot2::theme, etc
-  p +
+  p <- p +
     ggplot2::scale_color_discrete(dots$color_var) +
-    ggplot2::facet_grid(. ~ var, scale = "free_y") +
     ggplot2::xlab("Year") + ggplot2::ylab(ifelse(dots$index, "Index Relative to Base", "Count")) +
     ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30))
+
+  if(var=="both"){
+    p <- p +
+      ggplot2::facet_grid(. ~ var, scale = "free_y")
+  } else {
+    p <- p +
+      ggplot2::facet_wrap(. ~ color_var, ncol = 3, scale = "free_y")
+  }
+
+  return(p)
 }
 
 
@@ -406,13 +499,13 @@ discover_outlying_rates <- function(db, counties = NULL,
 multiple_sevar <- function(dbset, db_names,
                            variable = c("population", "employment"),
                            facet_var = NULL, facet_levels=NULL,
-                           controls = TRUE, index = FALSE) {
+                           controls = TRUE, index = FALSE, index_year=2000) {
 
   # get the population table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_se(dbset[[i]], color_var = facet_var, color_levels=facet_levels) %>%
+      extract_se(dbset[[i]], color_var = facet_var, color_levels=facet_levels, index_year=index_year) %>%
         dplyr::mutate(scenario = names(dbset)[[i]]) %>%
         dplyr::filter(var == variable)
     )

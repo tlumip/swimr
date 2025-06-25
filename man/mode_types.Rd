@@ -4,11 +4,13 @@
 \name{mode_types}
 \alias{mode_types}
 \title{Consolidated transport modes}
-\format{A data frame with 9 observations.
+\format{
+A data frame with 9 observations.
 \describe{
   \item{mode}{The mode in the TRIPMATRIX} \item{consolidated_mode}{One of
   five modes: auto, transit, school, truck, and non-motorized.}
-}}
+}
+}
 \usage{
 mode_types
 }

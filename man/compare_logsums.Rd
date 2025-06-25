@@ -4,8 +4,13 @@
 \alias{compare_logsums}
 \title{Compare logsums from two scenarios}
 \usage{
-compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION",
-  "STATE", "DOT_REGION"), color_levels = NULL)
+compare_logsums(
+  db1,
+  db2,
+  color_var = c("COUNTY", "MPO", "ALDREGION", "STATE", "DOT_REGION"),
+  color_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db1}{The reference scenario VIZ database.}
@@ -15,6 +20,8 @@ compare_logsums(db1, db2, color_var = c("COUNTY", "MPO", "ALDREGION",
 \item{color_var}{The variable to color the plot by.}
 
 \item{color_levels}{The variable to}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \description{
 Compare logsums from two scenarios

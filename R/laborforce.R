@@ -21,6 +21,7 @@
 #'   which levels to include.
 #' @param color_levels A character vector of the industry sectors to include.
 #'   Defaults to all.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return A \code{data_frame} with the participation rate in each facet region
 #'   in each transport model year.
@@ -29,7 +30,7 @@
 extract_wapr <- function(db,
                          facet_var = c("BZONE", "MPO", "COUNTY",
                                        "DOT_REGION", "STATE"),
-                         facet_levels = NULL, color_levels = NULL) {
+                         facet_levels = NULL, color_levels = NULL, index_year=2000) {
 
 
   df <- dplyr::tbl(db, "AZONE") %>%
@@ -68,7 +69,7 @@ extract_wapr <- function(db,
       year = as.numeric(TSTEP) + 1990
     ) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-TSTEP)
+    dplyr::select(-TSTEP) %>% dplyr::filter(year >= index_year)
 
   return(df)
 
@@ -98,6 +99,7 @@ extract_wapr <- function(db,
 #'   "STATE")
 #' @param facet_levels A character vector of the variable specifiying
 #'   which levels to include.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return a ggplot2 plot object.
 #'
@@ -107,12 +109,12 @@ plot_wapr <- function(db,
                                     "STATE"),
                       color_levels = NULL,
                       facet_var = NULL,
-                      facet_levels = NULL) {
+                      facet_levels = NULL, index_year=2000) {
 
   # Simple plot of groups as colors
   if(is.null(facet_var)){
 
-    df <- extract_wapr(db, color_var, color_levels)
+    df <- extract_wapr(db, color_var, color_levels, index_year=index_year)
     p <- ggplot2::ggplot(df, ggplot2::aes_string(x = "year", y = "wapr", color = color_var)) +
       ggplot2::geom_path()
   } else {
@@ -123,7 +125,7 @@ plot_wapr <- function(db,
       dplyr::slice(1) %>% dplyr::ungroup() %>%
       dplyr::select_(color_var, facet_var)
 
-    df <- extract_wapr(db, color_var, color_levels) %>%
+    df <- extract_wapr(db, color_var, color_levels, index_year=index_year) %>%
       dplyr::left_join(zt)
 
     p <- ggplot2::ggplot(
@@ -150,6 +152,7 @@ plot_wapr <- function(db,
 #' @param level Level at which to calculate volatility over time. Smaller
 #'   levels, such as BZONE will show higher volatility.
 #' @param scope a dplyr::filtering criteria to limit the scope of the dataframe
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #'
 #' @return a ggplot2 object.
@@ -158,7 +161,7 @@ plot_wapr <- function(db,
 plot_wapr_volatility <- function(db,
                                  level = c("BZONE", "COUNTY", "MPO",
                                            "ALDREGION", "STATE"),
-                                 scope = NULL){
+                                 scope = NULL, index_year=2000){
 
   if(!is.null(scope)){
 
@@ -170,12 +173,12 @@ plot_wapr_volatility <- function(db,
       dplyr::slice(1)
 
 
-    df <- extract_wapr(db, level) %>%
+    df <- extract_wapr(db, level, index_year=index_year) %>%
       # trim to scope
       inner_join(zt)
 
   } else {
-    df <- extract_wapr(db, level)
+    df <- extract_wapr(db, level, index_year=index_year)
   }
 
   # calculate volatility as the standard deviation of the growth rates.
@@ -214,18 +217,19 @@ plot_wapr_volatility <- function(db,
 #' @param facet_var Field to facet by: either "MPO" or "COUNTY".
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return ggplot2 object
 #' @export
 compare_wapr <- function(db1, db2,
                          facet_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
                                       "STATE"),
-                         facet_levels = NULL) {
+                         facet_levels = NULL, index_year=2000) {
 
-  ref <- extract_wapr(db1, facet_var, facet_levels) %>%
+  ref <- extract_wapr(db1, facet_var, facet_levels, index_year=index_year) %>%
     dplyr::rename(ref = wapr) %>%
     dplyr::select(-workers, -laborforce)
-  com <- extract_wapr(db2, facet_var, facet_levels) %>%
+  com <- extract_wapr(db2, facet_var, facet_levels, index_year=index_year) %>%
     dplyr::rename(com = wapr) %>%
     dplyr::select(-workers, -laborforce)
 
@@ -248,6 +252,7 @@ compare_wapr <- function(db1, db2,
 #' @param facet_var Field to facet by.
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return a ggplot2 object.
 #'
@@ -255,13 +260,13 @@ compare_wapr <- function(db1, db2,
 #' @export
 multiple_wapr <- function(dbset, db_names,
                           facet_var = c("BZONE", "MPO", "COUNTY", "STATE"),
-                          facet_levels = NULL ) {
+                          facet_levels = NULL, index_year=2000 ) {
 
   # get the wapr table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_wapr(dbset[[i]], facet_var, facet_levels) %>%
+      extract_wapr(dbset[[i]], facet_var, facet_levels, index_year=index_year) %>%
         dplyr::mutate(scenario = names(dbset)[[i]])
     )
   ) %>%

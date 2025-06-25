@@ -11,17 +11,19 @@ multiple_employment(dbset, db_names, ...)
 
 \item{db_names}{A character vector naming the scenarios.}
 
-\item{...}{Arguments passed on to \code{extract_employment}
-\describe{
-  \item{db}{The scenario database.}
-  \item{facet_var}{The variable in the zone table to facet by. Defaults to MPO}
-  \item{facet_levels}{The levels of the facet variable to keep. Defaults to all
+\item{...}{
+  Arguments passed on to \code{\link[=extract_employment]{extract_employment}}
+  \describe{
+    \item{\code{db}}{The scenario database.}
+    \item{\code{facet_var}}{The variable in the zone table to facet by. Defaults to MPO}
+    \item{\code{facet_levels}}{The levels of the facet variable to keep. Defaults to all
 levels other than external stations.}
-  \item{type_levels}{The types of employment to show in the plot.}
-  \item{employment_categories}{[Optional] data_frame of employment aggregation categories;
+    \item{\code{type_levels}}{The types of employment to show in the plot.}
+    \item{\code{employment_categories}}{[Optional] data_frame of employment aggregation categories;}
+    \item{\code{index_year}}{[Optional] index year that should be used as the starting year for data or plots;
 if \code{NULL}, uses \code{\link{emp_types}}. Should have columns
 \code{ACTIVITY} (full code of activity in AA databases) and \code{emp_type}.}
-}}
+  }}
 }
 \value{
 a ggplot2 object.

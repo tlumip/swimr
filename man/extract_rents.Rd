@@ -4,8 +4,14 @@
 \alias{extract_rents}
 \title{Extract rent price}
 \usage{
-extract_rents(db, facet_var = NULL, facet_levels = NULL,
-  type_levels = NULL, index = TRUE)
+extract_rents(
+  db,
+  facet_var = NULL,
+  facet_levels = NULL,
+  type_levels = NULL,
+  index = TRUE,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -18,6 +24,8 @@ levels other than external stations.}
 \item{type_levels}{The types of employment to show in the plot.}
 
 \item{index}{Should the function extract indexed or absolute values?}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \description{
 This function extracts the occupancy rate by floortype from a scenario over

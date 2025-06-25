@@ -4,8 +4,14 @@
 \alias{plot_tlfd}
 \title{Plot a trip length frequency distribution}
 \usage{
-plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
-  cumulative = FALSE, years = NULL)
+plot_tlfd(
+  db,
+  region_var = c("MPO", "COUNTY", "STATE"),
+  regions = NULL,
+  cumulative = FALSE,
+  years = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario database.}
@@ -18,6 +24,8 @@ plot_tlfd(db, region_var = c("MPO", "COUNTY", "STATE"), regions = NULL,
 
 \item{years}{The years to show in the plot. If null, will show the first
 and last years.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 A ggplot2 object.

@@ -9,6 +9,7 @@
 #'   which levels to include.
 #' @param color_levels A character vector of the industry sectors to include.
 #'   Defaults to all.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return A \code{data_frame} with the participation rate in each facet region
 #'   in each transport model year.
@@ -16,7 +17,7 @@
 #' @export
 extract_gdp <- function(db,
                          facet_var = c("MPO", "COUNTY", "STATE"),
-                         facet_levels = NULL, color_levels = NULL) {
+                         facet_levels = NULL, color_levels = NULL, index_year=2000) {
 
   # set facet variable; if null then default to MPO
   if(is.null(facet_var)){
@@ -45,6 +46,7 @@ extract_gdp <- function(db,
     # join faceting variables
     dplyr::left_join(grouping ) %>%
     dplyr::filter(facet_var %in% facet_levels) %>%
+    dplyr::filter(year >= index_year) %>%
 
     # dplyr::summarize on faceting variable
     dplyr::filter(sold  > 0) %>%
@@ -78,9 +80,9 @@ extract_gdp <- function(db,
 #' @export
 plot_gdp <- function(db,
                      facet_var = c("MPO", "COUNTY", "STATE"),
-                     facet_levels = NULL, color_levels = NULL) {
+                     facet_levels = NULL, color_levels = NULL, index_year=2000) {
 
-  df <- extract_gdp(db, facet_var, facet_levels, color_levels)
+  df <- extract_gdp(db, facet_var, facet_levels, color_levels, index_year=index_year)
 
   ggplot2::ggplot(df, ggplot2::aes(x = year, y = value / 1e9, color = naics_label)) +
     ggplot2::geom_path() +
@@ -101,11 +103,11 @@ plot_gdp <- function(db,
 #' @export
 compare_gdp <- function(db1, db2,
                         facet_var = c("MPO", "COUNTY", "STATE"),
-                        facet_levels = NULL, color_levels = NULL) {
+                        facet_levels = NULL, color_levels = NULL, index_year=2000) {
 
-  ref <- extract_gdp(db1, facet_var, facet_levels, color_levels) %>%
+  ref <- extract_gdp(db1, facet_var, facet_levels, color_levels, index_year=index_year) %>%
     dplyr::rename(ref = value)
-  com <- extract_gdp(db2, facet_var, facet_levels, color_levels) %>%
+  com <- extract_gdp(db2, facet_var, facet_levels, color_levels, index_year=index_year) %>%
     dplyr::rename(com = value)
 
   df <- dplyr::left_join(ref, com) %>%
@@ -128,6 +130,7 @@ compare_gdp <- function(db1, db2,
 #' @param facet_var Field to facet by.
 #' @param facet_levels A character vector of the facet variable specifiying
 #'   which levels to include.
+#' @param index_year [Optional] index year that should be used as the starting year for data or plots;
 #'
 #' @return a ggplot2 object.
 #'
@@ -135,13 +138,13 @@ compare_gdp <- function(db1, db2,
 #' @export
 multiple_gdp <- function(dbset, db_names,
                          facet_var = c("MPO", "COUNTY", "STATE"),
-                         facet_levels = NULL ) {
+                         facet_levels = NULL, index_year=2000 ) {
 
   # get the wapr table for every scenario.
   names(dbset) <- db_names
   df <- bind_rows(
     lapply(seq_along(dbset), function(i)
-      extract_gdp(dbset[[i]], facet_var, facet_levels) %>%
+      extract_gdp(dbset[[i]], facet_var, facet_levels, index_year=index_year) %>%
         dplyr::mutate(scenario = names(dbset)[[i]])
     )
   ) %>%

@@ -4,8 +4,7 @@
 \alias{skim_leaflet}
 \title{Plot a skim chloropleth}
 \usage{
-skim_leaflet(zone, skim, dir1, dir2 = NULL, year1, year2 = NULL,
-  from = TRUE)
+skim_leaflet(zone, skim, dir1, dir2 = NULL, year1, year2 = NULL, from = TRUE)
 }
 \arguments{
 \item{zone}{The focus zone.}

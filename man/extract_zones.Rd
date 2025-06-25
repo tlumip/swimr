@@ -2,12 +2,22 @@
 % Please edit documentation in R/zone_leaflet.R
 \name{extract_zones}
 \alias{extract_zones}
-\title{Get zones geometry from the database}
+\title{Get zones geometry from the database or built-in files}
 \usage{
-extract_zones(db, tbl_name = "ALLZONES", wkt_col = "WKTSURFACE",
-  proj4string = "+proj=lcc +lat_1=43 +lat_2=45.5 +lat_0=41.75 +lon_0=-120.5 +x_0=399999.9999999999 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs")
+extract_zones(
+  zones_shp_name = NULL,
+  db = NULL,
+  tbl_name = "ALLZONES",
+  wkt_col = "WKTSURFACE",
+ 
+    proj4string = "+proj=lcc +lat_1=43 +lat_2=45.5 +lat_0=41.75 +lon_0=-120.5 +x_0=399999.9999999999 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs"
+)
 }
 \arguments{
+\item{zones_shp_name}{chr.  The name of the zones_shp object in \code{data} to use if
+the database does not contain the WKT geometry for zones.  Possible values are
+"zones_shp", "zones_shp_swim25".}
+
 \item{db}{class \code{src}.  The connection to the database.}
 
 \item{tbl_name}{chr.  The name of the table in \code{db} containing the geometry
@@ -23,9 +33,11 @@ WKT geometry. Defaults to WKTSURFACE}
 a \code{SpatialPolygonsDataFrame} in WGS84 lat long coordinates.
 }
 \description{
-Get zones geometry from the database
+Get zones geometry from the database or built-in files
 }
 \details{
 This function extracts the geography for the zones from the scenario
          database. It automatically reprojects the data to WGS84 using \code{st_transform}.
+         If the database does not contain geography, then data(zones_shp) is returned instead,
+         unless otherwise specified by the user.
 }

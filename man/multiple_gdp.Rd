@@ -4,8 +4,13 @@
 \alias{multiple_gdp}
 \title{Compare GDP across multiple scenarios.}
 \usage{
-multiple_gdp(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
-  facet_levels = NULL)
+multiple_gdp(
+  dbset,
+  db_names,
+  facet_var = c("MPO", "COUNTY", "STATE"),
+  facet_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{dbset}{A list of connections to SWIM databases.}
@@ -16,6 +21,8 @@ multiple_gdp(dbset, db_names, facet_var = c("MPO", "COUNTY", "STATE"),
 
 \item{facet_levels}{A character vector of the facet variable specifiying
 which levels to include.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 object.

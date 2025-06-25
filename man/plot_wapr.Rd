@@ -4,9 +4,14 @@
 \alias{plot_wapr}
 \title{Plot the labor force participation rate.}
 \usage{
-plot_wapr(db, color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION",
-  "STATE"), color_levels = NULL, facet_var = NULL,
-  facet_levels = NULL)
+plot_wapr(
+  db,
+  color_var = c("BZONE", "MPO", "COUNTY", "DOT_REGION", "STATE"),
+  color_levels = NULL,
+  facet_var = NULL,
+  facet_levels = NULL,
+  index_year = 2000
+)
 }
 \arguments{
 \item{db}{The scenario sqlite database.}
@@ -22,6 +27,8 @@ which levels to include.}
 
 \item{facet_levels}{A character vector of the variable specifiying
 which levels to include.}
+
+\item{index_year}{[Optional] index year that should be used as the starting year for data or plots;}
 }
 \value{
 a ggplot2 plot object.
